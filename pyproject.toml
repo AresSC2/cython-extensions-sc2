@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "cython-extensions-sc2"
+version = "0.1.0"
+description = ""
+authors = ["Tom Kerr <tomkerrdev@gmail.com>"]
+readme = "README.md"
+packages = [{include = "cython_extensions"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+cython = "^3.0.8"
+numpy = "^1.26.3"
+
+[build-system]
+requires = ["poetry-core", "Cython", "numpy", "setuptools"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.build]
+generate-setup-file = false
+script = 'build.py'
