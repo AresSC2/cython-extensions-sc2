@@ -9,7 +9,7 @@ cpdef set flood_fill_grid(
     const unsigned char[:, :] terrain_grid,
     const unsigned char[:, :] pathing_grid,
     unsigned int max_distance,
-    set choke_points
+    set cutoff_points
 ):
     cdef:
         unsigned int terrain_height = terrain_grid[start_point[0], start_point[1]]
@@ -20,7 +20,7 @@ cpdef set flood_fill_grid(
     if not terrain_height:
         return filled_points
 
-    grid_flood_fill(start_point, terrain_grid, pathing_grid, terrain_height, filled_points, start_point, max_distance, choke_points)
+    grid_flood_fill(start_point, terrain_grid, pathing_grid, terrain_height, filled_points, start_point, max_distance, cutoff_points)
     return filled_points
 
 cdef set grid_flood_fill(
@@ -31,7 +31,7 @@ cdef set grid_flood_fill(
     set current_vec,
     (unsigned int, unsigned int) start_point,
     unsigned int max_distance,
-    set choke_points):
+    set cutoff_points):
     cdef:
         unsigned int terrain_height = terrain_grid[start_point[0], start_point[1]]
         unsigned int pathing_value = pathing_grid[start_point[0], start_point[1]]
@@ -43,7 +43,7 @@ cdef set grid_flood_fill(
     if euclidean_distance_squared_int(point, start_point) > max_distance ** 2:
         return current_vec
 
-    if point in choke_points:
+    if point in cutoff_points:
         return current_vec
 
     terrain_height = terrain_grid[point[0], point[1]]
@@ -52,7 +52,7 @@ cdef set grid_flood_fill(
         return current_vec
 
     current_vec.add(point)
-    grid_flood_fill((point[0]+1, point[1]), terrain_grid, pathing_grid, terrain_height, current_vec, start_point, max_distance, choke_points)
-    grid_flood_fill((point[0]-1, point[1]), terrain_grid, pathing_grid, terrain_height, current_vec, start_point, max_distance, choke_points)
-    grid_flood_fill((point[0], point[1]+1), terrain_grid, pathing_grid, terrain_height, current_vec, start_point, max_distance, choke_points)
-    grid_flood_fill((point[0], point[1]-1), terrain_grid, pathing_grid, terrain_height, current_vec, start_point, max_distance, choke_points)
+    grid_flood_fill((point[0]+1, point[1]), terrain_grid, pathing_grid, terrain_height, current_vec, start_point, max_distance, cutoff_points)
+    grid_flood_fill((point[0]-1, point[1]), terrain_grid, pathing_grid, terrain_height, current_vec, start_point, max_distance, cutoff_points)
+    grid_flood_fill((point[0], point[1]+1), terrain_grid, pathing_grid, terrain_height, current_vec, start_point, max_distance, cutoff_points)
+    grid_flood_fill((point[0], point[1]-1), terrain_grid, pathing_grid, terrain_height, current_vec, start_point, max_distance, cutoff_points)
