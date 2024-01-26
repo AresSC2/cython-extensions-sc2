@@ -5,8 +5,8 @@ from cython cimport boundscheck, wraparound
 from libc.math cimport atan2, fabs, pi
 
 from cython_extensions.geometry import cy_distance_to
-from ares.dicts.turn_rate import TURN_RATE
-from ares.dicts.unit_data import UNIT_DATA
+from cython_extensions.turn_rate import TURN_RATE
+from cython_extensions.unit_data import UNIT_DATA
 
 UNIT_DATA_INT_KEYS = {k.value: v for k, v in UNIT_DATA.items()}
 TURN_RATE_INT_KEYS = {k.value: v for k, v in TURN_RATE.items()}
