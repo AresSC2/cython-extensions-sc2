@@ -32,4 +32,6 @@ def load_map_pickle_data(map_path: Path) -> tuple[Any, Any, Any]:
 
 def get_map_specific_bot(map_path: Path) -> BotAI:
     data = load_map_pickle_data(map_path)
-    return build_bot_object_from_pickle_data(*data)
+    bot: BotAI = build_bot_object_from_pickle_data(*data)
+    bot._find_expansion_locations()
+    return bot
