@@ -1,31 +1,13 @@
-import numpy as np
-
-cimport numpy as cnp
-from cython cimport boundscheck, wraparound
 from libc.math cimport atan2, fabs, pi
 
-from cython_extensions.geometry import cy_distance_to
+from cython_extensions.geometry import cy_angle_to, cy_angle_diff, cy_distance_to
 from cython_extensions.turn_rate import TURN_RATE
 from cython_extensions.unit_data import UNIT_DATA
 
 UNIT_DATA_INT_KEYS = {k.value: v for k, v in UNIT_DATA.items()}
 TURN_RATE_INT_KEYS = {k.value: v for k, v in TURN_RATE.items()}
 
-# `cdef` functions only for internal use, change to `cpdef` if
-# needed elsewhere
-cdef double angle_to((float, float) from_pos, (float, float) to_pos):
-    """Angle from point to other point in radians"""
-    return atan2(to_pos[1] - from_pos[1], to_pos[0] - to_pos[0])
-
-cdef double angle_diff(double a, double b):
-    """Absolute angle difference between 2 angles"""
-    if a < 0:
-        a += pi * 2
-    if b < 0:
-        b += pi * 2
-    return fabs(a - b)
-
-cdef double get_turn_speed(unit, unsigned int unit_type_int):
+cpdef double cy_get_turn_speed(unit, unsigned int unit_type_int):
     """Returns turn speed of unit in radians"""
     cdef double turn_rate
 
@@ -33,7 +15,7 @@ cdef double get_turn_speed(unit, unsigned int unit_type_int):
     if turn_rate:
         return turn_rate * 1.4 * pi / 180
 
-cdef double range_vs_target(unit, target):
+cpdef double cy_range_vs_target(unit, target):
     """Get the range of a unit to a target."""
     if unit.can_attack_air and target.is_flying:
         return unit.air_range
@@ -90,40 +72,23 @@ cpdef bint cy_attack_ready(bot, unit, target):
     unit_pos = unit.position
     target_pos = target.position
     # Time it will take for unit to turn to face target
-    angle = angle_diff(
-        unit.facing, angle_to(unit_pos, target_pos)
+    angle = cy_angle_diff(
+        unit.facing, cy_angle_to(unit_pos, target_pos)
     )
-    turn_time = angle / get_turn_speed(unit, unit_type_int)
+    turn_time = angle / cy_get_turn_speed(unit, unit_type_int)
 
     # Time it will take for unit to move in range of target
     distance = (
         cy_distance_to(unit_pos, target_pos)
         - unit.radius
         - target.radius
-        - range_vs_target(unit, target)
+        - cy_range_vs_target(unit, target)
     )
     distance = max(0, distance)
     unit_speed = (unit.real_speed + 1e-16) * 1.4
     move_time = distance / unit_speed
 
     return step_time + turn_time + move_time >= weapon_cooldown / 22.4
-
-@boundscheck(False)
-@wraparound(False)
-cpdef bint cy_is_position_safe(
-    cnp.ndarray[cnp.npy_float32, ndim=2] grid,
-    (unsigned int, unsigned int) position,
-    double weight_safety_limit = 1.0,
-):
-    """
-    987 ns ± 10.1 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
-    Python alternative:
-    4.66 µs ± 64.8 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
-    """
-    cdef double weight = 0.0
-    weight = grid[position[0], position[1]]
-    # np.inf check if drone is pathing near a spore crawler
-    return weight == np.inf or weight <= weight_safety_limit
 
 cpdef object cy_pick_enemy_target(object enemies):
     """For best enemy target from the provided enemies

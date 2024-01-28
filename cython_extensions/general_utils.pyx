@@ -1,17 +1,58 @@
 from cython cimport boundscheck, wraparound
-
+from math import floor
+from cython_extensions.geometry import cy_distance_to_squared
 from sc2.dicts.unit_trained_from import UNIT_TRAINED_FROM
 from sc2.game_info import Race
 from sc2.ids.unit_typeid import UnitTypeId
 
-from ares.dicts.does_not_use_larva import DOES_NOT_USE_LARVA
+DOES_NOT_USE_LARVA: dict[UnitTypeId, UnitTypeId] = {
+    UnitTypeId.BANELING: UnitTypeId.ZERGLING,
+    UnitTypeId.BROODLORD: UnitTypeId.CORRUPTOR,
+    UnitTypeId.LURKERMP: UnitTypeId.HYDRALISK,
+    UnitTypeId.OVERSEER: UnitTypeId.OVERLORD,
+    UnitTypeId.OVERLORDTRANSPORT: UnitTypeId.OVERLORD,
+    UnitTypeId.RAVAGER: UnitTypeId.ROACH,
+}
 
-
-cdef double cy_distance_to(
-        (double, double) p1,
-        (double, double) p2
+cpdef cy_add_neighbors_to_ignore(
+        points_to_ignore
 ):
-    return ((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2) ** 0.5
+    cdef:
+        int current_idx = 0
+        int i = 0
+        int x = 0
+        int y = 0
+        (int, int)[1008] all_avoid  # 112 base points, chosen arbitrarily
+
+    for i in range(len(points_to_ignore)):
+        point = points_to_ignore[i]
+        for x in range(-1, 2):
+            for y in range(-1, 2):
+                all_avoid[current_idx][0] = point[0] + x
+                all_avoid[current_idx][1] = point[1] + y
+                current_idx += 1
+                if current_idx >= 1008:
+                    return set(list(all_avoid)[:1008])
+    return set(list(all_avoid)[:current_idx])
+
+
+cpdef cy_get_neighbors8((float, float) point):
+    cdef:
+        int i, j
+        int idx = 0
+        double x, y
+        (double, double) [8] neighbors
+
+    x = floor(point[0])
+    y = floor(point[1])
+
+    for i in range(-1, 2):
+        for j in range(-1, 2):
+            if i == 0 and j == 0:
+                continue
+            neighbors[idx] = (x + i, y + j)
+            idx += 1
+    return set(neighbors)
 
 @boundscheck(False)
 @wraparound(False)
@@ -30,7 +71,8 @@ cpdef bint cy_pylon_matrix_covers(
         (double, double) pylon_position
         unsigned int pylon_height, i, _x, _y
         # range + pylon radius
-        double pylon_powered_distance = 6.5#  + 1.125
+        # squared distance
+        double pylon_powered_distance = 42.25 #  + 1.125
 
 
     for i in range(len_pylons):
@@ -42,7 +84,7 @@ cpdef bint cy_pylon_matrix_covers(
         if (
           pylon.build_progress >= pylon_build_progress
           and pylon_height >= position_height
-          and cy_distance_to(position, pylon_position) < pylon_powered_distance
+          and cy_distance_to_squared(position, pylon_position) < pylon_powered_distance
         ):
           return True
 

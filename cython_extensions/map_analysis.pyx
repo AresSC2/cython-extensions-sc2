@@ -1,10 +1,39 @@
+from cython import boundscheck, wraparound
+
 cdef unsigned int euclidean_distance_squared_int(
         (unsigned int, unsigned int) p1,
         (unsigned int, unsigned int) p2
 ):
     return (p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2
 
-cpdef set flood_fill_grid(
+@boundscheck(False)
+@wraparound(False)
+cpdef ((float, float), (float, float)) cy_get_bounding_box(set coordinates):
+    cdef:
+        float x_min = 9999.0
+        float x_max = 0.0
+        float x_val = 0.0
+        float y_min = 9999.0
+        float y_max = 0.0
+        float y_val = 0.0
+        int start = 0
+        int stop = len(coordinates)
+        (float, float) position
+    for i in range(start, stop):
+        position = coordinates.pop()
+        x_val = position[0]
+        y_val = position[1]
+        if x_val < x_min:
+            x_min = x_val
+        if x_val > x_max:
+            x_max = x_val
+        if y_val < y_min:
+            y_min = y_val
+        if y_val > y_max:
+            y_max = y_val
+    return (x_min, x_max), (y_min, y_max)
+
+cpdef set cy_flood_fill_grid(
     (unsigned int, unsigned int) start_point,
     const unsigned char[:, :] terrain_grid,
     const unsigned char[:, :] pathing_grid,

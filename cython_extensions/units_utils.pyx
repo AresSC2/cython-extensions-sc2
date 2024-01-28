@@ -3,19 +3,13 @@ from cython cimport boundscheck, wraparound
 import numpy as np
 from sklearn.cluster import DBSCAN
 
-from ares.cython_extensions.geometry import cy_distance_to
-from ares.dicts.unit_data import UNIT_DATA
+from cython_extensions.geometry import cy_distance_to, cy_distance_to_squared
+from cython_extensions.unit_data import UNIT_DATA
 
 cimport numpy as cnp
 
 UNIT_DATA_INT_KEYS = {k.value: v for k, v in UNIT_DATA.items()}
 
-
-cdef double euclidean_distance_squared(
-        (float, float) p1,
-        (float, float) p2
-):
-    return (p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2
 
 @boundscheck(False)
 @wraparound(False)
@@ -58,7 +52,7 @@ cpdef object cy_closest_to((float, float) position, object units):
     for i in range(len_units):
         unit = units[i]
         pos = unit.position
-        dist = euclidean_distance_squared((pos[0], pos[1]), (position[0], position[1]))
+        dist = cy_distance_to_squared((pos[0], pos[1]), (position[0], position[1]))
         if dist < closest_dist:
             closest_dist = dist
             closest = unit
@@ -112,7 +106,7 @@ cpdef list cy_in_attack_range(object unit, object units, double bonus_distance =
 
 @boundscheck(False)  # turn off bounds-checking for entire function
 @wraparound(False)  # turn off negative index wrapping for entire function
-cpdef tuple group_by_spatial(
+cpdef tuple cy_group_by_spatial(
         object units,
         float distance = 0.5,
         unsigned int min_samples = 1
