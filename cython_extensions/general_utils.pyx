@@ -66,7 +66,7 @@ cpdef bint cy_pylon_matrix_covers(
     cdef:
         unsigned int x = int(position[0])
         unsigned int y = int(position[1])
-        unsigned int len_pylons = len(pylons)
+        Py_ssize_t len_pylons = len(pylons)
         unsigned int position_height = height_grid[y, x]
         (double, double) pylon_position
         unsigned int pylon_height, i, _x, _y
@@ -93,7 +93,7 @@ cpdef bint cy_pylon_matrix_covers(
 cpdef unsigned int cy_unit_pending(object bot, object unit_type):
     cdef:
         unsigned int num_pending = 0
-        unsigned int len_units, x
+        Py_ssize_t len_units, x
         set trained_from = UNIT_TRAINED_FROM[unit_type]
         object units_collection, unit
 

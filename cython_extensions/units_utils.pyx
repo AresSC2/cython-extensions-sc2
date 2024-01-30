@@ -168,7 +168,7 @@ cpdef list cy_sorted_by_distance_to(object units, (float, float) position, bint 
         unsigned int i, j
 
     for i in range(len_units):
-        distances[i] = euclidean_distance_squared(units[i].position, position)
+        distances[i] = cy_distance_to_squared(units[i].position, position)
 
     indices = distances.argsort()
 

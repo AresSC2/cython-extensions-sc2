@@ -13,6 +13,7 @@ MAPS: list[Path] = [
     map_path for map_path in (Path(__file__).parent / "pickle_data").iterdir() if map_path.suffix == ".xz"
 ]
 
+
 def build_bot_object_from_pickle_data(raw_game_data, raw_game_info, raw_observation) -> BotAI:
     # Build fresh bot object, and load the pickled data into the bot object
     bot = BotAI()
@@ -25,13 +26,14 @@ def build_bot_object_from_pickle_data(raw_game_data, raw_game_info, raw_observat
     bot._prepare_step(state=game_state, proto_game_info=raw_game_info)
     return bot
 
+
 def load_map_pickle_data(map_path: Path) -> tuple[Any, Any, Any]:
     with lzma.open(str(map_path), "rb") as f:
         raw_game_data, raw_game_info, raw_observation = pickle.load(f)
         return raw_game_data, raw_game_info, raw_observation
 
+
 def get_map_specific_bot(map_path: Path) -> BotAI:
     data = load_map_pickle_data(map_path)
     bot: BotAI = build_bot_object_from_pickle_data(*data)
-    bot._find_expansion_locations()
     return bot

@@ -16,6 +16,16 @@ matplotlib = "^3.8.2"
 line-profiler = "^4.1.2"
 scikit-learn = "^1.4.0"
 
+[tool.poetry.group.test.dependencies]
+pytest = "^7.2.1"
+pytest-cov = "^4.0.0"
+pytest-asyncio = "^0.21.1"
+
+[tool.poetry.group.docs.dependencies]
+mkdocs = "^1.4.2"
+mkdocs-material = "^9.0.6"
+mkdocstrings = {extras = ["python"], version = "^0.20.0"}
+
 
 [build-system]
 requires = ["poetry-core", "Cython", "numpy", "setuptools"]
@@ -24,3 +34,18 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.build]
 generate-setup-file = false
 script = 'build.py'
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-p no:cacheprovider" # deactivating pytest caching.
+filterwarnings = [
+    "error",
+    "ignore::DeprecationWarning",
+    # note the use of single quote below to denote "raw" strings in TOML
+    'ignore:function ham\(\) is deprecated:DeprecationWarning',
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    'if __name__ == "__main__":'
+]

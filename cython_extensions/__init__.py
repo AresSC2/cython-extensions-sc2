@@ -20,7 +20,6 @@ from cython_extensions.geometry import (
     cy_angle_diff,
     cy_find_correct_line,
     cy_find_average_angle,
-    cy_get_line_to_point,
     cy_get_angle_between_points,
     cy_translate_point_along_line,
     cy_towards
