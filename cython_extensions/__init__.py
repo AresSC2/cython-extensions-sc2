@@ -1,3 +1,12 @@
+# bootstrap is the only module which
+# can be loaded with default Python-machinery
+# because the resulting extension is called `bootstrap`:
+from . import bootstrap
+
+# injecting our finders into sys.meta_path
+# after that all other submodules can be loaded
+bootstrap.bootstrap_cython_submodules()
+
 from cython_extensions.combat_utils import (
     cy_get_turn_speed,
     cy_range_vs_target,
@@ -45,7 +54,6 @@ from cython_extensions.placement_solver import (
 
 from cython_extensions.units_utils import (
     cy_distance_to_squared,
-    cy_group_by_spatial,
     cy_closest_to,
     cy_center,
     cy_in_attack_range,

@@ -1,7 +1,6 @@
 from cython cimport boundscheck, wraparound
 
 import numpy as np
-from sklearn.cluster import DBSCAN
 
 from cython_extensions.geometry import cy_distance_to, cy_distance_to_squared
 from cython_extensions.unit_data import UNIT_DATA
@@ -103,61 +102,6 @@ cpdef list cy_in_attack_range(object unit, object units, double bonus_distance =
                     returned_units.append(u)
 
     return returned_units
-
-@boundscheck(False)  # turn off bounds-checking for entire function
-@wraparound(False)  # turn off negative index wrapping for entire function
-cpdef tuple cy_group_by_spatial(
-        object units,
-        float distance = 0.5,
-        unsigned int min_samples = 1
-):
-    """
-    Use DBSCAN to group units. Returns grouped units and the tags of units that were not placed in a group.
-    """
-    cdef unsigned int num_units = len(units)
-
-    if num_units == 0:
-        return [], set()
-
-    cdef:
-        cnp.ndarray[cnp.int64_t, ndim = 1] clustering_labels
-        cnp.ndarray[cnp.double_t, ndim = 2] vectors = np.empty((num_units, 2), dtype=np.double)
-        list groups
-        set ungrouped_unit_tags
-        int label
-        unsigned int index, _index, groups_length, max_range, num_clusters
-        (double, double) position
-        # array.array groups
-
-    for _index in range(num_units):
-        position = units[_index].position
-        vectors[_index, 0] = position[0]
-        vectors[_index, 1] = position[1]
-
-    clustering_labels = DBSCAN(eps=distance, algorithm='kd_tree', min_samples=min_samples).fit(vectors).labels_
-    #num_clusters = len(set(clustering_labels)) - (1 if -1 in clustering_labels else 0)
-
-    groups = []
-    # groups = array.array('i', [j for j in range(num_clusters_)])
-
-    max_range = len(clustering_labels)
-    ungrouped_unit_tags = set()
-
-    for index in range(max_range):
-        unit = units[index]
-        label = clustering_labels[index]
-        if label == -1:
-            # not part of a group
-            ungrouped_unit_tags.add(unit.tag)
-            continue
-        # groups[label].append(unit)
-        groups_length = len(groups)
-        if label >= groups_length:
-            groups.append([unit])
-        else:
-            groups[label].append(unit)
-
-    return groups, ungrouped_unit_tags
 
 cpdef list cy_sorted_by_distance_to(object units, (float, float) position, bint reverse=False):
     cdef:

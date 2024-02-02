@@ -1,5 +1,4 @@
 import os
-import platform
 import shutil
 from distutils.command.build_ext import build_ext
 from distutils.core import Distribution, Extension
@@ -13,34 +12,19 @@ libraries = []
 
 
 def build():
-    ext_modules = []
+    source_files = []
     for root, directories, files in os.walk("cython_extensions"):
         for file in files:
             if file.endswith("pyx"):
-                file_name = file.split(".")[0]
-                if platform.system() == "Windows":
-                    _path = root.replace("\\", ".")
-                else:
-                    _path = root.replace("/", ".")
+                source_files.append(os.path.join(root, file))
 
-                module = Extension(
-                    name=f"{_path}.{file_name}",
-                    sources=[
-                        os.path.join(root, file),
-                    ],
-                    extra_link_args=link_args,
-                    include_dirs=include_dirs,
-                    libraries=libraries,
-                )
-                ext_modules.append(module)
+    extensions = cythonize(Extension(
+        name="cython_extensions.bootstrap",
+        sources=source_files,
+        include_dirs=include_dirs,
+    ), compiler_directives={"binding": True, "language_level": 3},)
 
-    ext_modules = cythonize(
-        ext_modules,
-        include_path=include_dirs,
-        compiler_directives={"binding": True, "language_level": 3},
-    )
-
-    distribution = Distribution({"name": "extended", "ext_modules": ext_modules})
+    distribution = Distribution({"name": "extended", "ext_modules": extensions})
     distribution.package_dir = "extended"
 
     cmd = build_ext(distribution)

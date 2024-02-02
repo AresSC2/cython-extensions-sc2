@@ -12,7 +12,7 @@ from sc2.main import run_game
 from sc2 import maps
 from sc2.player import Bot, Computer
 
-from cython_extensions import cy_is_facing
+from cython_extensions import cy_is_facing, cy_angle_diff, cy_closest_to
 
 
 class BotTest(BotAI):
@@ -20,7 +20,9 @@ class BotTest(BotAI):
         super().__init__()
 
     async def on_step(self, iteration: int):
-        print(cy_is_facing(self.workers[0], self.workers[1]))
+        # print(cy_is_facing(self.workers[0], self.workers[1]))
+        # print(cy_angle_diff(300.0, 250.0))
+        print(cy_closest_to(self.start_location, self.workers))
 
 
 if __name__ == "__main__":
