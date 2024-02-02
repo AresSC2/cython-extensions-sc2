@@ -9,3 +9,8 @@ clean-cov:
 	@rm -rf htmlcov
 	@rm -rf pytest.xml
 	@rm -rf pytest-coverage.txt
+docs-build: ## build documentation locally
+	@mkdocs build
+
+docs-deploy: ## build & deploy documentation to "gh-pages" branch
+	@mkdocs gh-deploy -m "docs: update documentation" -v --force

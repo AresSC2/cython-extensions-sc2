@@ -1,0 +1,89 @@
+name: CompileCython
+on:
+  workflow_call:
+
+jobs:
+  build_ladder_binary:
+    name: Compile Cython for Ladder
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+        python-version: [ '3.11' ]
+
+    steps:
+      # check-out repo
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+      # install poetry
+      - name: Install poetry
+        run: pipx install poetry
+      # set-up python with cache
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'poetry'
+      # Install requirements and build extension
+      - name: Install requirements and build extension
+        run: |
+          poetry install --with dev
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ladder_binary
+          path: |
+            cython_extensions/*.so
+  build:
+    name: Compile Cython
+    needs: build_ladder_binary
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+        python-version: ['3.11']
+
+    steps:
+      - name: Display structure of downloaded files
+        run: ls -R .
+      # check-out repo
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+      # install poetry
+      - name: Install poetry
+        run: pipx install poetry
+      # set-up python with cache
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'poetry'
+      # Install requirements and build extension
+      - name: Install requirements and build extension
+        run: |
+          poetry install --with dev
+        if: matrix.os != 'ubuntu'
+      - name: Get linux binary
+        uses: actions/download-artifact@v4
+        with:
+          name: ladder_binary
+          path: cython_extensions
+      - name: Delete unwanted files
+        run: |
+          find cython_extensions -name "*.c" -print0 | xargs -0 rm -f
+        if: matrix.os != 'windows-latest'
+      - name: Delete unwanted files windows
+        run: |
+          Remove-Item -Path .\cython_extensions\*.c -Force
+        if: matrix.os == 'windows-latest'
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.os }}_python${{ matrix.python-version }}
+          path: |
+            cython_extensions
