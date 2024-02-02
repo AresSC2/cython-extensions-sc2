@@ -1,0 +1,9 @@
+site_name: cython-extensions
+theme:
+  name: "material"
+
+nav:
+  - Index Page: index.md
+
+# to navigate with `/site` content correctly
+use_directory_urls: false
