@@ -50,3 +50,15 @@ filterwarnings = [
 exclude_lines = [
     'if __name__ == "__main__":'
 ]
+
+[tool.semantic_release]
+branch = "main"
+version_variable = "cython_extensions/__init__.py:__version__"
+version_toml = "pyproject.toml:tool.poetry.version"
+version_source = "tag"
+commit_version_number = true # required for version_source = "tag"
+tag_commit = true
+upload_to_pypi = false
+upload_to_release = false
+hvcs = "github" # gitlab is also supported
+commit_message = "{version} [skip ci]" # skip triggering ci pipelines for version commits

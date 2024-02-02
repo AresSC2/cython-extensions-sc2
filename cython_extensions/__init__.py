@@ -1,3 +1,5 @@
+__version__ = "0.1.0"
+
 # bootstrap is the only module which
 # can be loaded with default Python-machinery
 # because the resulting extension is called `bootstrap`:

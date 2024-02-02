@@ -52,7 +52,7 @@ jobs:
         run: ls -R .
       # check-out repo
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
       # install poetry
@@ -60,7 +60,7 @@ jobs:
         run: pipx install poetry
       # set-up python with cache
       - name: Setup Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'poetry'
@@ -83,7 +83,7 @@ jobs:
           Remove-Item -Path .\cython_extensions\*.c -Force
         if: matrix.os == 'windows-latest'
       - run: mkdir tmp-dir && mv cython_extensions tmp-dir/ && mv tmp-dir cython_extensions
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.os }}_python${{ matrix.python-version }}
           path: |

@@ -12,9 +12,10 @@ jobs:
   call-compiling-pipeline:
     name: CompileCython
     uses: ./.github/workflows/compile_cython.yml
-#  call-release-pipeline:
-#    name: Release
-#    needs:
-#      - call-testing-pipeline
-#    uses: ./.github/workflows/release.yml
-#    secrets: inherit
+  call-release-pipeline:
+    name: Release
+    needs:
+      - call-testing-pipeline
+      - call-compiling-pipeline
+    uses: ./.github/workflows/release.yml
+    secrets: inherit
