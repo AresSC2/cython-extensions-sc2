@@ -28,6 +28,10 @@ mkdocs-material = "^9.0.6"
 mkdocstrings = {extras = ["python"], version = "^0.20.0"}
 
 
+
+[tool.poetry.group.semver.dependencies]
+python-semantic-release = "^8.7.0"
+
 [build-system]
 requires = ["poetry-core", "Cython", "numpy", "setuptools"]
 build-backend = "poetry.core.masonry.api"
