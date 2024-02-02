@@ -27,8 +27,6 @@ mkdocs = "^1.4.2"
 mkdocs-material = "^9.0.6"
 mkdocstrings = {extras = ["python"], version = "^0.20.0"}
 
-
-
 [tool.poetry.group.semver.dependencies]
 python-semantic-release = "^8.7.0"
 
@@ -64,5 +62,5 @@ commit_version_number = true # required for version_source = "tag"
 tag_commit = true
 upload_to_pypi = false
 upload_to_release = false
-hvcs = "github" # gitlab is also supported
+hvcs = "github"
 commit_message = "{version} [skip ci]" # skip triggering ci pipelines for version commits
