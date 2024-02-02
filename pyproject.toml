@@ -8,13 +8,14 @@ packages = [{include = "cython_extensions"}]
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.13"
+
+[tool.poetry.group.dev.dependencies]
 cython = "^3.0.8"
+ipykernel = "^6.29.0"
+line-profiler = "^4.1.2"
+matplotlib = "^3.8.2"
 numpy = "^1.26.3"
 burnysc2 = "^6.5.0"
-ipykernel = "^6.29.0"
-matplotlib = "^3.8.2"
-line-profiler = "^4.1.2"
-scikit-learn = "^1.4.0"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.2.1"
