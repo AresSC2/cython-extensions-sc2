@@ -9,93 +9,33 @@ jobs:
     concurrency: release
 
     steps:
+      # check-out repo
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
           token: ${{ secrets.GH_TOKEN_CYTHON }}
           fetch-depth: 0
-
+      # install poetry
       - name: Install poetry
         run: pipx install poetry
-
+      # set-up python with cache
       - name: Setup Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: 'poetry'
-
+      # install requirements
       - name: Install requirements
         run: poetry install --only semver --no-root
-
-      # Run semantic-release to determine the version and generate changelog
-      - name: Run Semantic Release
+      # semantic release
+      - name: Python Semantic Release
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN_CYTHON }}
         run: |
           set -o pipefail
-          poetry run semantic-release version
-
-      # Get artifacts
-      - name: Get previous artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: release-artifacts
-
-      # Upload each artifact to the GitHub release
-      - name: Upload Artifacts
-        uses: semantic-release/exec@v1
-        with:
-          command: |
-            for file in $(ls release-artifacts); do
-              gh release upload $RELEASE_TAG ./release-artifacts/$file
-            done
-
-      # Push changes and tags back to the repository
-      - name: Push Changes
-        run: |
-          git push origin HEAD:${{ github.head_ref }}
-          git push origin refs/tags/${{ steps.version.outputs.version }}
-
-
-#name: Release
-#
-#on:
-#  workflow_call:
-#
-#jobs:
-#  release:
-#    runs-on: ubuntu-latest
-#    concurrency: release
-#
-#    steps:
-#      # check-out repo
-#      - name: Checkout repository
-#        uses: actions/checkout@v4
-#        with:
-#          ref: ${{ github.head_ref }}
-#          token: ${{ secrets.GH_TOKEN_CYTHON }}
-#          fetch-depth: 0
-#      # install poetry
-#      - name: Install poetry
-#        run: pipx install poetry
-#      # set-up python with cache
-#      - name: Setup Python 3.11
-#        uses: actions/setup-python@v5
-#        with:
-#          python-version: '3.11'
-#          cache: 'poetry'
-#      # install requirements
-#      - name: Install requirements
-#        run: poetry install --only semver --no-root
-#      # semantic release
-#      - name: Python Semantic Release
-#        env:
-#          GH_TOKEN: ${{ secrets.GH_TOKEN_CYTHON }}
-#        run: |
-#          set -o pipefail
-#          # Set git details
-#          git config --global user.name "github-actions"
-#          git config --global user.email "github-actions@github.com"
-#          # run semantic-release
-#          poetry run semantic-release publish -v DEBUG -D commit_author="github-actions <action@github.com>"
+          # Set git details
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          # run semantic-release
+          poetry run semantic-release publish -v DEBUG -D commit_author="github-actions <action@github.com>"
