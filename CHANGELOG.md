@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.0 (2024-02-03)
+### Feature
+* Test new release pipeline ([`8900ab5`](https://github.com/AresSC2/cython-extensions-sc2/commit/8900ab53e89fb996ca4e34238e40c5abb955f17b))
+
+### Fix
+* Semantic-release/exec@v1 ([`92d39be`](https://github.com/AresSC2/cython-extensions-sc2/commit/92d39bea03175c9e045423a942294756b3d5ccd7))
+
 ## v0.1.0 (2024-02-02)
 ### Feature
 * Reorganise code and user friendly import ([`281588d`](https://github.com/AresSC2/cython-extensions-sc2/commit/281588de572dfee0c3f51a771053ac210108993d))
