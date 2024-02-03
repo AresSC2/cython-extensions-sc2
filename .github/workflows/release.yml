@@ -44,7 +44,7 @@ jobs:
 
       # Upload each artifact to the GitHub release
       - name: Upload Artifacts
-        uses: semantic-release/exec@v2
+        uses: semantic-release/exec@v1
         with:
           command: |
             for file in $(ls release-artifacts); do
