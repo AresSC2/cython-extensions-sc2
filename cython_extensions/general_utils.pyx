@@ -1,9 +1,12 @@
 from cython cimport boundscheck, wraparound
+
 from math import floor
-from cython_extensions.geometry import cy_distance_to_squared
+
 from sc2.dicts.unit_trained_from import UNIT_TRAINED_FROM
 from sc2.game_info import Race
 from sc2.ids.unit_typeid import UnitTypeId
+
+from cython_extensions.geometry import cy_distance_to_squared
 
 DOES_NOT_USE_LARVA: dict[UnitTypeId, UnitTypeId] = {
     UnitTypeId.BANELING: UnitTypeId.ZERGLING,

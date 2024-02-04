@@ -1,6 +1,6 @@
-import sys
 import importlib
 import importlib.abc
+import sys
 
 
 # Chooses the right init function

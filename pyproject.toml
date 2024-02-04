@@ -16,6 +16,8 @@ line-profiler = "^4.1.2"
 matplotlib = "^3.8.2"
 numpy = "^1.26.3"
 burnysc2 = "^6.5.0"
+black = "^24.1.1"
+isort = "^5.13.2"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.2.1"
@@ -64,3 +66,7 @@ upload_to_pypi = false
 upload_to_release = false
 hvcs = "github"
 commit_message = "{version} [skip ci]" # skip triggering ci pipelines for version commits
+
+[tool.isort]
+profile = "black"
+

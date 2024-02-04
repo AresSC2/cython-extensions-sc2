@@ -1,6 +1,10 @@
 import numpy as np
+
 cimport numpy as cnp
+
 from cython import boundscheck, wraparound
+
+
 cpdef int cy_last_index_with_value(
     const unsigned char[:, :] grid,
     const unsigned char value,

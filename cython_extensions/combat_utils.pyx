@@ -1,6 +1,6 @@
 from libc.math cimport atan2, fabs, pi
 
-from cython_extensions.geometry import cy_angle_to, cy_angle_diff, cy_distance_to
+from cython_extensions.geometry import cy_angle_diff, cy_angle_to, cy_distance_to
 from cython_extensions.turn_rate import TURN_RATE
 from cython_extensions.unit_data import UNIT_DATA
 
@@ -26,7 +26,7 @@ cpdef double cy_range_vs_target(unit, target):
 End of `cdef` functions
 """
 
-cpdef bint cy_is_facing(unit, other_unit, double angle_error=0.05):
+cpdef bint cy_is_facing(unit, other_unit, double angle_error=0.3):
     cdef:
         (double, double) p1 = unit.position
         (double, double) p2 = other_unit.position

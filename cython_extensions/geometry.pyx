@@ -1,5 +1,7 @@
 from libc.math cimport acos, atan2, fabs, pi, sqrt
+
 from math import cos, sin
+
 
 cdef (float, float, float) cy_get_line_to_point((int, int) pa, (int, int) pb):
     """Cython version of get_line_between_points"""

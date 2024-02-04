@@ -10,11 +10,15 @@ from sc2.game_info import GameInfo
 from sc2.game_state import GameState
 
 MAPS: list[Path] = [
-    map_path for map_path in (Path(__file__).parent / "pickle_data").iterdir() if map_path.suffix == ".xz"
+    map_path
+    for map_path in (Path(__file__).parent / "pickle_data").iterdir()
+    if map_path.suffix == ".xz"
 ]
 
 
-def build_bot_object_from_pickle_data(raw_game_data, raw_game_info, raw_observation) -> BotAI:
+def build_bot_object_from_pickle_data(
+    raw_game_data, raw_game_info, raw_observation
+) -> BotAI:
     # Build fresh bot object, and load the pickled data into the bot object
     bot = BotAI()
     game_data = GameData(raw_game_data.data)
@@ -22,7 +26,9 @@ def build_bot_object_from_pickle_data(raw_game_data, raw_game_info, raw_observat
     game_state = GameState(raw_observation)
     bot._initialize_variables()
     client = Client(True)
-    bot._prepare_start(client=client, player_id=1, game_info=game_info, game_data=game_data)
+    bot._prepare_start(
+        client=client, player_id=1, game_info=game_info, game_data=game_data
+    )
     bot._prepare_step(state=game_state, proto_game_info=raw_game_info)
     return bot
 

@@ -1,5 +1,6 @@
 from cython import boundscheck, wraparound
 
+
 cdef unsigned int euclidean_distance_squared_int(
         (unsigned int, unsigned int) p1,
         (unsigned int, unsigned int) p2

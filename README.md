@@ -1,8 +1,7 @@
-# Work in progress
+[![Testing](https://github.com/AresSC2/cython-extensions-sc2/actions/workflows/test.yml/badge.svg)](https://github.com/AresSC2/cython-extensions-sc2/actions/workflows/test.yml)
+[![Deploy Documentation](https://github.com/AresSC2/cython-extensions-sc2/actions/workflows/pages.yml/badge.svg)](https://github.com/AresSC2/cython-extensions-sc2/actions/workflows/pages.yml)
+<br>
 
-Run `poetry install` to setup project
+# cython-extensions-sc2
 
-Run `poetry build` to compile cython
-
-Compiles, but not in a workable state till
-a few of the ares dependencies are removed.
+[Documentation](https://aressc2.github.io/cython-extensions-sc2/)

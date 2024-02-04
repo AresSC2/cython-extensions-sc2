@@ -18,11 +18,14 @@ def build():
             if file.endswith("pyx"):
                 source_files.append(os.path.join(root, file))
 
-    extensions = cythonize(Extension(
-        name="cython_extensions.bootstrap",
-        sources=source_files,
-        include_dirs=include_dirs,
-    ), compiler_directives={"binding": True, "language_level": 3},)
+    extensions = cythonize(
+        Extension(
+            name="cython_extensions.bootstrap",
+            sources=source_files,
+            include_dirs=include_dirs,
+        ),
+        compiler_directives={"binding": True, "language_level": 3},
+    )
 
     distribution = Distribution({"name": "extended", "ext_modules": extensions})
     distribution.package_dir = "extended"

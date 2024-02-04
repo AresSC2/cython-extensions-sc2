@@ -2,6 +2,7 @@ from typing import Dict
 
 from sc2.ids.unit_typeid import UnitTypeId as UnitID
 
+
 cdef struct TurnRateData:
     float turn_rate
 

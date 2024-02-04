@@ -1,9 +1,10 @@
 """Mineral, gas, supply, and army values for units.
 
 """
+from typing import Dict, TypedDict
+
 from sc2.ids.unit_typeid import UnitTypeId as UnitID
 
-from typing import Dict, TypedDict
 
 class UnitData(TypedDict):
     minerals: int

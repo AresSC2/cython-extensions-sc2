@@ -2,6 +2,7 @@
 This "bot" will loop over several available ladder maps and generate the pickle file in the "/test/pickle_data/" subfolder.
 These will then be used to run tests from the test script "test_pickled_data.py"
 """
+
 import lzma
 import os
 import pickle
@@ -9,7 +10,6 @@ from typing import Set
 
 from loguru import logger
 from s2clientprotocol import sc2api_pb2 as sc_pb
-
 from sc2 import maps
 from sc2.bot_ai import BotAI
 from sc2.data import Difficulty, Race
@@ -48,7 +48,13 @@ class ExporterBot(BotAI):
     async def store_data_to_file(self, file_path: str):
         # Grab all raw data from observation
         raw_game_data = await self.client._execute(
-            data=sc_pb.RequestData(ability_id=True, unit_type_id=True, upgrade_id=True, buff_id=True, effect_id=True)
+            data=sc_pb.RequestData(
+                ability_id=True,
+                unit_type_id=True,
+                upgrade_id=True,
+                buff_id=True,
+                effect_id=True,
+            )
         )
 
         raw_game_info = await self.client._execute(game_info=sc_pb.RequestGameInfo())
@@ -78,26 +84,44 @@ class ExporterBot(BotAI):
         valid_units: Set[UnitTypeId] = {
             UnitTypeId(unit_id)
             for unit_id, data in self.game_data.units.items()
-            if data._proto.race != Race.NoRace and data._proto.race != Race.Random and data._proto.available and unit_id < 2000
+            if data._proto.race != Race.NoRace
+            and data._proto.race != Race.Random
+            and data._proto.available
+            and unit_id < 2000
             # Dont cloak units
-            and UnitTypeId(unit_id) != UnitTypeId.MOTHERSHIP and
-            (data._proto.mineral_cost or data._proto.movement_speed or data._proto.weapons)
+            and UnitTypeId(unit_id) != UnitTypeId.MOTHERSHIP
+            and (
+                data._proto.mineral_cost
+                or data._proto.movement_speed
+                or data._proto.weapons
+            )
         }
 
         # Create units for self
         await self.client.debug_create_unit(
-            [[valid_unit, 1, self.start_location, 1] for valid_unit in valid_units
-             if valid_unit not in {UnitTypeId.SCV, UnitTypeId.DRONE, UnitTypeId.PROBE}]
+            [
+                [valid_unit, 1, self.start_location, 1]
+                for valid_unit in valid_units
+                if valid_unit
+                not in {UnitTypeId.SCV, UnitTypeId.DRONE, UnitTypeId.PROBE}
+            ]
         )
         # create same in map center, away from base
         await self.client.debug_create_unit(
-            [[valid_unit, 1, self.game_info.map_center, 1] for valid_unit in valid_units
-             if valid_unit not in {UnitTypeId.SCV, UnitTypeId.DRONE, UnitTypeId.PROBE}]
+            [
+                [valid_unit, 1, self.game_info.map_center, 1]
+                for valid_unit in valid_units
+                if valid_unit
+                not in {UnitTypeId.SCV, UnitTypeId.DRONE, UnitTypeId.PROBE}
+            ]
         )
 
         # Create units for enemy
         await self.client.debug_create_unit(
-            [[valid_unit, 1, self.enemy_start_locations[0], 2] for valid_unit in valid_units]
+            [
+                [valid_unit, 1, self.enemy_start_locations[0], 2]
+                for valid_unit in valid_units
+            ]
         )
 
         for worker in self.workers:
@@ -134,7 +158,11 @@ def main():
                 )
                 continue
             logger.info(f"Creating pickle file for map {map_} ...")
-            run_game(maps.get(map_), [Bot(Race.Terran, bot), Computer(Race.Zerg, Difficulty.Easy)], realtime=False)
+            run_game(
+                maps.get(map_),
+                [Bot(Race.Terran, bot), Computer(Race.Zerg, Difficulty.Easy)],
+                realtime=False,
+            )
         except ProtocolError:
             # ProtocolError appears after a leave game request
             pass

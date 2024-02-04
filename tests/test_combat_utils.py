@@ -2,10 +2,11 @@ from pathlib import Path
 
 import pytest
 from sc2.bot_ai import BotAI
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.unit import Unit
 from sc2.units import Units
 
-from cython_extensions import cy_range_vs_target, cy_is_facing
+from cython_extensions import cy_attack_ready, cy_is_facing, cy_range_vs_target
 
 pytest_plugins = ("pytest_asyncio",)
 
@@ -62,3 +63,16 @@ class TestCombatUtils:
         # assert
         assert all_not_facing_townhall
 
+    def test_attack_ready(self, bot: BotAI, event_loop):
+        # arrange
+        ground_ranged_units: list[Unit] = [
+            u
+            for u in bot.units
+            if u.type_id in {UnitTypeId.MARINE, UnitTypeId.STALKER, UnitTypeId.ROACH}
+        ]
+        in_range_target: Unit = bot.townhalls[0]
+        out_of_range_target: Unit = bot.enemy_units[0]
+
+        for unit in ground_ranged_units:
+            # act and assert
+            assert cy_attack_ready(bot, unit, in_range_target)

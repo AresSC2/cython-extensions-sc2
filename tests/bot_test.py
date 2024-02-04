@@ -6,13 +6,13 @@ And that some cython functions are working
 
 from random import choice
 
-from sc2.bot_ai import BotAI
-from sc2.data import Race, Difficulty
-from sc2.main import run_game
 from sc2 import maps
+from sc2.bot_ai import BotAI
+from sc2.data import Difficulty, Race
+from sc2.main import run_game
 from sc2.player import Bot, Computer
 
-from cython_extensions import cy_is_facing, cy_angle_diff, cy_closest_to
+from cython_extensions import cy_angle_diff, cy_closest_to, cy_is_facing
 
 
 class BotTest(BotAI):
