@@ -17,46 +17,6 @@ DOES_NOT_USE_LARVA: dict[UnitTypeId, UnitTypeId] = {
     UnitTypeId.RAVAGER: UnitTypeId.ROACH,
 }
 
-cpdef cy_add_neighbors_to_ignore(
-        points_to_ignore
-):
-    cdef:
-        int current_idx = 0
-        int i = 0
-        int x = 0
-        int y = 0
-        (int, int)[1008] all_avoid  # 112 base points, chosen arbitrarily
-
-    for i in range(len(points_to_ignore)):
-        point = points_to_ignore[i]
-        for x in range(-1, 2):
-            for y in range(-1, 2):
-                all_avoid[current_idx][0] = point[0] + x
-                all_avoid[current_idx][1] = point[1] + y
-                current_idx += 1
-                if current_idx >= 1008:
-                    return set(list(all_avoid)[:1008])
-    return set(list(all_avoid)[:current_idx])
-
-
-cpdef cy_get_neighbors8((float, float) point):
-    cdef:
-        int i, j
-        int idx = 0
-        double x, y
-        (double, double) [8] neighbors
-
-    x = floor(point[0])
-    y = floor(point[1])
-
-    for i in range(-1, 2):
-        for j in range(-1, 2):
-            if i == 0 and j == 0:
-                continue
-            neighbors[idx] = (x + i, y + j)
-            idx += 1
-    return set(neighbors)
-
 @boundscheck(False)
 @wraparound(False)
 cpdef bint cy_pylon_matrix_covers(
@@ -97,8 +57,9 @@ cpdef unsigned int cy_unit_pending(object bot, object unit_type):
     cdef:
         unsigned int num_pending = 0
         Py_ssize_t len_units, x
-        set trained_from = UNIT_TRAINED_FROM[unit_type]
         object units_collection, unit
+
+    trained_from = UNIT_TRAINED_FROM[unit_type]
 
     if bot.race == Race.Zerg and unit_type != UnitTypeId.QUEEN:
         if unit_type in DOES_NOT_USE_LARVA:

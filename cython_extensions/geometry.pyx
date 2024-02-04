@@ -22,7 +22,7 @@ cdef (float, float, float) cy_get_line_to_point((int, int) pa, (int, int) pb):
 
 cpdef double cy_angle_to((float, float) from_pos, (float, float) to_pos):
     """Angle from point to other point in radians"""
-    return atan2(to_pos[1] - from_pos[1], to_pos[0] - to_pos[0])
+    return atan2(to_pos[0] - from_pos[0], to_pos[1] - from_pos[1])
 
 cpdef double cy_angle_diff(double a, double b):
     """Absolute angle difference between 2 angles"""

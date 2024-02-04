@@ -16,12 +16,7 @@ from cython_extensions.combat_utils import (
     cy_pick_enemy_target,
     cy_range_vs_target,
 )
-from cython_extensions.general_utils import (
-    cy_add_neighbors_to_ignore,
-    cy_get_neighbors8,
-    cy_pylon_matrix_covers,
-    cy_unit_pending,
-)
+from cython_extensions.general_utils import cy_pylon_matrix_covers, cy_unit_pending
 from cython_extensions.geometry import (
     cy_angle_diff,
     cy_angle_to,
