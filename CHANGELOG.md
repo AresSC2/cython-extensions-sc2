@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.1 (2024-02-04)
+### Fix
+* Remove unused cython functions ([`b4f9aa0`](https://github.com/AresSC2/cython-extensions-sc2/commit/b4f9aa061aecf1bbf535aea3a9bc06770fb640a3))
+
+### Documentation
+* Update readme ([`fea801a`](https://github.com/AresSC2/cython-extensions-sc2/commit/fea801a9dfea97dc1ae6923a1b1d2cd4f95848f8))
+
 ## v0.2.0 (2024-02-03)
 ### Feature
 * Test new release pipeline ([`8900ab5`](https://github.com/AresSC2/cython-extensions-sc2/commit/8900ab53e89fb996ca4e34238e40c5abb955f17b))
