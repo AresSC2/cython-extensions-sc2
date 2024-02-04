@@ -1,12 +1,9 @@
 from pathlib import Path
 
-import numpy as np
 import pytest
 from sc2.bot_ai import BotAI
-from sc2.ids.unit_typeid import UnitTypeId
 from sc2.position import Point2
 from sc2.unit import Unit
-from sc2.units import Units
 
 from cython_extensions import (
     cy_angle_to,
