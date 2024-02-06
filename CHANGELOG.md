@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.3.0 (2024-02-06)
+### Feature
+* Ci workflow to pipi ([`c6c27c6`](https://github.com/AresSC2/cython-extensions-sc2/commit/c6c27c63cab827e71e1c028321de29145b89c0e5))
+
 ## v0.2.1 (2024-02-04)
 ### Fix
 * Remove unused cython functions ([`b4f9aa0`](https://github.com/AresSC2/cython-extensions-sc2/commit/b4f9aa061aecf1bbf535aea3a9bc06770fb640a3))

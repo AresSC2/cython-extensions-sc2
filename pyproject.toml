@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cython-extensions-sc2"
-version = "0.2.1"
+version = "0.3.0"
 description = ""
 authors = ["Tom Kerr <tomkerrdev@gmail.com>"]
 readme = "README.md"
