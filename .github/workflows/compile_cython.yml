@@ -68,7 +68,15 @@ jobs:
       - name: Install requirements and build extension
         run: |
           poetry install --with dev
-        if: matrix.os != 'ubuntu'
+      # build a wheel while we are here for later (pipi) and upload artifact
+      - name: Make wheel
+        run: poetry build
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: cibw-wheels-${{ matrix.os }}-${{ matrix.python-version }}
+          path: dist/*.whl
+      # create folders here for uploading to github release
       - name: Get linux binary
         uses: actions/download-artifact@v4
         with:
@@ -88,11 +96,3 @@ jobs:
           name: ${{ matrix.os }}_python${{ matrix.python-version }}
           path: |
             cython_extensions
-      - name: Make wheel
-        run: poetry build
-      - name: Upload wheels
-        uses: actions/upload-artifact@v4
-        with:
-          name: cibw-wheels-${{ matrix.os }}-${{ matrix.python-version }}
-          path: dist/*.whl
-
