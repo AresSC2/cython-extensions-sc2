@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.3.3 (2024-02-07)
+### Fix
+* Build wheel earlier to fix dir structure of released wheel ([`abd82dd`](https://github.com/AresSC2/cython-extensions-sc2/commit/abd82dd4fa4265816ba61dffe790359c22bf1629))
+
 ## v0.3.2 (2024-02-07)
 ### Fix
 * Typo ([`8dd9e96`](https://github.com/AresSC2/cython-extensions-sc2/commit/8dd9e96d9fb69efdef3018b494e86b5d8fb36a03))
