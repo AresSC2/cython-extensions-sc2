@@ -88,3 +88,11 @@ jobs:
           name: ${{ matrix.os }}_python${{ matrix.python-version }}
           path: |
             cython_extensions
+      - name: Make wheel
+        run: poetry build
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: cibw-wheels-${{ matrix.os }}-${{ matrix.python-version }}
+          path: dist/*.whl
+
