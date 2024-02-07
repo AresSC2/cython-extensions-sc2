@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.3.2 (2024-02-07)
+### Fix
+* Typo ([`8dd9e96`](https://github.com/AresSC2/cython-extensions-sc2/commit/8dd9e96d9fb69efdef3018b494e86b5d8fb36a03))
+
 ## v0.3.1 (2024-02-07)
 ### Fix
 * Pipi workflow ([`57dbb6b`](https://github.com/AresSC2/cython-extensions-sc2/commit/57dbb6bffe89592834427e4569e824bab47e2efb))
