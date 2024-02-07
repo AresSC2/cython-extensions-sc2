@@ -200,13 +200,13 @@ cpdef ((float, float, float), (float, float)) cy_find_correct_line(points, base_
 
     return line, points[idx]
 
-cpdef (float, float) cy_translate_point_along_line((float, float) point, float A_value, float distance):
+cpdef (float, float) cy_translate_point_along_line((float, float) point, float a_value, float distance):
     cdef:
         float angle
         float x_offset
         float y_offset
 
-    angle = atan2(1, -A_value)
+    angle = atan2(1, -a_value)
     x_offset = distance * cos(angle)
     y_offset = distance * sin(angle)
 
