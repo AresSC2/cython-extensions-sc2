@@ -2,6 +2,15 @@
 
 <!--next-version-placeholder-->
 
+## v0.3.4 (2024-02-08)
+### Fix
+* Correct imports ([`3912ed1`](https://github.com/AresSC2/cython-extensions-sc2/commit/3912ed156ff7ea65601bf0536208d307ea05d1cc))
+* Fake fix commit to trigger new release ([`9d41c34`](https://github.com/AresSC2/cython-extensions-sc2/commit/9d41c3432232cafd787d78073c115c821764c0c7))
+
+### Documentation
+* Tidy up docstrings / customize mkdocs ([`e451f8b`](https://github.com/AresSC2/cython-extensions-sc2/commit/e451f8b8cfefbea9ab37b8e083bd93c69dcc4d57))
+* Add stubs/pyi files for all cython functions ([`edd9a6f`](https://github.com/AresSC2/cython-extensions-sc2/commit/edd9a6f14a7994806a6d6eaf082acbc436dc2d93))
+
 ## v0.3.3 (2024-02-07)
 ### Fix
 * Build wheel earlier to fix dir structure of released wheel ([`abd82dd`](https://github.com/AresSC2/cython-extensions-sc2/commit/abd82dd4fa4265816ba61dffe790359c22bf1629))
