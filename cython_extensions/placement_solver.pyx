@@ -7,7 +7,7 @@ cimport numpy as np
 
 @cython.boundscheck(False)  # Deactivate bounds checking
 @cython.wraparound(False)   # Deactivate negative indexing.
-cpdef bint can_place_structure(
+cpdef bint cy_can_place_structure(
     (int, int) building_origin,
     (int, int) building_size,
     const unsigned char[:, :] creep_grid,
@@ -42,7 +42,7 @@ cpdef bint can_place_structure(
 
 @cython.boundscheck(False)  # Deactivate bounds checking
 @cython.wraparound(False)   # Deactivate negative indexing.
-cpdef list find_building_locations(
+cpdef list cy_find_building_locations(
     np.ndarray[np.uint8_t, ndim=2] kernel,
     unsigned int x_stride,
     unsigned int y_stride,
