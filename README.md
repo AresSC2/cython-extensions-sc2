@@ -4,19 +4,19 @@
 
 # cython-extensions-sc2
 
-[Documentation](https://aressc2.github.io/cython-extensions-sc2/) (coming soon!)
+[API Documentation](https://aressc2.github.io/cython-extensions-sc2/) - for a full list of included functions.
 
 `cython-extensions-sc2` is a library designed for the [python-sc2](https://github.com/BurnySc2/python-sc2) API. 
 Its purpose is to offer optimized Cython alternatives for commonly used functions, 
 along with additional useful custom functions.
 
-For bot authors who have a development environment for python-sc2, ares-sc2, or sharpy-sc2, 
+<b>Note: This library is included for `ares-sc2` users by default, no further setup is required.</b>
+
+For bot authors who have a working development environment for `python-sc2` or `sharpy-sc2`, 
 there are no additional requirements. Simply check out the releases, download the appropriate zip for your system,
 and place the cython_extensions 
 folder in your bot's root directory. Each release includes a binary that is compatible with the ai-arena 
 ladder, making it ready for deployment.
-
-(will automatically be part of `ares-sc2` in the future)
 
 Example speedups, results may vary depending on machine and exact scenario.
 This is by no means a list of all functionality offered.
@@ -38,6 +38,13 @@ Tip: use `cy_distance_to_squared` where possible for extra 1.3x speedup.
 
 Note: currently only python 3.11 is supported unless you clone the project and compile it yourself, more
 versions will be supported in the future.
+
+To quickly get up and running locally, install with:
+
+`pip install cython-extensions-sc2`
+
+But when shipping to ladder, grab `ubuntu-latest_python3.11.zip` from releases in this repo
+and extract `cython_extensions` directory within the zip to the root of your bot's directory.
 
 ### Bot developer
 If you already have a `python-sc2`, or `sharpy-sc2` development environment setup,
@@ -72,8 +79,8 @@ This will set up a new environment, install all required dependencies and compil
 If you modify the cython code, run `poetry build` to compile it.
 
 #### Contributing
-Contributors are very welcome! There are many missing alternative `python-sc2` functions, and if you're
-really into optimization, the existing functions could likely be improved.
+Contributors are very welcome! There are many missing alternative `python-sc2` functions, and if you're 
+into optimization, the existing functions could likely be improved.
 
 Please use [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) if you choose to contribute, 
 it helps the automatic releases detect
@@ -82,8 +89,14 @@ a new version and generates an accurate changelog.
 Example git messages:
 
 `feat: add new cython function`
+
 `fix: fixed buggy function`
+
 `test: add new test`
+
 `ci: update github workflow`
+
 `docs: add new docs`
+
 `chore: add dependency`
+

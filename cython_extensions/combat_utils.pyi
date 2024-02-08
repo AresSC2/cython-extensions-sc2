@@ -19,10 +19,12 @@ def cy_attack_ready(ai: BotAI, unit: Unit, target: Unit) -> bool:
     attack_ready: bool = cy_attack_ready(self, worker, target)
     ```
 
+    ```
     1.46 µs ± 5.45 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
 
     Python alternative:
     5.66 µs ± 21.2 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
+    ```
 
     Parameters
     ----------
@@ -41,7 +43,7 @@ def cy_attack_ready(ai: BotAI, unit: Unit, target: Unit) -> bool:
     """
     ...
 
-def cy_is_facing(unit: Unit, other_unit: int, angle_error: float) -> float:
+def cy_is_facing(unit: Unit, other_unit: int, angle_error: float) -> bool:
     """Get turn speed of unit in radians
 
     Example:
@@ -52,11 +54,12 @@ def cy_is_facing(unit: Unit, other_unit: int, angle_error: float) -> float:
     other_unit: Unit = self.townhalls[0]
     is_facing: bool = cy_is_facing(unit, other_unit)
     ```
-
+    ```
     323 ns ± 3.93 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
 
     Python-sc2's `unit.is_facing(other_unit)` alternative:
     2.94 µs ± 8 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
+    ```
 
     Parameters
     ----------
@@ -69,7 +72,8 @@ def cy_is_facing(unit: Unit, other_unit: int, angle_error: float) -> float:
 
     Returns
     -------
-    bool : unit is facing other_unit?
+    bool :
+        Is facing the other unit?
     """
     ...
 
@@ -79,20 +83,19 @@ def cy_pick_enemy_target(enemies: Union[Units, list[Unit]]) -> Unit:
     Example:
     ```py
     from cython_extensions import cy_pick_enemy_target
+    from sc2.units import Units
+    from sc2.unit import Unit
 
-    enemies = self.enemy_units
+    enemies: Units = self.enemy_units
 
-    target = cy_pick_enemy_target(enemies)
+    target: Unit = cy_pick_enemy_target(enemies)
     ```
-
-    TODO: If there are multiple units that can be killed, pick the highest value one
-        Unit parameter to allow for this in the future.
-    TODO: There might be other things to consider here.
-
+    ```
     70.5 µs ± 818 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
 
     Python alternative:
     115 µs ± 766 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
+    ```
 
     Parameters
     ----------

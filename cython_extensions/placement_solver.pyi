@@ -11,9 +11,6 @@ def cy_can_place_structure(
 ) -> bool:
     """Simulate whether a structure can be placed at `building_origin`
     Fast alternative to python-sc2 `can_place`
-    # TODO: Test if this works / Fix if it doesn't
-    # TODO: Addon check
-    # 1.21 µs ± 891 ns per loop (mean ± std. dev. of 1000 runs, 10 loops each)
 
     Example:
     ```py
@@ -28,6 +25,10 @@ def cy_can_place_structure(
         avoid_creep=self.race != Race.Zerg,
         include_addon=False,
     )
+    ```
+
+    ```
+    1.21 µs ± 891 ns per loop (mean ± std. dev. of 1000 runs, 10 loops each)
     ```
 
     Parameters
@@ -72,8 +73,8 @@ def cy_find_building_locations(
     """Use a convolution pass to find all possible building locations in an area
     Check `ares-sc2` for a full example of using this to calculate
     building formations.
+
     https://github.com/AresSC2/ares-sc2/blob/main/src/ares/managers/placement_manager.py
-    64.8 µs ± 4.05 µs per loop (mean ± std. dev. of 1000 runs, 10 loops each)
 
     Example:
     ```py
@@ -97,6 +98,10 @@ def cy_find_building_locations(
         avoid_creep=True
     )
 
+    ```
+
+    ```
+    64.8 µs ± 4.05 µs per loop (mean ± std. dev. of 1000 runs, 10 loops each)
     ```
 
     Parameters

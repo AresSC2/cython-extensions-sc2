@@ -5,11 +5,8 @@ from sc2.unit import Unit
 from sc2.units import Units
 
 def cy_center(units: Union[Units, list[Unit]]) -> tuple[float, float]:
-    """
-    54.2 µs ± 137 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
+    """ Given some units, find the center point.
 
-    `python-sc2`'s `units.center` alternative:
-    107 µs ± 255 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
 
     Example:
     ```py
@@ -18,6 +15,13 @@ def cy_center(units: Union[Units, list[Unit]]) -> tuple[float, float]:
     centroid: Tuple[float, float] = cy_center(self.workers)
 
     # centroid_point2 = Point2(centroid)
+    ```
+
+    ```
+    54.2 µs ± 137 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
+
+    `python-sc2`'s `units.center` alternative:
+    107 µs ± 255 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
     ```
 
     Parameters
@@ -38,17 +42,21 @@ def cy_closest_to(
 
     Example:
     ```py
-    from ares.cython_functions.units_utils import cy_closest_to
+    from cython_functions import cy_closest_to
+    from sc2.unit import Unit
 
-    closest_unit = cy_closest_to(self.start_location, self.workers)
+    closest_unit: Unit = cy_closest_to(self.start_location, self.workers)
     ```
 
+    ```
     14.3 µs ± 135 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
 
     python-sc2's `units.closest_to()` alternative:
     98.9 µs ± 240 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
-    If using `units.closest_to(Point2):
+
+    If using python-sc2's `units.closest_to(Point2):
     200 µs ± 1.02 µs per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
+    ```
 
     Parameters
     ----------
@@ -71,19 +79,22 @@ def cy_in_attack_range(
     """Find all units that unit can shoot at.
 
     Doesn't check if the unit weapon is ready. See:
-    `ares.cython_functions.combat_utils.attack_ready`
+    `cython_functions.attack_ready`
 
     Example:
     ```py
-    from ares.cython_functions.units_utils import cy_in_attack_range
+    from cython_functions import cy_in_attack_range
+    from sc2.unit import Unit
 
-    in_attack_range = cy_in_attack_range(self.workers[0], self.enemy_units)
+    in_attack_range: list[Unit] = cy_in_attack_range(self.workers[0], self.enemy_units)
     ```
 
+    ```
     7.28 µs ± 26.3 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
 
     python-sc2's `units.in_attack_range_of(unit)` alternative:
     30.4 µs ± 271 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
+    ```
 
     Parameters
     ----------
@@ -108,15 +119,20 @@ def cy_sorted_by_distance_to(
 
     Example:
     ```py
-    from ares.cython_functions.units_utils import cy_sorted_by_distance_to
+    from cython_functions import cy_sorted_by_distance_to
+    from sc2.unit import Unit
 
-    sorted_by_distance = cy_sorted_by_distance_to(self.workers, self.start_location)
+    sorted_by_distance: list[Unit] = cy_sorted_by_distance_to(
+        self.workers, self.start_location
+    )
     ```
 
+    ```
     33.7 µs ± 190 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
 
     python-sc2's `units.sorted_by_distance_to(position)` alternative:
     246 µs ± 830 ns per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
+    ```
 
     Parameters
     ----------

@@ -15,20 +15,23 @@ def cy_pylon_matrix_covers(
 ) -> bool:
     """Check if a position is powered by a pylon.
 
-    1.85 µs ± 8.72 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
-
     Example:
     ```py
     from cython_functions import cy_pylon_matrix_covers
+    from sc2.position import Point2
 
     # check if start location is powered by pylon
-    position = self.start_location
+    position: Point2 = self.start_location
 
     can_place_structure_here: bool = cy_pylon_matrix_covers(
         position,
         self.structures(UnitTypeId.PYLON),
         self.game_info.terrain_height.data_numpy
     )
+    ```
+
+    ```
+    1.85 µs ± 8.72 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
     ```
 
     Parameters
@@ -60,11 +63,12 @@ def cy_unit_pending(ai: "BotAI", unit_type: UnitID) -> int:
 
     num_marines_pending: int = cy_unit_pending(UnitTypeId.MARINE)
     ```
-
+    ```
     453 ns ± 9.35 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
 
     Python-sc2 `already_pending` alternative:
     2.82 µs ± 29 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
+    ```
 
     Parameters
     ----------

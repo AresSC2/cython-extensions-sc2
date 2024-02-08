@@ -43,10 +43,6 @@ def cy_point_below_value(
     Is it below `weight_safety_limit`?
     Useful for checking enemy influence on a position.
 
-    987 ns ± 10.1 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
-    Python alternative:
-    4.66 µs ± 64.8 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
-
     Example:
     ```py
     from cython_extensions import cy_point_below_value
@@ -54,7 +50,13 @@ def cy_point_below_value(
     # pretend grid has enemy influence added
     grid = self.game_info.pathing_grid.data_numpy.T
     safe: bool = cy_point_below_value(grid, self.start_location.rounded)
+    ```
 
+    ```
+    987 ns ± 10.1 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
+
+    Python alternative:
+    4.66 µs ± 64.8 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
     ```
 
     Parameters
@@ -81,10 +83,13 @@ def cy_points_with_value(
     Example:
     ```py
     from cython_extensions import cy_points_with_value
+    import numpy as np
 
     # pretend grid has enemy influence added
-    grid = self.game_info.pathing_grid.data_numpy.T
-    safe: bool = cy_points_with_value(grid, 1.0, [self.start_location.rounded])
+    grid: np.ndarray = self.game_info.pathing_grid.data_numpy.T
+    safe: bool = cy_points_with_value(
+        grid, 1.0, [self.start_location.rounded]
+    )
 
     ```
 

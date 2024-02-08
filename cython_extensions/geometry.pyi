@@ -10,12 +10,15 @@ def cy_angle_to(
 
     Parameters
     ----------
-    from_pos : First 2D point.
-    to_pos : Measure angle to this 2D point.
+    from_pos : Union[Point2, tuple[float, float]]
+        First 2D point.
+    to_pos : Union[Point2, tuple[float, float]]
+        Measure angle to this 2D point.
 
     Returns
     -------
-    float : Angle in radians.
+    angle : float
+        Angle in radians.
     """
     ...
 
@@ -24,12 +27,14 @@ def cy_angle_diff(a: float, b: float) -> float:
 
     Parameters
     ----------
-    a : First angle.
-    b : Second angle.
+    a : float
+        First angle.
+    b : float
+        Second angle.
 
     Returns
     -------
-    float :
+    angle_difference : float
     """
     ...
 
@@ -42,9 +47,11 @@ def cy_distance_to(
     ```py
     from cython_functions import cy_distance_to
 
-    dist: float = cy_distance_to(self.start_location, self.game_info.map_center)
+    dist: float = cy_distance_to(
+        self.start_location, self.game_info.map_center
+    )
     ```
-
+    ```
     cy_distance_to(Point2, Point2)
     157 ns ± 2.69 ns per loop (mean ± std. dev. of 7 runs, 10,000,000 loops each)
 
@@ -55,17 +62,22 @@ def cy_distance_to(
 
     Point1.distance_to(Point2)
     386 ns ± 2.71 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
+
     unit1.distance_to(unit2)
     583 ns ± 7.89 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
+    ```
 
     Parameters
     ----------
-    p1 : First point
-    p2 : Measure to this point
+    p1 : Union[Point2, tuple[float, float]]
+        First point
+    p2 : Union[Point2, tuple[float, float]]
+        Measure to this point
 
     Returns
     -------
-    float : Distance in tiles
+    distance : float
+        Distance in tiles
 
     """
     ...
@@ -77,20 +89,25 @@ def cy_distance_to_squared(
     Use this for ~1.3x speedup
 
     Example:
-    ```py
+    ```python
     from cython_functions import cy_distance_to_squared
 
-    dist: float = cy_distance_to_squared(self.start_location, self.game_info.map_center)
+    dist: float = cy_distance_to_squared(
+        self.start_location, self.game_info.map_center
+    )
     ```
 
     Parameters
     ----------
-    p1 : First point
-    p2 : Measure to this point
+    p1 : Union[Point2, tuple[float, float]]
+        First point
+    p2 : Union[Point2, tuple[float, float]]
+        Measure to this point
 
     Returns
     -------
-    float : Distance in tiles, squared
+    distance : float
+        Distance in tiles, squared
 
     """
     ...
@@ -113,16 +130,29 @@ def cy_towards(
 
     Note: For performance reasons this returns the point2 as a tuple, if a
     python-sc2 Point2 is required it's up to the user to convert it.
+
     Example:
-    `new_pos: Point2 = Point2(cy_towards(self.start_location, self.enemy_start_locations, 10.0))`
+    ```py
+    new_pos: Point2 = Point2(
+        cy_towards(
+            self.start_location, self.enemy_start_locations, 10.0
+        )
+    )
+    ```
 
     Though for best performance it is recommended to simply work with the tuple if possible:
-    `new_pos: tuple[float, float] = cy_towards(self.start_location, self.enemy_start_locations, 10.0)`
+    ```py
+    new_pos: tuple[float, float] = cy_towards(
+        self.start_location, self.enemy_start_locations, 10.0
+    )
+    ```
 
+    ```
     191 ns ± 0.855 ns per loop (mean ± std. dev. of 7 runs, 10,000,000 loops each)
 
     Python-sc2's `start_pos.towards(target_pos, distance)` alternative:
     2.73 µs ± 18.9 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
+    ```
 
 
     Parameters
@@ -151,13 +181,17 @@ def cy_get_angle_between_points(
     ```py
     from cython_functions import cy_get_angle_between_points
 
-    angle: float = cy_get_angle_between_points(self.start_location, self.game_info.map_center)
+    angle: float = cy_get_angle_between_points(
+        self.start_location, self.game_info.map_center
+    )
     ```
 
     Parameters
     ----------
-    point_a : First point
-    point_b : Measure to this point
+    point_a :
+        First point
+    point_b :
+        Measure to this point
 
     Returns
     -------
@@ -199,7 +233,7 @@ def cy_find_average_angle(
 
     Returns
     -------
-    double :
+    float :
         Average angle in radians between the reference point and the given points.
     """
     ...
