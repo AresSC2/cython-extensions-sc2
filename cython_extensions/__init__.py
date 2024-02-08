@@ -37,8 +37,8 @@ from cython_extensions.numpy_helper import (
     cy_points_with_value,
 )
 from cython_extensions.placement_solver import (
-    can_place_structure,
-    find_building_locations,
+    cy_can_place_structure,
+    cy_find_building_locations,
 )
 from cython_extensions.units_utils import (
     cy_center,
