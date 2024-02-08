@@ -5,7 +5,7 @@ from sc2.unit import Unit
 from sc2.units import Units
 
 def cy_center(units: Union[Units, list[Unit]]) -> tuple[float, float]:
-    """ Given some units, find the center point.
+    """Given some units, find the center point.
 
 
     Example:
