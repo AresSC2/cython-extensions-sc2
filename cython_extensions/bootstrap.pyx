@@ -1,5 +1,7 @@
 import importlib
 import importlib.abc
+import importlib.util
+import importlib.machinery
 import sys
 
 
