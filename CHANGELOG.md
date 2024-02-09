@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.3.5 (2024-02-09)
+### Fix
+* Add imports required for ladder ([`e425929`](https://github.com/AresSC2/cython-extensions-sc2/commit/e4259290b3e54a4f0f3e43f5c5dd982d199dc5e1))
+
 ## v0.3.4 (2024-02-08)
 ### Fix
 * Correct imports ([`3912ed1`](https://github.com/AresSC2/cython-extensions-sc2/commit/3912ed156ff7ea65601bf0536208d307ea05d1cc))
