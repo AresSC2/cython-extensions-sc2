@@ -51,16 +51,14 @@ jobs:
           uses: actions/checkout@v4
           with:
             fetch-depth: 0
+        - name: Setup Python ${{ matrix.python-version }}
+          uses: actions/setup-python@v5
         - name: Install poetry
           run: pipx install poetry
         - name: Install requirements and build extension
           run: |
             poetry install --with dev
-        - name: Setup Python ${{ matrix.python-version }}
-          uses: actions/setup-python@v5
-          with:
-            python-version: ${{ matrix.python-version }}
-            cache: 'poetry'
+
         # build a wheel while we are here for later (pipi) and upload artifact
         - name: Make wheel
           run: poetry build
