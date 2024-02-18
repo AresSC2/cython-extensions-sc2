@@ -8,7 +8,7 @@ packages = [{include = "cython_extensions"}]
 include = ["cython_extensions/*.so", "cython_extensions/*.pyd"]
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.13"
+python = ">=3.9,<3.13"
 
 [tool.poetry.group.dev.dependencies]
 cython = "^3.0.8"
