@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.3.6 (2024-02-18)
+### Fix
+* Use correct cibuildwheel version ([`51a8d35`](https://github.com/AresSC2/cython-extensions-sc2/commit/51a8d35849fc7e6aef7ad709f21df4378a5074e4))
+* Build wheels for numerous architecture / os ([`defc93a`](https://github.com/AresSC2/cython-extensions-sc2/commit/defc93a8630bbeaf77f44c74708a5100168f2646))
+
 ## v0.3.5 (2024-02-09)
 ### Fix
 * Add imports required for ladder ([`e425929`](https://github.com/AresSC2/cython-extensions-sc2/commit/e4259290b3e54a4f0f3e43f5c5dd982d199dc5e1))
