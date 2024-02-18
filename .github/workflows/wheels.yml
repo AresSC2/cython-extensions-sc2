@@ -41,43 +41,63 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-latest]
-        cibw_build: ["cp310-*", "cp311-*", "cp312-*"]
-        cibw_archs: ["AMD64", "x86", "ARM64"]
-        exclude:
-          - os: windows-latest
-            cibw_build: "cp38-*"
-            cibw_archs: "ARM64"
+        python-version: ['3.10', '3.11', '3.12']
+#        cibw_build: ["cp310-*", "cp311-*", "cp312-*"]
+#        cibw_archs: ["AMD64", "x86", "ARM64"]
 
     steps:
-      - name: "Set environment variables (Windows)"
-        shell: pwsh
-        run: |
-          (Get-ItemProperty "HKLM:System\CurrentControlSet\Control\FileSystem").LongPathsEnabled
-
-      - name: Check out repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up python 3.12
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install poetry
-        uses: snok/install-poetry@v1
-        with:
-          virtualenvs-create: false
-          virtualenvs-in-project: false
-          installer-parallel: false # Currently there seems to be some race-condition in windows
-
-      - name: Build wheels
-        uses: pypa/cibuildwheel@v2.16.5
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: cibw-wheels-${{ matrix.os }}-${{ matrix.cibw_archs }}-${{ strategy.job-index }}
-          path: wheelhouse/*.whl
+        # install poetry
+        - name: Check out repository
+          uses: actions/checkout@v4
+          with:
+            fetch-depth: 0
+        - name: Install poetry
+          run: pipx install poetry
+        - name: Install requirements and build extension
+          run: |
+            poetry install --with dev
+        - name: Setup Python ${{ matrix.python-version }}
+          uses: actions/setup-python@v5
+          with:
+            python-version: ${{ matrix.python-version }}
+            cache: 'poetry'
+        # build a wheel while we are here for later (pipi) and upload artifact
+        - name: Make wheel
+          run: poetry build
+        - name: Upload wheels
+          uses: actions/upload-artifact@v4
+          with:
+            name: cibw-wheels-${{ matrix.os }}-${{ matrix.python-version }}
+            path: dist/*.whl
+#      - name: "Set environment variables (Windows)"
+#        shell: pwsh
+#        run: |
+#          (Get-ItemProperty "HKLM:System\CurrentControlSet\Control\FileSystem").LongPathsEnabled
+#
+#      - name: Check out repository
+#        uses: actions/checkout@v4
+#        with:
+#          fetch-depth: 0
+#
+#      - name: Set up python 3.12
+#        uses: actions/setup-python@v5
+#        with:
+#          python-version: "3.12"
+#
+#      - name: Install poetry
+#        uses: snok/install-poetry@v1
+#        with:
+#          virtualenvs-create: false
+#          virtualenvs-in-project: false
+#          installer-parallel: false # Currently there seems to be some race-condition in windows
+#
+#      - name: Build wheels
+#        uses: pypa/cibuildwheel@v2.16.5
+#
+#      - uses: actions/upload-artifact@v4
+#        with:
+#          name: cibw-wheels-${{ matrix.os }}-${{ matrix.cibw_archs }}-${{ strategy.job-index }}
+#          path: wheelhouse/*.whl
 
   build_wheels_linux:
     name: "${{ matrix.os }} ${{ matrix.cibw_archs }} ${{ matrix.cibw_build }}"

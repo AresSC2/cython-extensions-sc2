@@ -64,18 +64,18 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'poetry'
-      # Install requirements and build extension
-      - name: Install requirements and build extension
-        run: |
-          poetry install --with dev
-      # build a wheel while we are here for later (pipi) and upload artifact
-      - name: Make wheel
-        run: poetry build
-      - name: Upload wheels
-        uses: actions/upload-artifact@v4
-        with:
-          name: cibw-wheels-${{ matrix.os }}-${{ matrix.python-version }}
-          path: dist/*.whl
+#      # Install requirements and build extension
+#      - name: Install requirements and build extension
+#        run: |
+#          poetry install --with dev
+#      # build a wheel while we are here for later (pipi) and upload artifact
+#      - name: Make wheel
+#        run: poetry build
+#      - name: Upload wheels
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: cibw-wheels-${{ matrix.os }}-${{ matrix.python-version }}
+#          path: dist/*.whl
       # create folders here for uploading to github release
       - name: Get linux binary
         uses: actions/download-artifact@v4
