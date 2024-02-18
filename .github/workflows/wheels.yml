@@ -65,7 +65,11 @@ jobs:
           python-version: "3.12"
 
       - name: Install poetry
-        run: pipx install poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: false
+          virtualenvs-in-project: false
+          installer-parallel: false # Currently there seems to be some race-condition in windows
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.16.5
@@ -83,7 +87,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         cibw_build: ["cp310-*", "cp311-*", "cp312-*"]
-        cibw_archs: ["x86_64", "i686", "aarch64"] # "ppc64le" not working
+        cibw_archs: ["x86_64", "i686"] # "aarch64" and "ppc64le" not working, investigate if needed
 
     steps:
       - name: Check out repository
