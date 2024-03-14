@@ -60,6 +60,35 @@ cpdef object cy_closest_to((float, float) position, object units):
 
 @boundscheck(False)
 @wraparound(False)
+cpdef tuple cy_find_units_center_mass(units, double distance):
+    cdef:
+        unsigned int max_units_found = 0
+        (double, double) center_position
+        double distance_check = distance * distance
+        list positions = [u.position for u in units]
+        (double, double) pos_1, pos_2
+        unsigned int units_found
+        unsigned int num_units = len(positions)
+        double dist_sq
+        Py_ssize_t i, j
+
+    for i in range(num_units):
+        units_found = 0
+        pos_1 = positions[i]
+        for j in range(num_units):
+            pos_2 = positions[j]
+            dist_sq = cy_distance_to_squared(pos_1, pos_2)
+            if dist_sq < distance_check:
+                units_found += 1
+
+        if units_found > max_units_found:
+            max_units_found = units_found
+            center_position = pos_1
+
+    return center_position, max_units_found
+
+@boundscheck(False)
+@wraparound(False)
 cpdef list cy_in_attack_range(object unit, object units, double bonus_distance = 0.0):
     if not unit.can_attack:
         return []

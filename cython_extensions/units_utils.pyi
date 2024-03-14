@@ -73,6 +73,44 @@ def cy_closest_to(
     """
     ...
 
+def cy_find_units_center_mass(
+    units: Union[Units, list[Unit]], distance: float
+) -> Unit:
+    """Given some units, find the center mass
+
+    Example:
+    ```py
+    from cython_functions import cy_find_units_center_mass
+    from sc2.position import Point2
+
+    center_mass: Point2
+    num_units: int
+    center_mass, num_units = cy_find_units_center_mass(self.units, 10.0)
+    ```
+
+    ```
+    47.8 ms ± 674 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
+
+    python alternative:
+    322 ms ± 5.2 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+    ```
+
+    Parameters
+    ----------
+    units :
+        Position to measure distance from.
+    distance :
+        Collection of units we want to check.
+
+    Returns
+    -------
+    Tuple[Point2, int] :
+        The center mass, and how many units are within `distance`
+        of the center mass.
+
+    """
+    ...
+
 def cy_in_attack_range(
     unit: Unit, units: Union[Units, list[Unit]], bonus_distance: float = 0.0
 ) -> list[Unit]:
