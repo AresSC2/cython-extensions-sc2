@@ -43,6 +43,7 @@ from cython_extensions.placement_solver import (
 from cython_extensions.units_utils import (
     cy_center,
     cy_closest_to,
+    cy_find_units_center_mass,
     cy_distance_to_squared,
     cy_in_attack_range,
     cy_sorted_by_distance_to,
