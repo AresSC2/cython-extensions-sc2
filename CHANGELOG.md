@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.0 (2024-03-14)
+### Feature
+* Add units center mass function ([`88d88e6`](https://github.com/AresSC2/cython-extensions-sc2/commit/88d88e6606f80d52448279183573b3b8566cacaf))
+
 ## v0.3.6 (2024-02-18)
 ### Fix
 * Use correct cibuildwheel version ([`51a8d35`](https://github.com/AresSC2/cython-extensions-sc2/commit/51a8d35849fc7e6aef7ad709f21df4378a5074e4))
