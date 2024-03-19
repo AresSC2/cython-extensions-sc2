@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.2 (2024-03-19)
+### Fix
+* Call correct units collection ([`3e609f0`](https://github.com/AresSC2/cython-extensions-sc2/commit/3e609f019fc78148c426eab2a7983e75cd95bdf2))
+
 ## v0.4.1 (2024-03-19)
 ### Fix
 * Access correct units object in BotAI ([`e5db481`](https://github.com/AresSC2/cython-extensions-sc2/commit/e5db4812ee385cbca5ba8a699483cfbc9c948850))
