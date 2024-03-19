@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.1 (2024-03-19)
+### Fix
+* Access correct units object in BotAI ([`e5db481`](https://github.com/AresSC2/cython-extensions-sc2/commit/e5db4812ee385cbca5ba8a699483cfbc9c948850))
+
 ## v0.4.0 (2024-03-14)
 ### Feature
 * Add units center mass function ([`88d88e6`](https://github.com/AresSC2/cython-extensions-sc2/commit/88d88e6606f80d52448279183573b3b8566cacaf))
