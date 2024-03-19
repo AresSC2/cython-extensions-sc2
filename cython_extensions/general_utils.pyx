@@ -64,7 +64,7 @@ cpdef unsigned int cy_unit_pending(object bot, object unit_type):
     if bot.race == Race.Zerg and unit_type != UnitTypeId.QUEEN:
         if unit_type in DOES_NOT_USE_LARVA:
             units_collection = bot.units
-            len_units = len(bot.own_units)
+            len_units = len(bot.units)
             trained_from = {UnitTypeId[f"{unit_type.name}COCOON"]}
             if unit_type == UnitTypeId.LURKERMP:
                 trained_from = {UnitTypeId.LURKERMPEGG}
