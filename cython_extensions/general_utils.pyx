@@ -1,7 +1,5 @@
 from cython cimport boundscheck, wraparound
 
-from math import floor
-
 from sc2.dicts.unit_trained_from import UNIT_TRAINED_FROM
 from sc2.game_info import Race
 from sc2.ids.unit_typeid import UnitTypeId
@@ -59,7 +57,10 @@ cpdef unsigned int cy_unit_pending(object bot, object unit_type):
         Py_ssize_t len_units, x
         object units_collection, unit
 
-    trained_from = UNIT_TRAINED_FROM[unit_type]
+    if unit_type == UnitTypeId.ARCHON:
+        trained_from = {UnitTypeId.DARKTEMPLAR, UnitTypeId.HIGHTEMPLAR}
+    else:
+        trained_from = UNIT_TRAINED_FROM[unit_type]
 
     if bot.race == Race.Zerg and unit_type != UnitTypeId.QUEEN:
         if unit_type in DOES_NOT_USE_LARVA:
