@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.4 (2024-06-19)
+### Fix
+* Handle missing trained from value for archon ([`8883bc8`](https://github.com/AresSC2/cython-extensions-sc2/commit/8883bc8c1c6749a4ed60e3b2b63c5dc907a6f292))
+
 ## v0.4.3 (2024-03-19)
 ### Fix
 * Prevent lurkermp crash ([`09a1d97`](https://github.com/AresSC2/cython-extensions-sc2/commit/09a1d972dc9155dd5e4e1025d0194e64b24645a7))
