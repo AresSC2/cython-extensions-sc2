@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.5 (2024-10-03)
+### Fix
+* Prevent division by 0 ([`070105f`](https://github.com/AresSC2/cython-extensions-sc2/commit/070105fcd2278a9f62ab34ebd5d6a5a22b2d9163))
+
 ## v0.4.4 (2024-06-19)
 ### Fix
 * Handle missing trained from value for archon ([`8883bc8`](https://github.com/AresSC2/cython-extensions-sc2/commit/8883bc8c1c6749a4ed60e3b2b63c5dc907a6f292))
