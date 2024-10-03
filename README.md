@@ -12,11 +12,7 @@ along with additional useful custom functions.
 
 <b>Note: This library is included for `ares-sc2` users by default, no further setup is required.</b>
 
-For bot authors who have a working development environment for `python-sc2` or `sharpy-sc2`, 
-there are no additional requirements. Simply check out the releases, download the appropriate zip for your system,
-and place the cython_extensions 
-folder in your bot's root directory. Each release includes a binary that is compatible with the ai-arena 
-ladder, making it ready for deployment.
+This library also supports `python-sc2` and `sharpy-sc2` bots, see Getting Started below.
 
 Example speedups, results may vary depending on machine and exact scenario.
 This is by no means a list of all functionality offered.
@@ -36,19 +32,24 @@ Tip: use `cy_distance_to_squared` where possible for extra 1.3x speedup.
 
 ## Getting started
 
-Note: currently only python 3.11 is supported unless you clone the project and compile it yourself, more
-versions will be supported in the future.
-
-To quickly get up and running locally, install with:
+To quickly get up and running locally (for python versions 3.10, 3.11, 3.12), install `cython-extensions-sc2` with:
 
 `pip install cython-extensions-sc2`
 
-But when shipping to ladder, grab `ubuntu-latest_python3.11.zip` from releases in this repo
-and extract `cython_extensions` directory within the zip to the root of your bot's directory.
+### Shipping to ladder
+When shipping to [ladder](https://aiarena.net/), grab `ubuntu-latest_python3.11.zip` from releases in this repo
+and extract `cython_extensions` directory within the zip to the root of your bot's directory, like so:
 
-### Bot developer
+```
+MyBot
+└───cython_extensions
+│   └───cython-extensions library files
+└───your bot files and directories
+```
+
+### Alternative local setup
 If you already have a `python-sc2`, or `sharpy-sc2` development environment setup,
-then `cython-extensions` should work out the box with your bot. Simply check out the releases on this
+then `cython-extensions` should work out the box with your bot without the need to install extra requirements. Simply check out the releases on this
 repo and download the correct `zip` for your system.
 
 ![release](https://github.com/AresSC2/cython-extensions-sc2/assets/63355562/3c5084ee-5d61-4446-a0dc-4d0ce3421b34)
@@ -64,6 +65,7 @@ MyBot
 └───your bot files and directories
 ```
 
+### Start using `cython-extensions-sc2`
 For ease of use all cython functions are importable via the main module, for example:
 ```python
 from cython_extensions import cy_distance_to, cy_attack_ready, cy_closest_to
