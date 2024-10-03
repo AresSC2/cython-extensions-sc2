@@ -49,6 +49,10 @@ cpdef (double, double) cy_towards((double, double) start_pos, (double, double) t
         (double, double) vector, displacement, new_pos, normalized_vector
         double magnitude
 
+    # Same points. Prevent division by 0 when magnitude = 0
+    if start_pos == target_pos:
+        return target_pos
+        
     # Calculate the vector between the points
     vector = (target_pos[0] - start_pos[0], target_pos[1] - start_pos[1])
 
