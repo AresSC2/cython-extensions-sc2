@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.6 (2024-11-19)
+### Fix
+* Prevent cy_center returning unexpected values ([`d8e8d14`](https://github.com/AresSC2/cython-extensions-sc2/commit/d8e8d142bab3cfee22467b616f18b6a10f8b0662))
+
 ## v0.4.5 (2024-10-03)
 ### Fix
 * Prevent division by 0 ([`070105f`](https://github.com/AresSC2/cython-extensions-sc2/commit/070105fcd2278a9f62ab34ebd5d6a5a22b2d9163))
