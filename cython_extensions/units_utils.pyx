@@ -16,18 +16,28 @@ cpdef (double, double) cy_center(object units):
     """Returns the central position of all units."""
     cdef:
         unsigned int i = 0
-        unsigned int num_units = len(units)
-        double sum_x, sum_y = 0.0
+        double MAX_THRESHOLD = 600.0
+        Py_ssize_t num_units = len(units)
+        double sum_x, sum_y, x, y
         (double, double) position
         object unit
 
+    sum_x = 0
+    sum_y = 0
+
     for i in range(num_units):
-        pos = units[i]._proto.pos
+        pos = units[i].position
         position = (pos.x, pos.y)
         sum_x += position[0]
         sum_y += position[1]
+    x = sum_x / num_units
+    y = sum_y / num_units
+    # there are some very rare scenarios where we get a rather large
+    # x or y, in this case just return what we have in `position`
+    if x > MAX_THRESHOLD or y > MAX_THRESHOLD:
+        return position
+    return (x, y)
 
-    return sum_x / num_units, sum_y / num_units
 
 @boundscheck(False)
 @wraparound(False)
