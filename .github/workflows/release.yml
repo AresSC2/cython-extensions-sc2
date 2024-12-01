@@ -11,7 +11,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest ]
-        python-version: [ '3.11' ]
+        python-version: [ '3.12' ]
 
     steps:
       # check-out repo
@@ -25,10 +25,10 @@ jobs:
       - name: Install poetry
         run: pipx install poetry
       # set-up python with cache
-      - name: Setup Python 3.11
+      - name: Setup Python 3.12
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.12'
           cache: 'poetry'
       # install requirements
       - name: Install requirements
@@ -53,7 +53,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: ['3.11']
+        python-version: ['3.12']
 
     steps:
       # check-out repo
