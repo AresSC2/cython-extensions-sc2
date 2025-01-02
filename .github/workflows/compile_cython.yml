@@ -11,7 +11,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest ]
-        python-version: [ '3.11' ]
+        python-version: [ '3.12' ]
 
     steps:
       # check-out repo
@@ -45,7 +45,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-latest, macos-latest, ubuntu-latest]
-        python-version: ['3.11']
+        python-version: ['3.12']
 
     steps:
       - name: Display structure of downloaded files
