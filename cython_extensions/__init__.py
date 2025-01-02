@@ -15,6 +15,8 @@ from cython_extensions.combat_utils import (
     cy_is_facing,
     cy_pick_enemy_target,
     cy_range_vs_target,
+    cy_find_aoe_position,
+    cy_adjust_moving_formation
 )
 from cython_extensions.general_utils import cy_pylon_matrix_covers, cy_unit_pending
 from cython_extensions.geometry import (
@@ -44,7 +46,6 @@ from cython_extensions.units_utils import (
     cy_center,
     cy_closest_to,
     cy_find_units_center_mass,
-    cy_distance_to_squared,
     cy_in_attack_range,
     cy_sorted_by_distance_to,
 )
