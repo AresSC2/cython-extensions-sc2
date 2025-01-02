@@ -108,6 +108,7 @@ cpdef list cy_in_attack_range(object unit, object units, double bonus_distance =
         double dist, air_range, ground_range, radius, other_u_radius
         (float, float) unit_pos, other_unit_pos
         bint other_unit_flying, can_shoot_air, can_shoot_ground
+        list returned_units
 
     can_shoot_air = unit.can_attack_air
     can_shoot_ground = unit.can_attack_ground

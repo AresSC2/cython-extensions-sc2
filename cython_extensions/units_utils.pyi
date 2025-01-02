@@ -73,9 +73,7 @@ def cy_closest_to(
     """
     ...
 
-def cy_find_units_center_mass(
-    units: Union[Units, list[Unit]], distance: float
-) -> Unit:
+def cy_find_units_center_mass(units: Union[Units, list[Unit]], distance: float) -> Unit:
     """Given some units, find the center mass
 
     Example:

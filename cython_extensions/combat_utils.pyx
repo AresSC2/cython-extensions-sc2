@@ -1,8 +1,16 @@
-from libc.math cimport atan2, fabs, pi
+from libc.math cimport atan2, cos, exp, fabs, log, pi, sin, sqrt
+
+import numpy as np
+
+cimport numpy as np
+
+from scipy.optimize import differential_evolution
 
 from cython_extensions.geometry import cy_angle_diff, cy_angle_to, cy_distance_to
+from cython_extensions.map_analysis import cy_get_bounding_box
 from cython_extensions.turn_rate import TURN_RATE
 from cython_extensions.unit_data import UNIT_DATA
+from cython_extensions.units_utils import cy_center, cy_find_units_center_mass
 
 UNIT_DATA_INT_KEYS = {k.value: v for k, v in UNIT_DATA.items()}
 TURN_RATE_INT_KEYS = {k.value: v for k, v in TURN_RATE.items()}
@@ -113,3 +121,171 @@ cpdef object cy_pick_enemy_target(object enemies):
             returned_unit = unit
 
     return returned_unit
+
+cdef (double, double) rotate_by_angle((double, double) vec, double angle):
+    cdef double cos_angle = np.cos(angle)
+    cdef double sin_angle = np.sin(angle)
+    cdef double new_x = vec[0] * cos_angle - vec[1] * sin_angle
+    cdef double new_y = vec[0] * sin_angle + vec[1] * cos_angle
+    return (new_x, new_y)
+
+cpdef dict cy_adjust_moving_formation(
+        object our_units,
+        (double, double) target,
+        list fodder_tags,
+        double unit_multiplier,
+        double retreat_angle
+):
+    cdef:
+        dict unit_repositioning = {}
+        int num_units, index
+        unsigned int len_fodder_tags
+        (double, double) our_center, our_adjusted_position, sincos, core_left_rotate, core_right_rotate
+        (double, double) unit_pos, new_position, fodder_mean, adjusted_unit_position, unit_sincos
+        double angle_to_origin, core_left_x_offset, core_left_y_offset, core_right_x_offset, core_right_y_offset
+        double fodder_mean_distance, angle_to_target, fodder_x_offset, fodder_y_offset
+        double c_distance = 0.0
+        list core_units = []
+        list fodder_units = []
+
+    len_fodder_tags = len(fodder_tags)
+
+    # If there are no fodder tags, none of the units will need their positions adjusted
+    if len_fodder_tags == 0:
+        return unit_repositioning
+
+    # Find the center of the units
+    our_center = cy_find_units_center_mass(our_units, 6.0)[0]
+
+    # start getting the angle by applying a translation that moves the enemy to the origin
+    our_adjusted_position = (our_center[0] - target[0], our_center[1] - target[1])
+
+    # use atan2 to get the angle
+    angle_to_origin = np.arctan2(our_adjusted_position[1], our_adjusted_position[0])
+
+    # We need sine and cosine so that we can give the correct retreat position
+    sincos = (np.sin(angle_to_origin), np.cos(angle_to_origin))
+
+    # Rotate offsets by +/- retreat angle degrees so that core units move diagonally backwards
+    core_left_rotate = rotate_by_angle((sincos[1], sincos[0]), retreat_angle)
+    core_right_rotate = rotate_by_angle((sincos[1], sincos[0]), -retreat_angle)
+
+    core_left_x_offset = core_left_rotate[1] * unit_multiplier
+    core_left_y_offset = core_left_rotate[0] * unit_multiplier
+    core_right_x_offset = core_right_rotate[1] * unit_multiplier
+    core_right_y_offset = core_right_rotate[0] * unit_multiplier
+
+    for unit in our_units:
+        if unit.tag in fodder_tags:
+            fodder_units.append(unit)
+        else:
+            core_units.append(unit)
+
+    # Determine which core units need to move based on the mean fodder distance
+    fodder_mean = cy_find_units_center_mass(fodder_units, 7.0)[0]
+    fodder_mean_distance = (fodder_mean[0] - target[0]) ** 2 + (fodder_mean[1] - target[1]) ** 2
+
+    num_units = len(core_units)
+    # Identify if a core unit is closer to the enemy than the fodder mean
+
+    for index in range(num_units):
+        unit = core_units[index]
+        unit_pos = unit.position
+        unit_tag = unit.tag
+
+        c_distance = (unit_pos[0] - target[0]) ** 2 + (unit_pos[1] - target[1]) ** 2
+
+        if c_distance < fodder_mean_distance:
+            adjusted_unit_position = (unit_pos[0] - target[0], unit_pos[1] - target[1])
+            angle_to_target = atan2(adjusted_unit_position[1], adjusted_unit_position[0])
+            unit_sincos = (sin(angle_to_target), cos(angle_to_target))
+
+            if unit_sincos[1] > 0.0:
+                # If cosine of angle is greater than 0, the unit is to the right of the line so move right diagonally
+                new_position = (unit_pos[0] + core_right_x_offset, unit_pos[1] + core_right_y_offset)
+                unit_repositioning[unit_tag] = new_position
+            else:
+                # Otherwise, go left diagonally
+                new_position = (unit_pos[0] + core_left_x_offset, unit_pos[1] + core_left_y_offset)
+                unit_repositioning[unit_tag] = new_position
+
+    return unit_repositioning
+
+
+cdef double optimization_function(
+    double[:] params,
+    object targets,
+    double effect_radius,
+    set bonus_tags
+):
+    """
+    Function for optimization.
+    """
+    cdef double x = params[0]
+    cdef double y = params[1]
+    cdef double i, j, y_offset, dist, exponent, denominator, fraction, append_value
+    cdef double radius
+    cdef double result = 0.0
+    cdef double log_effect = log(1 + effect_radius)
+    cdef bint is_bonus_tag
+
+    for unit in targets:
+        is_bonus_tag = unit.tag in bonus_tags
+        if is_bonus_tag:
+            result += 2.0
+            continue
+        radius = unit.radius
+        i, j = unit.position
+
+        y_offset = log_effect + log(1 + radius)
+        dist = sqrt(((x - i) ** 2 + (y - j) ** 2))
+        exponent = 100 * (log(dist + 1) - y_offset)
+        denominator = 1 + exp(exponent)
+        fraction = 2 / denominator
+        append_value = -1.0 * (fraction - 1.0)
+        result += append_value
+    return result
+
+# Wrapper for the optimization function
+cdef double f_wrapper(
+    double[:] params,
+    object targets,
+    double effect_radius,
+    set bonus_tags
+):
+    return optimization_function(params, targets, effect_radius, bonus_tags)
+
+cpdef cy_find_aoe_position(
+    double effect_radius,
+    object targets,
+    unsigned int min_units = 1,
+    bonus_tags = None,
+):
+    """
+    Find the best place to put an AoE effect so that it hits the most units.
+    """
+    cdef:
+        double x_min, x_max, y_min, y_max
+        unsigned int len_targets = len(targets)
+    if not bonus_tags:
+        bonus_tags = set()
+    if len_targets == 0:
+        return None
+    elif len_targets == 1:
+        return targets.first.position
+
+    # Get bounding box
+    (x_min, x_max), (y_min, y_max) = cy_get_bounding_box({u.position_tuple for u in targets})
+    cdef double[:, :] boundaries = np.array([[x_min, x_max], [y_min, y_max]])
+
+    # OptimizeResult
+    result = differential_evolution(
+        f_wrapper,
+        bounds=boundaries,
+        args=(targets, effect_radius, bonus_tags),
+        tol=1e-10
+    )
+    if result.success:
+        return result.x
+    else:
+        return None
