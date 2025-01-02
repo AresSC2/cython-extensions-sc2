@@ -19,18 +19,12 @@ def cy_last_index_with_value(
 
     ```
 
-    Parameters
-    ----------
-    grid :
-        The grid to check `points` on.
-    value :
-        The value we are looking for.
-    points :
-        Points we want to check
+    Parameters:
+        grid: The grid to check `points` on.
+        value: The value we are looking for.
+        points: Points we want to check
 
-    Returns
-    -------
-    int :
+    Returns:
         The last index in `points` that has `value`
 
     """
@@ -59,18 +53,14 @@ def cy_point_below_value(
     4.66 µs ± 64.8 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
     ```
 
-    Parameters
-    ----------
-    grid :
-        The grid to check.
-    position :
-        2D coordinate to check on grid.
-    weight_safety_limit : (default = 1.0)
-        We want to check of point is less or equal to this.
-    Returns
-    -------
-    int :
-        The last index in `points` that has `value`
+    Parameters:
+        grid: The grid to check.
+        position: 2D coordinate to check on grid.
+        weight_safety_limit: (default = 1.0) We want to check
+            if the point is less than or equal to this.
+
+    Returns:
+        The last index in `points` that has `value`.
 
     """
     ...
@@ -93,17 +83,12 @@ def cy_points_with_value(
 
     ```
 
-    Parameters
-    ----------
-    grid :
-        The grid to check.
-    value :
-        2D coordinate to check on grid.
-    points :
-        List of points we are checking.
-    Returns
-    -------
-    list[tuple[int, int]] :
+    Parameters:
+        grid: The grid to check.
+        value: 2D coordinate to check on grid.
+        points: List of points we are checking.
+
+    Returns:
         All points that equal `value` on grid.
 
     """
@@ -127,18 +112,14 @@ def cy_all_points_below_max_value(
 
     ```
 
-    Parameters
-    ----------
-    grid :
-        The grid to check.
-    value :
-        The max value.
-    points_to_check :
-        List of points we are checking.
-    Returns
-    -------
-    bool :
-        Are all points_to_check below value?.
+    Parameters:
+        grid: The grid to check.
+        value: The max value.
+        points_to_check: List of points we are checking.
+
+    Returns:
+        Are all points_to_check below value?
+
 
     """
     ...
@@ -161,18 +142,13 @@ def cy_all_points_have_value(
 
     ```
 
-    Parameters
-    ----------
-    grid :
-        The grid to check.
-    value :
-        The max value.
-    points :
-        List of points we are checking.
-    Returns
-    -------
-    bool :
-        Are all points equal value?.
+    Parameters:
+        grid: The grid to check.
+        value: The max value.
+        points: List of points we are checking.
+
+    Returns:
+        Are all points equal value?
 
     """
     ...

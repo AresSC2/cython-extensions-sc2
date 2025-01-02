@@ -31,28 +31,20 @@ def cy_can_place_structure(
     1.21 µs ± 891 ns per loop (mean ± std. dev. of 1000 runs, 10 loops each)
     ```
 
-    Parameters
-    ----------
-    building_origin :
-        The top left corner of the intended structure.
-    building_size :
-        For example: (3, 3) for barracks.
-        (2, 2) for depot
-        (5, 5) for command center
-    creep_grid :
-        Creep grid
-    placement_grid :
-    pathing_grid :
-    avoid_creep : (default = True)
-        ENSURE THIS IS FALSE IF CHECKING ZERG STRUCTURES
-    include_addon : (default = False)
-        Check if there is room for addon too?
+    Parameters:
+        building_origin: The top left corner of the intended structure.
+        building_size: For example: (3, 3) for barracks.
+            (2, 2) for depot,
+            (5, 5) for command center.
+        creep_grid: Creep grid.
+        placement_grid:
+        pathing_grid:
+        avoid_creep: Ensure this is False if checking Zerg structures.
+        include_addon: Check if there is room for addon too.
 
+    Returns:
+        Can we place structure at building_origin?
 
-    Returns
-    -------
-    bool :
-        Can we place structure at building_origin?.
 
     """
     ...
@@ -104,33 +96,23 @@ def cy_find_building_locations(
     64.8 µs ± 4.05 µs per loop (mean ± std. dev. of 1000 runs, 10 loops each)
     ```
 
-    Parameters
-    ----------
-    kernel :
-        The size of the sliding window that scans this area.
-    x_stride :
-        The x distance the kernel window moves each step.
-    y_stride :
-        The y distance the kernel window moves downwards.
-    x_bounds :
-        The starting point of the algorithm.
-    y_bounds :
-        The end point of the algorithm.
-    creep_grid :
-    placement_grid :
-    pathing_grid :
-    points_to_avoid_grid :
-        Grid containing `1`s where we shouldn't place anything.
-    avoid_creep : (default = True)
-        ENSURE THIS IS FALSE IF CHECKING ZERG STRUCTURES
-    include_addon : (default = False)
-        Check if there is room for addon too?
+    Parameters:
+        kernel: The size of the sliding window that scans this area.
+        x_stride: The x distance the kernel window moves each step.
+        y_stride: The y distance the kernel window moves downwards.
+        x_bounds: The starting point of the algorithm.
+        y_bounds: The end point of the algorithm.
+        creep_grid:
+        placement_grid:
+        pathing_grid:
+        points_to_avoid_grid: Grid containing `1`s where we shouldn't
+            place anything.
+        avoid_creep: Ensure this is False if checking Zerg structures.
+        include_addon: Check if there is room for addon too.
 
-
-    Returns
-    -------
-    list[tuple[float, float]] :
+    Returns:
         Final list of positions that make up the building formation.
+
 
     """
     ...

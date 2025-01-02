@@ -24,14 +24,12 @@ def cy_center(units: Union[Units, list[Unit]]) -> tuple[float, float]:
     107 µs ± 255 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
     ```
 
-    Parameters
-    ----------
-    units :
+    Parameters:
+        units: Units we want to check
 
-    Returns
-    -------
-    tuple[float, float] :
+    Returns:
         Centroid of all units positions
+
     """
     ...
 
@@ -58,22 +56,17 @@ def cy_closest_to(
     200 µs ± 1.02 µs per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
     ```
 
-    Parameters
-    ----------
-    position :
-        Position to measure distance from.
-    units :
-        Collection of units we want to check.
+    Parameters:
+        position: Position to measure distance from.
+        units: Collection of units we want to check.
 
-    Returns
-    -------
-    Unit :
+    Returns:
         Unit closest to `position`.
 
     """
     ...
 
-def cy_find_units_center_mass(units: Union[Units, list[Unit]], distance: float) -> Unit:
+def cy_find_units_center_mass(units: Union[Units, list[Unit]], distance: float) -> tuple[tuple[float, float], int]:
     """Given some units, find the center mass
 
     Example:
@@ -93,19 +86,12 @@ def cy_find_units_center_mass(units: Union[Units, list[Unit]], distance: float) 
     322 ms ± 5.2 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
     ```
 
-    Parameters
-    ----------
-    units :
-        Position to measure distance from.
-    distance :
-        Collection of units we want to check.
+    Parameters:
+        units: Collection of units we want to check.
+        distance: The distance to check from the center mass.
 
-    Returns
-    -------
-    Tuple[Point2, int] :
-        The center mass, and how many units are within `distance`
-        of the center mass.
-
+    Returns:
+        The center mass, and how many units are within `distance` of the center mass.
     """
     ...
 
@@ -132,17 +118,12 @@ def cy_in_attack_range(
     30.4 µs ± 271 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
     ```
 
-    Parameters
-    ----------
-    unit :
-        Position to measure distance from.
-    units :
-        Collection of units we want to check.
-    bonus_distance :
+    Parameters:
+        unit: The unit to measure distance from.
+        units: Collection of units we want to check.
+        bonus_distance: Additional distance to consider.
 
-    Returns
-    -------
-    list[Unit] :
+    Returns:
         Units that are in attack range of `unit`.
 
     """
@@ -170,17 +151,12 @@ def cy_sorted_by_distance_to(
     246 µs ± 830 ns per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
     ```
 
-    Parameters
-    ----------
-    units :
-        Units we want to sort.
-    position :
-        Sort by distance to this position.
-    reverse :
-        Not currently used.
-    Returns
-    -------
-    list[Unit] :
+    Parameters:
+        units: Units we want to sort.
+        position: Sort by distance to this position.
+        reverse: Not currently used.
+
+    Returns:
         Units sorted by distance to position.
 
     """
