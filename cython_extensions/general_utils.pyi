@@ -34,21 +34,16 @@ def cy_pylon_matrix_covers(
     1.85 µs ± 8.72 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
     ```
 
-    Parameters
-    ----------
-    position :
-        Position to check for power.
-    pylons :
-        The pylons we want to check.
-    height_grid :
-        Height grid supplied from `python-sc2` as a numpy array.
-    pylon_build_progress : Optional (default=1.0)
-        If less than 1.0, check near pending pylons.
+    Args:
+        position: Position to check for power.
+        pylons: The pylons we want to check.
+        height_grid: Height grid supplied from `python-sc2` as a numpy array.
+        pylon_build_progress: If less than 1.0, check near pending pylons.
+            Default is 1.0.
 
-    Returns
-    -------
-    bool :
-        True if `position` has power.
+    Returns:
+        True if `position` has power, False otherwise.
+
     """
 
 def cy_unit_pending(ai: "BotAI", unit_type: UnitID) -> int:
@@ -70,17 +65,13 @@ def cy_unit_pending(ai: "BotAI", unit_type: UnitID) -> int:
     2.82 µs ± 29 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
     ```
 
-    Parameters
-    ----------
-    ai :
-        Bot object that will be running the game.
-    unit_type :
-        Unit type we want to check.
+    Args:
+        ai: Bot object that will be running the game.
+        unit_type: Unit type we want to check.
 
-    Returns
-    -------
-    int :
+    Returns:
         How many unit_type are currently building.
+
 
     """
     ...

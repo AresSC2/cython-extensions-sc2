@@ -8,33 +8,25 @@ def cy_angle_to(
 ) -> float:
     """Angle from point to other point in radians
 
-    Parameters
-    ----------
-    from_pos : Union[Point2, tuple[float, float]]
-        First 2D point.
-    to_pos : Union[Point2, tuple[float, float]]
-        Measure angle to this 2D point.
+    Args:
+        from_pos: First 2D point.
+        to_pos: Measure angle to this 2D point.
 
-    Returns
-    -------
-    angle : float
-        Angle in radians.
+    Returns:
+        angle: Angle in radians.
+
     """
     ...
 
 def cy_angle_diff(a: float, b: float) -> float:
     """Absolute angle difference between 2 angles
 
-    Parameters
-    ----------
-    a : float
-        First angle.
-    b : float
-        Second angle.
+    Args:
+        a: First angle.
+        b: Second angle.
 
-    Returns
-    -------
-    angle_difference : float
+    Returns:
+        angle_difference: Difference between the two angles.
     """
     ...
 
@@ -67,17 +59,13 @@ def cy_distance_to(
     583 ns ± 7.89 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
     ```
 
-    Parameters
-    ----------
-    p1 : Union[Point2, tuple[float, float]]
-        First point
-    p2 : Union[Point2, tuple[float, float]]
-        Measure to this point
+    Args:
+        p1: First point.
+        p2: Measure to this point.
 
-    Returns
-    -------
-    distance : float
-        Distance in tiles
+    Returns:
+        distance: Distance in tiles.
+
 
     """
     ...
@@ -97,18 +85,12 @@ def cy_distance_to_squared(
     )
     ```
 
-    Parameters
-    ----------
-    p1 : Union[Point2, tuple[float, float]]
-        First point
-    p2 : Union[Point2, tuple[float, float]]
-        Measure to this point
+    Args:
+        p1: First point.
+        p2: Measure to this point.
 
-    Returns
-    -------
-    distance : float
-        Distance in tiles, squared
-
+    Returns:
+        distance: Distance in tiles, squared.
     """
     ...
 
@@ -155,19 +137,13 @@ def cy_towards(
     ```
 
 
-    Parameters
-    ----------
-    start_pos :
-        Start from this 2D position.
-    target_pos :
-        Go towards this 2D position.
-    distance :
-        How far we go towards target_pos.
+    Args:
+        start_pos: Start from this 2D position.
+        target_pos: Go towards this 2D position.
+        distance: How far we go towards target_pos.
 
-    Returns
-    -------
-    tuple[float, float] :
-
+    Returns:
+        The new position as a tuple of x and y coordinates.
     """
     ...
 
@@ -186,17 +162,12 @@ def cy_get_angle_between_points(
     )
     ```
 
-    Parameters
-    ----------
-    point_a :
-        First point
-    point_b :
-        Measure to this point
+    Args:
+        point_a: First point.
+        point_b: Measure to this point.
 
-    Returns
-    -------
-    float :
-
+    Returns:
+        The angle between the two points.
     """
     ...
 
@@ -222,19 +193,16 @@ def cy_find_average_angle(
     )
     ```
 
-    Parameters
-    ----------
-    start_point :
-        Origin for the vectors to the other given points.
-    reference_point :
-        Vector forming one leg of the angle.
-    points :
-        Points to calculate the angle between relative to the reference point.
+    Args:
+        start_point: Origin for the vectors to the other given points.
+        reference_point: Vector forming one leg of the angle.
+        points: Points to calculate the angle between relative
+            to the reference point.
 
-    Returns
-    -------
-    float :
-        Average angle in radians between the reference point and the given points.
+    Returns:
+        Average angle in radians between the reference
+        point and the given points.
+
     """
     ...
 
@@ -248,16 +216,11 @@ def cy_find_correct_line(
 
     If no such line is found, it returns ((0, 0, 0), <last_point_checked>).
 
-    Parameters
-    ----------
-    points :
-        Points that need to be on one side of the line.
-    base_location :
-        Starting point for the line.
+    Args:
+        points: Points that need to be on one side of the line.
+        base_location: Starting point for the line.
 
-    Returns
-    -------
-    Tuple[Tuple[float, float, float], Tuple[float, float]] :
+    Returns:
         First element is the coefficients of Ax + By + C = 0.
         Second element is the point used to form the line.
     """
@@ -267,15 +230,20 @@ def cy_translate_point_along_line(
     point: Union[Point2, tuple[float, float]], a_value: float, distance: float
 ) -> tuple[float, float]:
     """
+    Translates a point along a line defined by a slope value.
 
-    Parameters
-    ----------
-    point :
-    a_value :
-    distance :
+    This function moves a given point along a line in a direction
+    determined by the slope `a_value`, by a specified `distance`.
+    The new point after translation is returned.
 
-    Returns
-    -------
-    Tuple[float, float]]
+    Args:
+        point: The point to be translated, given as either a `Point2`
+        object or a tuple of `(x, y)` coordinates.
+        a_value: The slope of the line along which the point will be moved.
+        distance: The distance to move the point along the line.
+
+    Returns:
+        A tuple representing the new position of the point
+        after translation.
     """
     ...

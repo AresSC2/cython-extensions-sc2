@@ -18,15 +18,16 @@ def cy_get_bounding_box(
 
     ```
 
-    Parameters
-    ----------
-    coordinates : The points we want to draw a box around.
+    Args:
+        coordinates:
+            The points around which the bounding box should be drawn.
 
-    Returns
-    -------
-    Tuple[Tuple[float, float], Tuple[float, float]] :
-        A pair of coordinates that determine the box in the following format:
-        ((xmin, xmax), (ymin, ymax))
+    Returns:
+        A tuple containing two tuples:
+        - The first tuple represents the minimum and maximum x values
+        (xmin, xmax).
+        - The second tuple represents the minimum and maximum y values
+        (ymin, ymax).
 
     """
     ...
@@ -57,23 +58,16 @@ def cy_flood_fill_grid(
 
     Parameters
     ----------
-    start_point :
-        Start algorithm from here.
-    terrain_grid :
-        Numpy array containing heights for the map.
-    pathing_grid :
-        Numpy array containing pathing values for the map.
-    max_distance :
-        The maximum distance the flood fill should reach
-        before halting.
-    cutoff_points :
-        Points which we don't want the algorithm to pass.
-        Choke points are a good use case.
-
+    start_point : Start algorithm from here.
+    terrain_grid : Numpy array containing heights for the map.
+    pathing_grid : Numpy array containing pathing values for the map.
+    max_distance : The maximum distance the flood fill should reach before halting.
+    cutoff_points : Points which we don't want the algorithm to pass.
+    Choke points are a good use case.
 
     Returns
     -------
-    Tuple[Tuple[float, float], Tuple[float, float]] :
+    tuple of tuple of float :
         A pair of coordinates that determine the box in the following format:
         ((xmin, xmax), (ymin, ymax))
 

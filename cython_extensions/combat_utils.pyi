@@ -28,21 +28,14 @@ def cy_attack_ready(ai: BotAI, unit: Unit, target: Unit) -> bool:
     5.66 µs ± 21.2 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
     ```
 
-    Parameters
-    ----------
-    ai :
-        Bot object that will be running the game.
-    unit :
-        The unit we want to check.
-    target :
-        The thing we want to shoot.
+    Args:
+        ai: Bot object that will be running the game.
+        unit: The unit we want to check.
+        target: The thing we want to shoot.
 
-    Returns
-    -------
-    bool :
-        Is the unit ready to attack the target?
-
-    """
+    Returns:
+        True if the unit is ready to attack the target, False otherwise.
+        """
     ...
 
 def cy_is_facing(unit: Unit, other_unit: int, angle_error: float) -> bool:
@@ -63,19 +56,15 @@ def cy_is_facing(unit: Unit, other_unit: int, angle_error: float) -> bool:
     2.94 µs ± 8 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
     ```
 
-    Parameters
-    ----------
-    unit :
-        The actual sc2.Unit object we are checking.
-    other_unit :
-        The unit type id integer value.
-    angle_error : (default=0.3)
-        Some leeway when deciding a unit is facing.
+    Args:
+        unit: The actual unit we are checking.
+        other_unit: The unit type ID integer value.
+        angle_error: Some leeway when deciding if a unit is facing the other unit.
+        Defaults to 0.3.
 
-    Returns
-    -------
-    bool :
-        Is facing the other unit?
+    Returns:
+        True if the unit is facing the other unit, False otherwise.
+
     """
     ...
 
@@ -99,14 +88,10 @@ def cy_pick_enemy_target(enemies: Union[Units, list[Unit]]) -> Unit:
     115 µs ± 766 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
     ```
 
-    Parameters
-    ----------
-    enemies :
-        All enemy units we would like to check.
+    Args:
+        enemies: All enemy units we would like to check.
 
-    Returns
-    -------
-    Unit :
+    Returns:
         The best unit to target.
     """
     ...
@@ -146,20 +131,14 @@ def cy_find_aoe_position(
                     unit(AbilityId.EFFECT_CORROSIVEBILE, Point2(pos))
     ```
 
-    Parameters
-    ----------
-    effect_radius :
-        The radius of the effect (range).
-    targets :
-        All enemy units we would like to check.
-    bonus_tags (optional) :
-        If provided, give more value to these enemy tags.
+    Args:
+        effect_radius: The radius of the effect (range).
+        targets: All enemy units we would like to check.
+        bonus_tags: If provided, give more value to these enemy tags.
 
-    Returns
-    -------
-    Optional[np.ndarray] :
-        A 1D numpy array containing x and y coordinates of aoe position.
-        Can return `None`
+    Returns:
+        A 1D numpy array containing x and y coordinates of aoe position,
+        or None.
     """
     ...
 
@@ -260,24 +239,18 @@ def cy_adjust_moving_formation(
 
     324 µs ± 9.44 µs per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
 
-    Parameters
-    ----------
-    our_units :
-        All our squad units including core and fodder.
-    target :
-        We want the fodder to lead us to this target.
-    fodder_tags :
-        A list of fodder unit tags
-    unit_multiplier :
-        How far core units should retreat when told to move during combat adjustments
-    retreat_angle :
-        Core units will move back diagonally based on this
-        angle. (in radians)
+    Args:
+        our_units: All our squad units, including core and fodder.
+        target: The target we want the fodder to lead us to.
+        fodder_tags: A list of fodder unit tags.
+        unit_multiplier: How far core units should retreat when
+            adjusting during combat.
+        retreat_angle: Angle (in radians) for diagonal
+            retreat of core units.
 
-    Returns
-    -------
-    dict[int, tuple[float, float]:
-        A dictionary where keys are unit tags that require moving and value
-        is a tuple containing x, y coordinates of position to move to.
+    Returns:
+        A dictionary where keys are unit tags requiring movement
+        and values are tuples of x, y coordinates.
+
     """
     ...
