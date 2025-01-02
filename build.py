@@ -23,7 +23,6 @@ def build():
             name="cython_extensions.bootstrap",
             sources=source_files,
             include_dirs=include_dirs,
-            extra_compile_args=["-Wno-maybe-uninitialized"],
         ),
         compiler_directives={"binding": True, "language_level": 3},
     )
