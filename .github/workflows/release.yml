@@ -43,7 +43,7 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
           # run semantic-release
-          poetry run semantic-release publish DEBUG -D commit_author="github-actions <action@github.com>"
+          poetry run semantic-release publish commit_author="github-actions <action@github.com>"
       # Get the latest version
       - name: Get Latest Version
         run: echo "VERSION=$(poetry version -s)" >> $GITHUB_ENV
