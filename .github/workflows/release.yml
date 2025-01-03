@@ -28,7 +28,7 @@ jobs:
           github_token: ${{ secrets.GH_TOKEN_CYTHON }}
 
       - name: Publish package distributions to GitHub Releases
-        uses: python-semantic-release/upload-to-gh-release@v9.15.2
+        uses: python-semantic-release/publish-action@v9.15.2
         if: steps.release.outputs.released == 'true'
         with:
           github_token: ${{ secrets.GH_TOKEN_CYTHON }}
