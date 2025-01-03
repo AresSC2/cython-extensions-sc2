@@ -31,7 +31,7 @@ mkdocs-material = "^9.0.6"
 mkdocstrings-python = "^1.13.0"
 
 [tool.poetry.group.semver.dependencies]
-python-semantic-release = "7.33.0"
+python-semantic-release = "^9.15.2"
 
 [build-system]
 requires = ["poetry-core", "Cython", "numpy", "setuptools"]
