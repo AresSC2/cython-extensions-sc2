@@ -2,6 +2,9 @@
 
 <!--next-version-placeholder-->
 
+## v0.5.0 (2025-01-02)
+
+
 ## v0.4.6 (2024-11-19)
 ### Fix
 * Prevent cy_center returning unexpected values ([`d8e8d14`](https://github.com/AresSC2/cython-extensions-sc2/commit/d8e8d142bab3cfee22467b616f18b6a10f8b0662))
