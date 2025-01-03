@@ -34,16 +34,20 @@ jobs:
       - name: Install requirements
         run: poetry install --only semver --no-root
       # semantic release
-      - name: Python Semantic Release
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN_CYTHON }}
-        run: |
-          set -o pipefail
-          # Set git details
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-          # run semantic-release
-          poetry run semantic-release publish
+      - name: Bump version using semantic-release
+        uses: python-semantic-release/python-semantic-release@master
+        with:
+          github_token: ${{ secrets.GH_TOKEN_CYTHON }}
+#      - name: Python Semantic Release
+#        env:
+#          GH_TOKEN: ${{ secrets.GH_TOKEN_CYTHON }}
+#        run: |
+#          set -o pipefail
+#          # Set git details
+#          git config --global user.name "github-actions"
+#          git config --global user.email "github-actions@github.com"
+#          # run semantic-release
+#          poetry run semantic-release publish -vv
       # Get the latest version
       - name: Get Latest Version
         run: echo "VERSION=$(poetry version -s)" >> $GITHUB_ENV
