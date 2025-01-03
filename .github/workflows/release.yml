@@ -7,6 +7,8 @@ jobs:
   release:
     concurrency: release
     runs-on: ${{ matrix.os }}
+    permissions:
+      id-token: write
     strategy:
       fail-fast: false
       matrix:
@@ -14,36 +16,22 @@ jobs:
         python-version: [ '3.12' ]
 
     steps:
-      # check-out repo
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v3
         with:
-          ref: ${{ github.head_ref }}
-          token: ${{ secrets.GH_TOKEN_CYTHON }}
           fetch-depth: 0
-      # install poetry
-      - name: Install poetry
-        run: pipx install poetry
-      # set-up python with cache
-      - name: Setup Python 3.12
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-          cache: 'poetry'
-      # install requirements
-      - name: Install requirements
-        run: poetry install --only semver --no-root
-      # semantic release
+
+      # This action uses Python Semantic Release v8
       - name: Python Semantic Release
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN_CYTHON }}
-        run: |
-          set -o pipefail
-          # Set git details
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-          # run semantic-release
-          poetry run semantic-release publish -vv
+        id: release
+        uses: python-semantic-release/python-semantic-release@v9.15.2
+        with:
+          github_token: ${{ secrets.GH_TOKEN_CYTHON }}
+
+      - name: Publish package distributions to GitHub Releases
+        uses: python-semantic-release/upload-to-gh-release@v9.15.2
+        if: steps.release.outputs.released == 'true'
+        with:
+          github_token: ${{ secrets.GH_TOKEN_CYTHON }}
 
       # Get the latest version
       - name: Get Latest Version
