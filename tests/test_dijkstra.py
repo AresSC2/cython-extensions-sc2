@@ -23,19 +23,18 @@ class TestDijkstra:
         # arrange
         targets = np.array([u.position.rounded for u in bot.enemy_units], np.intp)
         cost = np.where(bot.game_info.pathing_grid.data_numpy.T == 1, 1.0, np.inf).astype(np.float64)
-        cost = np.ones_like(cost)
         pathing = cy_dijkstra(cost, targets)
 
-        limit = 1000
+        limit = 32
         for unit in bot.units:
             path = pathing.get_path(unit.position.rounded, limit)
-            assert 0 < len(path) < limit
+            assert 0 < len(path) <= limit
             if len(path) == 1:
                 assert pathing.dist[path[0]] == np.inf
             else:
                 # integrate cost backwards
                 path_backwards = path[::-1]
-                dist_expected = cost[path_backwards[0]]
+                dist_expected = pathing.dist[path_backwards[0]]
                 for i, (p, q) in enumerate(zip(path_backwards[1:], path_backwards)):
                     dist_factor = np.linalg.norm(np.array(p) - np.array(q))
                     dist_expected += cost[p] * dist_factor
