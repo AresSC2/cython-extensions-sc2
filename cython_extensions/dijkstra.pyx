@@ -40,8 +40,22 @@ cdef class DijkstraOutput:
 
     cpdef get_path(self,
                  (int, int) source,
-                 int limit) except *:
-
+                 int limit=2**20) except *:
+        """Follow the path from a given source using the precalculated pointer arrays.
+        
+        Parameters
+        ----------
+        source :
+            The start point of the path.
+        limit:
+            Maximum returned path length. Reduce for a small speedup.
+            
+        Returns
+        -------
+        list[tuple[int, int]] :
+            The lowest cost path from source to any of the targets.
+            
+        """
         path = list[tuple[int, int]]()
         x, y = source
         while len(path) < limit:
@@ -56,7 +70,21 @@ cpdef DijkstraOutput cy_dijkstra(
     DTYPE_t[:, :] cost,
     Py_ssize_t[:, :] targets,
 ):
-
+    """Run Dijkstras algorithm on a grid, precalulating paths from all points to one of the targets.
+    
+    Parameters
+    ----------
+    cost :
+        Cost array of shape (n, m). Entries must be positive. Use infinity to mark unpathable cells.
+    targets :
+        Target array of shape (k, 2) containing x and y coordinates of the target points.
+        
+    Returns
+    -------
+    DijkstraOutput :
+        Pathfinding object containing pointer arrays used to construct paths.
+        
+    """
 
     cdef:
         DTYPE_t _sqrt2 = np.sqrt(2)
