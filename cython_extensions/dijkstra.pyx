@@ -1,8 +1,5 @@
 # distutils: language = c++
 
-#include <functional>
-#include <queue>
-
 from cython import boundscheck, wraparound
 import numpy as np
 
