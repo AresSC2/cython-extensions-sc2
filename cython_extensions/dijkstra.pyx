@@ -3,6 +3,7 @@
 #include <functional>
 #include <queue>
 
+from cython import boundscheck, wraparound
 import numpy as np
 
 cimport numpy as cnp
@@ -38,6 +39,8 @@ cdef class DijkstraOutput:
         self.prev_y = prev_y
         self.dist = dist
 
+    @boundscheck(False)
+    @wraparound(False)
     cpdef get_path(self,
                  (int, int) source,
                  int limit=2**20) except *:
@@ -66,6 +69,8 @@ cdef class DijkstraOutput:
         return path
 
 
+@boundscheck(False)
+@wraparound(False)
 cpdef DijkstraOutput cy_dijkstra(
     DTYPE_t[:, :] cost,
     Py_ssize_t[:, :] targets,
@@ -126,10 +131,6 @@ cpdef DijkstraOutput cy_dijkstra(
         for k in range(8):
             x2 = x + neighbours_x[k]
             y2 = y + neighbours_y[k]
-            if x2 < 0 or cost.shape[0] <= x2:
-                continue
-            if y2 < 0 or cost.shape[1] <= y2:
-                continue
             alternative = dist[x, y] + neighbours_d[k] * cost_padded[x2+1, y2+1]
             if alternative < dist[x2, y2]:
                 dist[x2, y2] = alternative
