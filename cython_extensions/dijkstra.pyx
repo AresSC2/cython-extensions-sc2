@@ -38,16 +38,17 @@ cdef class DijkstraOutput:
         self.prev_y = prev_y
         self.dist = dist
 
-    def get_path(self,
-                 Py_ssize_t[:] target,
-                 Py_ssize_t limit):
+    cpdef get_path(self,
+                 (int, int) source,
+                 int limit) except *:
+
         path = list[tuple[int, int]]()
-        p = target
+        x, y = source
         while len(path) < limit:
-            path.append(p)
-            if p[0] < 0 or p[1] < 0:
+            if x < 0 or y < 0:
                 break
-            p = self.prev_x[p], self.prev_y[p]
+            path.append((x, y))
+            x, y = self.prev_x[x, y], self.prev_y[x, y]
         return path
 
 
@@ -63,12 +64,23 @@ cpdef DijkstraOutput cy_dijkstra(
         Py_ssize_t[8] neighbours_y = [0, 0, -1, 1, -1, -1, 1, 1]
         DTYPE_t[8] neighbours_d = [1, 1, 1, 1, _sqrt2, _sqrt2, _sqrt2, _sqrt2]
         DTYPE_t[:, :] dist = np.full_like(cost, np.inf)
+        DTYPE_t[:, :] cost_padded = np.pad(cost, 1, "constant", constant_values=np.inf)
         Py_ssize_t[:, :] prev_x = np.full_like(cost, -1, np.intp)
         Py_ssize_t[:, :] prev_y = np.full_like(cost, -1, np.intp)
         cpp_pq q = cpp_pq(compare_element)
         Py_ssize_t x, y, x2, y2
         DTYPE_t alternative
         pair[double, pair[int, int]] u, v
+
+    if np.any(np.less_equal(cost, 0.0)):
+        raise Exception("invalid cost: entries must be strictly positive")
+
+    if (
+        np.less(targets, 0).any()
+        or np.greater_equal(targets[:, 0], cost.shape[0]).any()
+        or np.greater_equal(targets[:, 1], cost.shape[1]).any()
+    ):
+        raise Exception("Target out of bounds")
 
     for i in range(targets.shape[0]):
         x = targets[i, 0]
@@ -86,7 +98,11 @@ cpdef DijkstraOutput cy_dijkstra(
         for k in range(8):
             x2 = x + neighbours_x[k]
             y2 = y + neighbours_y[k]
-            alternative = dist[x, y] + neighbours_d[k] * cost[x2, y2]
+            if x2 < 0 or cost.shape[0] <= x2:
+                continue
+            if y2 < 0 or cost.shape[1] <= y2:
+                continue
+            alternative = dist[x, y] + neighbours_d[k] * cost_padded[x2+1, y2+1]
             if alternative < dist[x2, y2]:
                 dist[x2, y2] = alternative
                 prev_x[x2, y2] = x
