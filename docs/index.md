@@ -2,6 +2,10 @@
     options:
         show_root_heading: false
 
+::: cython_extensions.dijkstra
+    options:
+        show_root_heading: false
+
 ::: cython_extensions.general_utils
     options:
         show_root_heading: false
