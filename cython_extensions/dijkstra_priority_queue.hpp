@@ -2,4 +2,6 @@
 #include <queue>
 #include <utility>
 
-using cpp_pq = std::priority_queue<std::pair<double,std::pair<int,int>>,std::vector<std::pair<double,std::pair<int,int>>>,std::function<bool(std::pair<double,std::pair<int,int>>,std::pair<double,std::pair<int,int>>)>>;
+using coords = std::pair<int,int>;
+using item = std::pair<double,coords>;
+using cpp_pq = std::priority_queue<item,std::vector<item>,std::function<bool(item,item)>>;

@@ -6,7 +6,7 @@ import numpy as np
 from libcpp cimport bool
 from libcpp.pair cimport pair
 
-ctypedef pair[double, pair[Py_ssize_t, Py_ssize_t]] Item
+ctypedef pair[double, pair[int, int]] Item
 
 cdef Py_ssize_t[8] NEIGHBOURS_X = [-1, 1, 0, 0, -1, 1, -1, 1]
 cdef Py_ssize_t[8] NEIGHBOURS_Y = [0, 0, -1, 1, -1, -1, 1, 1]
