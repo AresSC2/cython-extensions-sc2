@@ -5,6 +5,9 @@ class DijkstraOutput:
     """Result of Dijkstras algorithm containing distance and predecessor pointers per cell.
 
     """
+    prev_x: np.ndarray
+    prev_y: np.ndarray
+    dist: np.ndarray
 
     def get_path(self, source: tuple[int, int], limit: int) -> list[tuple[int, int]]:
         """Follow the path from a given source using the precalculated pointer arrays.
