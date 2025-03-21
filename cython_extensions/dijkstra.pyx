@@ -116,7 +116,7 @@ cpdef DijkstraOutput cy_dijkstra(
 
     if checks_enabled:
         if np.any(np.less_equal(cost, 0.0)):
-            raise Exception("invalid double: entries must be strictly positive")
+            raise Exception("invalid cost: entries must be strictly positive")
 
         if any((
             np.less(targets, 0).any(),
