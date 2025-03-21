@@ -47,7 +47,7 @@ cdef class DijkstraOutput:
         ----------
         source :
             The start point of the path.
-        limit:
+        limit :
             Maximum returned path length. Reduce for a small speedup.
             
         Returns
