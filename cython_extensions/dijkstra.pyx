@@ -1,30 +1,80 @@
-# distutils: language = c++
-
 from cython import boundscheck, wraparound
 import numpy as np
+cimport numpy as cnp
 
-from libcpp cimport bool
-from libcpp.pair cimport pair
+from libc.stdlib cimport malloc, free
 
-ctypedef pair[double, pair[int, int]] Item
+ctypedef cnp.float64_t DTYPE_t
 
 cdef Py_ssize_t[8] NEIGHBOURS_X = [-1, 1, 0, 0, -1, 1, -1, 1]
 cdef Py_ssize_t[8] NEIGHBOURS_Y = [0, 0, -1, 1, -1, -1, 1, 1]
-cdef double SQRT2 = np.sqrt(2)
-cdef double[8] NEIGHBOURS_D = [1, 1, 1, 1, SQRT2, SQRT2, SQRT2, SQRT2]
+cdef DTYPE_t SQRT2 = np.sqrt(2)
+cdef DTYPE_t[8] NEIGHBOURS_D = [1, 1, 1, 1, SQRT2, SQRT2, SQRT2, SQRT2]
+
+cdef struct PriorityQueueItem:
+    Py_ssize_t x, y
+    DTYPE_t distance
+
+cdef class PriorityQueue:
+    cdef:
+        PriorityQueueItem* heap
+        Py_ssize_t capacity, size
+
+    def __cinit__(self, Py_ssize_t capacity):
+        self.heap = <PriorityQueueItem*>malloc(capacity * sizeof(PriorityQueueItem))
+        self.capacity = capacity
+        self.size = 0
+
+    cdef free(self):
+        free(self.heap)
+
+    cdef enqueue(self, PriorityQueueItem item):
+        cdef Py_ssize_t index
+        index = self.size
+        self.size += 1
+        self.heap[index] = item
+        self.decrease_key(index)
 
 
-cdef extern from "dijkstra_priority_queue.hpp":
-    cdef cppclass cpp_pq:
-        cpp_pq(...) except +
-        void push(Item)
-        Item top()
-        void pop()
-        bool empty()
+    cdef decrease_key(self, Py_ssize_t index):
+        Py_ssize_t previous
+        PriorityQueueItem parent_item
+        while index != 0:
+            parent = (index - 1) // 2
+            parent_item = self.heap[parent]
+            if item.distance < parent_item.distance:
+                self.heap[index], self.heap[parent] = parent_item, item
+                index, item = parent, parent_item
+            else:
+                break
 
+    cdef PriorityQueueItem dequeue(self):
+        cdef:
+            PriorityQueueItem root = self.heap[0]
+        self.size -= 1
+        self.heap[0] = self.heap[self.size]
+        self.heapify(0)
+        return root
 
-cdef bool compare_element(Item a, Item b):
-    return a.first > b.first
+    cdef heapify(self, Py_ssize_t index):
+        cdef Py_ssize_t left, right, swap
+        while True:
+
+            left = 2 * index + 1
+            if left < self.size and self.heap[left].distance < self.heap[index].distance:
+                swap = left
+            else:
+                swap = index
+
+            right = left + 1
+            if right < self.size and self.heap[right].distance < self.heap[swap].distance:
+                swap = right
+
+            if swap != index:
+                self.heap[index], self.heap[swap] = self.heap[swap], self.heap[index]
+                index = swap
+            else:
+                break
 
 
 cdef class DijkstraOutput:
@@ -32,12 +82,12 @@ cdef class DijkstraOutput:
     """Forward pointer grid (x-coordinates)."""
     cdef public Py_ssize_t[:, :] forward_y
     """Forward pointer grid (y-coordinates)."""
-    cdef public double[:, :] distance
+    cdef public DTYPE_t[:, :] distance
     """Distance grid."""
     def __cinit__(self,
                   Py_ssize_t[:, :] forward_x,
                   Py_ssize_t[:, :] forward_y,
-                  double[:, :] distance):
+                  DTYPE_t[:, :] distance):
         self.forward_x = forward_x
         self.forward_y = forward_y
         self.distance = distance
@@ -80,9 +130,9 @@ cdef class DijkstraOutput:
 @boundscheck(False)
 @wraparound(False)
 cpdef DijkstraOutput cy_dijkstra(
-    double[:, :] cost,
+    DTYPE_t[:, :] cost,
     Py_ssize_t[:, :] targets,
-    bool checks_enabled = True,
+    bint checks_enabled = True,
 ):
     """
     
@@ -91,7 +141,7 @@ cpdef DijkstraOutput cy_dijkstra(
     Parameters
     ----------
     cost :
-        Cost grid. Entries must be positive. Use infinity to mark unpathable cells.
+        Cost grid. Entries must be positive. Set unpathable cells to infinity.
     targets :
         Target array of shape (*, 2) containing x and y coordinates of the target points.
     checks_enabled :
@@ -105,12 +155,12 @@ cpdef DijkstraOutput cy_dijkstra(
     """
 
     cdef:
-        cpp_pq q = cpp_pq(compare_element)
-        Item u
+        PriorityQueue pq = PriorityQueue(cost.shape[0] * cost.shape[1])
+        PriorityQueueItem u
         Py_ssize_t x, y, x2, y2
-        double alternative
-        double[:, :] cost_padded = np.pad(cost, 1, "constant", constant_values=np.inf)
-        double[:, :] distance = np.full_like(cost, np.inf)
+        DTYPE_t alternative
+        DTYPE_t[:, :] cost_padded = np.pad(cost, 1, "constant", constant_values=np.inf)
+        DTYPE_t[:, :] distance = np.full_like(cost, np.inf)
         Py_ssize_t[:, :] forward_x = np.full_like(cost, -1, np.intp)
         Py_ssize_t[:, :] forward_y = np.full_like(cost, -1, np.intp)
 
@@ -130,15 +180,14 @@ cpdef DijkstraOutput cy_dijkstra(
         x = targets[i, 0]
         y = targets[i, 1]
         c = cost[x, y]
-        u = (c, (x, y))
-        q.push(u)
+        u = PriorityQueueItem(x, y, c)
+        pq.enqueue(u)
         distance[x, y] = c
 
-    while not q.empty():
-        u = q.top()
-        q.pop()
-        x = u.second.first
-        y = u.second.second
+    while pq.size != 0:
+        u = pq.dequeue()
+        x = u.x
+        y = u.y
         for k in range(8):
             x2 = x + NEIGHBOURS_X[k]
             y2 = y + NEIGHBOURS_Y[k]
@@ -147,7 +196,7 @@ cpdef DijkstraOutput cy_dijkstra(
                 distance[x2, y2] = alternative
                 forward_x[x2, y2] = x
                 forward_y[x2, y2] = y
-                u = (alternative, (x2, y2))
-                q.push(u)
+                u = PriorityQueueItem(x2, y2, alternative)
+                pq.enqueue(u)
 
     return DijkstraOutput(forward_x, forward_y, distance)

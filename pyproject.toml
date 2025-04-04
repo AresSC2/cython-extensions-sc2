@@ -9,6 +9,7 @@ include = ["cython_extensions/*.so", "cython_extensions/*.pyd"]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.13"
+notebook = "^7.3.3"
 
 [tool.poetry.group.dev.dependencies]
 cython = "^3.0.8"
