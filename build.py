@@ -1,7 +1,7 @@
 import os
 import shutil
-from distutils.command.build_ext import build_ext
-from distutils.core import Distribution, Extension
+from setuptools.command.build_ext import build_ext
+from setuptools import Distribution, Extension
 
 import numpy
 from Cython.Build import cythonize
@@ -23,14 +23,12 @@ def build():
             name="cython_extensions.bootstrap",
             sources=source_files,
             include_dirs=include_dirs,
-            language="c++",
-            extra_compile_args=["-std=c++11"],
         ),
         compiler_directives={"binding": True, "language_level": 3},
     )
 
     distribution = Distribution({"name": "extended", "ext_modules": extensions})
-    distribution.package_dir = "extended"
+    # distribution.package_dir = "extended"
 
     cmd = build_ext(distribution)
     cmd.ensure_finalized()
