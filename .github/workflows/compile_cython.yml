@@ -84,7 +84,7 @@ jobs:
           path: cython_extensions
       - name: Delete unwanted files
         run: |
-          find cython_extensions -name "*.c" -o -name "*.cpp" -print0 | xargs -0 rm -f
+          find cython_extensions -name "*.c" -print0 | xargs -0 rm -f
         if: matrix.os != 'windows-latest'
       - name: Delete unwanted files windows
         run: |
