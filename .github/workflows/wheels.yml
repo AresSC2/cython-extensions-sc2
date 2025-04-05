@@ -106,8 +106,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        cibw_build: ["cp310-*"] #, "cp311-*", "cp312-*"]
-        cibw_archs: ["x86_64"] #, "i686"] # "aarch64" and "ppc64le" not working, investigate if needed
+        cibw_build: ["cp310-*", "cp311-*", "cp312-*"]
+        cibw_archs: ["x86_64", "i686"] # "aarch64" and "ppc64le" not working, investigate if needed
 
     steps:
       - name: Check out repository
