@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - dev
 
 jobs:
   call-testing-pipeline:
@@ -18,11 +19,11 @@ jobs:
       - call-compiling-pipeline
     uses: ./.github/workflows/wheels.yml
     secrets: inherit
-  call-release-pipeline:
-    name: Release
-    needs:
-      - call-testing-pipeline
-      - call-compiling-pipeline
-      - call-wheels-pipeline
-    uses: ./.github/workflows/release.yml
-    secrets: inherit
+#  call-release-pipeline:
+#    name: Release
+#    needs:
+#      - call-testing-pipeline
+#      - call-compiling-pipeline
+#      - call-wheels-pipeline
+#    uses: ./.github/workflows/release.yml
+#    secrets: inherit
