@@ -32,7 +32,7 @@ class TestGeometry:
             0.7853981633974483096156608458198757210492923498437764552437361480
         )
 
-        assert cy_angle_to(from_pos, to_pos) == angle_radians
+        assert cy_angle_to(from_pos, to_pos) == pytest.approx(angle_radians)
 
     def test_cy_distance_to(self, bot: BotAI, event_loop):
         # we just test this calculates same as burnysc2
