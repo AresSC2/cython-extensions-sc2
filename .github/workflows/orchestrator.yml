@@ -5,24 +5,86 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   call-testing-pipeline:
     name: Testing
     uses: ./.github/workflows/test.yml
+
   call-compiling-pipeline:
     name: CompileCython
+    needs: call-testing-pipeline
     uses: ./.github/workflows/compile_cython.yml
-  call-wheels-pipeline:
-    name: Wheels
-    needs:
-      - call-compiling-pipeline
-    uses: ./.github/workflows/wheels.yml
-    secrets: inherit
-  call-release-pipeline:
-    name: Release
+
+  version-bump:
+    name: VersionBump
     needs:
       - call-testing-pipeline
       - call-compiling-pipeline
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.get_tag.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+      - name: Show current commit
+        run: |
+          git log -1
+          echo "GITHUB_SHA: $GITHUB_SHA"
+          echo "git rev-parse HEAD: $(git rev-parse HEAD)"
+      - name: Download all Cython build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./cython_artifacts
+      - name: List downloaded Cython artifacts
+        run: ls -R cython_artifacts
+      - name: Python Semantic Release
+        id: release
+        uses: python-semantic-release/python-semantic-release@v9.21.0
+        with:
+          github_token: ${{ secrets.GH_TOKEN_CYTHON }}
+          root_options: "-vv"
+
+      - name: Publish package distributions to GitHub Releases
+        uses: python-semantic-release/publish-action@v9.21.0
+        if: steps.release.outputs.released == 'true'
+        with:
+          github_token: ${{ secrets.GH_TOKEN_CYTHON }}
+          upload_assets: 'cython_artifacts/**/*.zip'
+
+      - name: Get latest tag
+        id: get_tag
+        run: echo "tag=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
+      - name: Upload Cython zips to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: cython_artifacts/**/*.zip
+          tag_name: ${{ steps.get_tag.outputs.tag }}
+          update_existing: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN_CYTHON }}
+
+  call-wheels-pipeline:
+    name: Wheels
+    needs:
+      - version-bump
+      - call-compiling-pipeline
+    uses: ./.github/workflows/wheels.yml
+    with:
+      tag: ${{ needs.version-bump.outputs.tag }}
+    secrets: inherit
+
+  call-release-pipeline:
+    name: Release
+    needs:
+      - version-bump
+      - call-compiling-pipeline
       - call-wheels-pipeline
     uses: ./.github/workflows/release.yml
+    with:
+      tag: ${{ needs.version-bump.outputs.tag }}
     secrets: inherit

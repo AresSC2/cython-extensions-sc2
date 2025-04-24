@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Union, Optional
 
 import numpy as np
 from sc2.bot_ai import BotAI
@@ -11,7 +11,7 @@ def cy_pylon_matrix_covers(
     position: Union[Point2, tuple[float, float]],
     pylons: Union[Units, list[Unit]],
     height_grid: np.ndarray,
-    pylon_build_progress: float,
+    pylon_build_progress: Optional[float] = 1.0,
 ) -> bool:
     """Check if a position is powered by a pylon.
 

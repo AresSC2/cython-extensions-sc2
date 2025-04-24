@@ -35,7 +35,7 @@ def cy_attack_ready(ai: BotAI, unit: Unit, target: Unit) -> bool:
 
     Returns:
         True if the unit is ready to attack the target, False otherwise.
-        """
+    """
     ...
 
 def cy_is_facing(unit: Unit, other_unit: int, angle_error: float) -> bool:
@@ -143,11 +143,11 @@ def cy_find_aoe_position(
     ...
 
 def cy_adjust_moving_formation(
-        our_units: Union[Units, list[Unit]],
-        target: Union[Point2, tuple[float, float]],
-        fodder_tags: list[int],
-        unit_multiplier: float,
-        retreat_angle: float
+    our_units: Union[Units, list[Unit]],
+    target: Union[Point2, tuple[float, float]],
+    fodder_tags: list[int],
+    unit_multiplier: float,
+    retreat_angle: float,
 ) -> dict[int, tuple[float, float]]:
     """Adjust units formation.
 
@@ -252,5 +252,28 @@ def cy_adjust_moving_formation(
         A dictionary where keys are unit tags requiring movement
         and values are tuples of x, y coordinates.
 
+    """
+    ...
+
+def cy_range_vs_target(unit: Unit, target: Unit) -> float:
+    """Cython version of range_vs_target
+
+    Example:
+    ```py
+    from cython_extensions import cy_range_vs_target
+    from sc2.unit import Unit
+
+    unit: Unit = self.units[0]
+    target: Unit = self.enemies[0]
+
+    range: float = cy_range_vs_target(unit, target)
+    ```
+
+    Args:
+        unit: The unit we want to check.
+        target: The target we want to check.
+
+    Returns:
+        The weapon range to the target
     """
     ...

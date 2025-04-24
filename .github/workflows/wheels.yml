@@ -2,6 +2,10 @@ name: Build Wheels
 
 on:
   workflow_call:
+    inputs:
+      tag:
+        required: true
+        type: string
 
 jobs:
   build_sdist:
@@ -15,6 +19,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.tag }}
           fetch-depth: 0
 
       - name: Set up python 3.12
@@ -27,11 +32,22 @@ jobs:
 
       - name: Build sdist
         run: |
-          poetry self add "poetry-dynamic-versioning[plugin]"
           poetry build --format=sdist
-
+      - name: List dist contents (Unix)
+        if: runner.os != 'Windows'
+        run: if [ -d dist ]; then ls -lh dist/; else echo "dist/ does not exist"; fi
+      - name: List dist contents (Windows)
+        if: runner.os == 'Windows'
+        run: Get-ChildItem dist
+        shell: pwsh
+      - name: Sanitize artifact name
+        id: sanitize
+        run: |
+          echo "ARTIFACT_NAME=sdist-${{ matrix.os }}" | sed 's/\*//g' >> $GITHUB_ENV
+        shell: bash
       - uses: actions/upload-artifact@v4
         with:
+          name: ${{ env.ARTIFACT_NAME }}
           path: dist/*.tar.gz
 
   build_wheels_windows:
@@ -41,15 +57,16 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-latest]
-        python-version: ['3.10', '3.11', '3.12']
-#        cibw_build: ["cp310-*", "cp311-*", "cp312-*"]
-#        cibw_archs: ["AMD64", "x86", "ARM64"]
+        python-version: ['3.10', '3.11', '3.12', '3.13']
+        cibw_build: ["cp310-*", "cp311-*", "cp312-*", "cp313-*"]
+        cibw_archs: ["AMD64", "x86", "ARM64"]
 
     steps:
         # install poetry
         - name: Check out repository
           uses: actions/checkout@v4
           with:
+            ref: ${{ inputs.tag }}
             fetch-depth: 0
         - name: Setup Python ${{ matrix.python-version }}
           uses: actions/setup-python@v5
@@ -64,10 +81,22 @@ jobs:
         # build a wheel while we are here for later (pipi) and upload artifact
         - name: Make wheel
           run: poetry build
+        - name: List dist contents (Unix)
+          if: runner.os != 'Windows'
+          run: if [ -d dist ]; then ls -lh dist/; else echo "dist/ does not exist"; fi
+        - name: List dist contents (Windows)
+          if: runner.os == 'Windows'
+          run: Get-ChildItem dist
+          shell: pwsh
+        - name: Sanitize artifact name
+          id: sanitize
+          run: |
+            echo "ARTIFACT_NAME=wheels-windows-${{ matrix.os }}-${{ matrix.cibw_archs }}-${{ matrix.python-version }}-${{ matrix.cibw_build }}" | sed 's/\*//g' >> $GITHUB_ENV
+          shell: bash
         - name: Upload wheels
           uses: actions/upload-artifact@v4
           with:
-            name: cibw-wheels-${{ matrix.os }}-${{ matrix.python-version }}
+            name: ${{ env.ARTIFACT_NAME }}
             path: dist/*.whl
 #      - name: "Set environment variables (Windows)"
 #        shell: pwsh
@@ -106,13 +135,14 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        cibw_build: ["cp310-*", "cp311-*", "cp312-*"]
+        cibw_build: ["cp310-*", "cp311-*", "cp312-*", "cp313-*"]
         cibw_archs: ["x86_64", "i686"] # "aarch64" and "ppc64le" not working, investigate if needed
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.tag }}
           fetch-depth: 0
 
       - name: Set up QEMU
@@ -134,10 +164,21 @@ jobs:
         env:
           CIBW_ARCHS: ${{ matrix.cibw_archs }}
           CIBW_BUILD: ${{ matrix.cibw_build }}
-
+      - name: List dist contents (Unix)
+        if: runner.os != 'Windows'
+        run: if [ -d dist ]; then ls -lh dist/; else echo "dist/ does not exist"; fi
+      - name: List dist contents (Windows)
+        if: runner.os == 'Windows'
+        run: Get-ChildItem dist
+        shell: pwsh
+      - name: Sanitize artifact name
+        id: sanitize
+        run: |
+          echo "ARTIFACT_NAME=wheels-linux-${{ matrix.os }}-${{ matrix.cibw_archs }}-${{ matrix.cibw_build }}" | sed 's/\*//g' >> $GITHUB_ENV
+        shell: bash
       - uses: actions/upload-artifact@v4
         with:
-          name: cibw-wheels-${{ matrix.os }}-${{ matrix.cibw_archs }}-${{ strategy.job-index }}
+          name: ${{ env.ARTIFACT_NAME }}
           path: wheelhouse/*.whl
 
   build_wheels_macos:
@@ -147,7 +188,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-latest]
-        cibw_build: ["cp310-*", "cp311-*", "cp312-*"]
+        cibw_build: ["cp310-*", "cp311-*", "cp312-*", "cp313-*"]
         cibw_archs: ["x86_64"]
     env:
       SYSTEM_VERSION_COMPAT: 0 # https://github.com/actions/setup-python/issues/469#issuecomment-1192522949
@@ -155,6 +196,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.tag }}
           fetch-depth: 0
 
       - name: Set up python 3.12
@@ -170,10 +212,21 @@ jobs:
         env:
           CIBW_ARCHS: ${{ matrix.cibw_archs }}
           CIBW_BUILD: ${{ matrix.cibw_build }}
-
+      - name: List dist contents (Unix)
+        if: runner.os != 'Windows'
+        run: if [ -d dist ]; then ls -lh dist/; else echo "dist/ does not exist"; fi
+      - name: List dist contents (Windows)
+        if: runner.os == 'Windows'
+        run: Get-ChildItem dist
+        shell: pwsh
+      - name: Sanitize artifact name
+        id: sanitize
+        run: |
+          echo "ARTIFACT_NAME=wheels-macos-${{ matrix.os }}-${{ matrix.cibw_archs }}-${{ matrix.cibw_build }}" | sed 's/\*//g' >> $GITHUB_ENV
+        shell: bash
       - uses: actions/upload-artifact@v4
         with:
-          name: cibw-wheels-${{ matrix.os }}-${{ matrix.cibw_archs }}-${{ strategy.job-index }}
+          name: ${{ env.ARTIFACT_NAME }}
           path: wheelhouse/*.whl
 
   build_wheels_macos_arm64:
@@ -182,13 +235,14 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest]
-        cibw_build: ["cp310-*", "cp311-*", "cp312-*"]
+        cibw_build: ["cp310-*", "cp311-*", "cp312-*", "cp313-*"]
         cibw_archs: ["arm64"]
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.tag }}
           fetch-depth: 0
 
       - uses: actions/setup-python@v5
@@ -226,8 +280,19 @@ jobs:
             delocate-listdeps --all {dest_dir}/$WHEEL_SIMPLE_FILENAME
 
             echo "DONE."
-
+      - name: List dist contents (Unix)
+        if: runner.os != 'Windows'
+        run: if [ -d dist ]; then ls -lh dist/; else echo "dist/ does not exist"; fi
+      - name: List dist contents (Windows)
+        if: runner.os == 'Windows'
+        run: Get-ChildItem dist
+        shell: pwsh
+      - name: Sanitize artifact name
+        id: sanitize
+        run: |
+          echo "ARTIFACT_NAME=wheels-macos-${{ matrix.os }}-${{ matrix.cibw_archs }}-${{ matrix.cibw_build }}" | sed 's/\*//g' >> $GITHUB_ENV
+        shell: bash
       - uses: actions/upload-artifact@v4
         with:
-          name: cibw-wheels-${{ matrix.os }}-${{ matrix.cibw_archs }}-${{ strategy.job-index }}
+          name: ${{ env.ARTIFACT_NAME }}
           path: ./wheelhouse/*.whl

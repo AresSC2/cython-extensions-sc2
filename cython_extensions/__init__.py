@@ -16,7 +16,7 @@ from cython_extensions.combat_utils import (
     cy_pick_enemy_target,
     cy_range_vs_target,
     cy_find_aoe_position,
-    cy_adjust_moving_formation
+    cy_adjust_moving_formation,
 )
 from cython_extensions.dijkstra import cy_dijkstra
 from cython_extensions.general_utils import cy_pylon_matrix_covers, cy_unit_pending

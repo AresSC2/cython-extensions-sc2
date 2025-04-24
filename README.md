@@ -32,12 +32,12 @@ Tip: use `cy_distance_to_squared` where possible for extra 1.3x speedup.
 
 ## Getting started
 
-To quickly get up and running locally (for python versions 3.10, 3.11, 3.12), install `cython-extensions-sc2` with:
+To quickly get up and running locally (for python versions 3.10, 3.11, 3.12, 3.13), install `cython-extensions-sc2` with:
 
 `pip install cython-extensions-sc2`
 
 ### Shipping to ladder
-When shipping to [ladder](https://aiarena.net/), grab `ubuntu-latest_python3.11.zip` from releases in this repo
+When shipping to [ladder](https://aiarena.net/), grab `ubuntu-latest_python3.12.zip` from releases in this repo
 and extract `cython_extensions` directory within the zip to the root of your bot's directory, like so:
 
 ```
@@ -54,7 +54,7 @@ repo and download the correct `zip` for your system.
 
 ![release](https://github.com/AresSC2/cython-extensions-sc2/assets/63355562/3c5084ee-5d61-4446-a0dc-4d0ce3421b34)
 
-For example a Windows user should download `windows-latest_python3.11.zip`.
+For example a Windows user should download `windows-latest_python3.1.zip`.
 
 Inside this zip you will find a `cython_extensions` directory, this should be placed in your bot's root directory
 like so:
@@ -73,12 +73,22 @@ from cython_extensions import cy_distance_to, cy_attack_ready, cy_closest_to
 note: in this project all library functions have a `cy_` prefix to prevent confusion with python alternatives.
 
 ### Contributor / Cloning the project
-1. Install [poetry](https://python-poetry.org/) 
-2. Run `poetry install`
+Install [poetry](https://python-poetry.org/) if you do not already have it installed.
+
+Then to setup a full development environment run:
+`poetry install --with dev,test,docs,semver`
 
 This will set up a new environment, install all required dependencies and compile the cython code for your system.
 
 If you modify the cython code, run `poetry build` to compile it.
+
+#### Jupyter Notebooks
+Run `poetry run jupyter notebook` to open jupyter notebook in the environment. See the notebooks 
+directory for examples. Use `template_notebook.ipynb` as a starting point for your own notebooks.
+
+#### Run Test Bot
+Edit the map in `bot_test.py` and run with:
+`poetry run python tests/bot_test.py`
 
 #### Contributing
 Contributors are very welcome! There are many missing alternative `python-sc2` functions, and if you're 
