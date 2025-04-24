@@ -1,29 +1,29 @@
 [tool.poetry]
+version = "0.6.0"
 name = "cython-extensions-sc2"
-version = "0.4.6"
 description = ""
 authors = ["Tom Kerr <tomkerrdev@gmail.com>"]
 readme = "README.md"
 packages = [{include = "cython_extensions"}]
-# include = ["cython_extensions/*.so", "cython_extensions/*.pyd"]
  include = [
    { path = "cython_extensions/*.so", format = "wheel" },
    { path = "cython_extensions/*.pyd", format = "wheel" }
  ]
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.13"
-notebook = "^7.3.3"
+python = ">=3.10,<3.14"
+burnysc2 = ">=7.0.0"
 
 [tool.poetry.group.dev.dependencies]
 cython = "^3.0.8"
 ipykernel = "^6.29.0"
 line-profiler = "^4.1.2"
 matplotlib = "^3.8.2"
+notebook = "^7.3.3"
 numpy = "^2.0.0"
-burnysc2 = "7.0.0"
 black = "^24.1.1"
 isort = "^5.13.2"
+ipympl = "^0.9.3"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.2.1"
@@ -36,7 +36,7 @@ mkdocs-material = "^9.0.6"
 mkdocstrings-python = "^1.13.0"
 
 [tool.poetry.group.semver.dependencies]
-python-semantic-release = "9.15.2"
+python-semantic-release = "9.21.0"
 
 [build-system]
 requires = ["poetry-core", "Cython", "numpy", "setuptools"]
@@ -74,7 +74,10 @@ major_on_zero = true
 allow_zero_version = true
 no_git_verify = false
 tag_format = "v{version}"
-version_variables = ["cython_extensions/__init__.py:__version__", "pyproject.toml:tool.poetry.version"]
+version_variables = [
+  "pyproject.toml:version",
+  "cython_extensions/__init__.py:__version__"
+]
 
 [tool.semantic_release.branches.main]
 match = "(main|master)"
@@ -82,7 +85,6 @@ prerelease_token = "rc"
 prerelease = false
 
 [tool.semantic_release.changelog]
-changelog_file = ""
 exclude_commit_patterns = []
 mode = "init"
 insertion_flag = "<!-- version list -->"
@@ -127,4 +129,3 @@ insecure = false
 [tool.semantic_release.publish]
 dist_glob_patterns = ["dist/*"]
 upload_to_vcs_release = true
-
