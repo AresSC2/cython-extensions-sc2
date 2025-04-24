@@ -66,8 +66,6 @@ class BotTest(BotAI):
 
     async def on_step(self, iteration: int):
 
-        pass
-
         # TEST AOE
         # for unit in self.units:
         #     if unit.type_id == UnitTypeId.RAVAGER:
@@ -85,9 +83,9 @@ class BotTest(BotAI):
         #             unit.attack(self.enemy_start_locations[0])
 
         # TEST FUNCTIONS
-        # print(cy_is_facing(self.workers[0], self.workers[1]))
-        # print(cy_angle_diff(300.0, 250.0))
-        # print(cy_closest_to(self.start_location, self.workers))
+        print(cy_is_facing(self.workers[0], self.workers[1]))
+        print(cy_angle_diff(300.0, 250.0))
+        print(cy_closest_to(self.start_location, self.workers))
 
         # TEST UNIT FORMATION (play on micro arena)
         # if not self.enemy_units:
@@ -126,7 +124,7 @@ class BotTest(BotAI):
 if __name__ == "__main__":
     random_map = choice(
         [
-            "GoldenAura513AIE",
+            "InterloperAIE",
             # "Tier1MicroAIArena_v4"
         ]
     )

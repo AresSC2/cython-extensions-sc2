@@ -38,13 +38,11 @@ class TestDijkstraFailcases:
 
     def test_bounds(self):
         # make sure the algorithm does not go through walls or out of bounds
-        cost = np.array([[1, np.inf, 1],
-                         [1, np.inf, 1],
-                         [1, np.inf, 1]])
+        cost = np.array([[1, np.inf, 1], [1, np.inf, 1], [1, np.inf, 1]])
         pathing = cy_dijkstra(cost, np.array([[1, 2]]))
-        distance_expected = np.array([[np.inf, np.inf, 2],
-                                      [np.inf, np.inf, 1],
-                                      [np.inf, np.inf, 2]])
+        distance_expected = np.array(
+            [[np.inf, np.inf, 2], [np.inf, np.inf, 1], [np.inf, np.inf, 2]]
+        )
         assert_equal(pathing.distance, distance_expected)
 
 
@@ -54,7 +52,9 @@ class TestDijkstra:
 
     def test_pathing(self, bot: BotAI, event_loop):
         targets = np.array([u.position.rounded for u in bot.enemy_units], np.intp)
-        cost = np.where(bot.game_info.pathing_grid.data_numpy.T == 1, 1.0, np.inf).astype(np.float64)
+        cost = np.where(
+            bot.game_info.pathing_grid.data_numpy.T == 1, 1.0, np.inf
+        ).astype(np.float64)
         pathing = cy_dijkstra(cost, targets)
 
         limit = 32
