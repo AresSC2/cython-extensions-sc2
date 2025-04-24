@@ -35,8 +35,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: ladder_binary
-          path: |
-            cython_extensions/*.so
+          path: cython_extensions/bootstrap.cpython-312-x86_64-linux-gnu.so
   build:
     name: Compile Cython
     needs: build_ladder_binary
@@ -64,24 +63,24 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'poetry'
-#      # Install requirements and build extension
-#      - name: Install requirements and build extension
-#        run: |
-#          poetry install --with dev
-#      # build a wheel while we are here for later (pipi) and upload artifact
-#      - name: Make wheel
-#        run: poetry build
-#      - name: Upload wheels
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: cibw-wheels-${{ matrix.os }}-${{ matrix.python-version }}
-#          path: dist/*.whl
       # create folders here for uploading to github release
-      - name: Get linux binary
+      - name: Install requirements and build extension
+        run: |
+          poetry install --with dev
+      # Only download ladder binary for non-linux builds
+      - name: Download ladder binary (for Mac/Win only)
+        if: matrix.os != 'ubuntu-latest'
         uses: actions/download-artifact@v4
         with:
           name: ladder_binary
           path: cython_extensions
+      - name: List cython_extensions contents before zipping
+        run: ls -l cython_extensions
+        if: runner.os != 'Windows'
+      - name: List cython_extensions contents before zipping (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: Get-ChildItem cython_extensions
       - name: Delete unwanted files
         run: |
           find cython_extensions -name "*.c" -print0 | xargs -0 rm -f
@@ -90,9 +89,18 @@ jobs:
         run: |
           Remove-Item -Path .\cython_extensions\*.c -Force
         if: matrix.os == 'windows-latest'
-      - run: mkdir tmp-dir && mv cython_extensions tmp-dir/ && mv tmp-dir cython_extensions
+      - name: Debug listing before zipping
+        run: ls -l cython_extensions
+      - name: Zip Cython extension (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Compress-Archive -Path cython_extensions\* -DestinationPath "${{ matrix.os }}_python${{ matrix.python-version }}.zip"
+      - name: Zip Cython extension (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          zip -r ${{ matrix.os }}_python${{ matrix.python-version }}.zip cython_extensions
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.os }}_python${{ matrix.python-version }}
-          path: |
-            cython_extensions
+          path: ${{ matrix.os }}_python${{ matrix.python-version }}.zip
