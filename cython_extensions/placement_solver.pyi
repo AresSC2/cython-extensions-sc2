@@ -59,8 +59,9 @@ def cy_find_building_locations(
     placement_grid: np.ndarray,
     pathing_grid: np.ndarray,
     points_to_avoid_grid: np.ndarray,
+    building_width: int,
+    building_height: int,
     avoid_creep: bool = True,
-    include_addon: bool = False,
 ) -> list[tuple[float, float]]:
     """Use a convolution pass to find all possible building locations in an area
     Check `ares-sc2` for a full example of using this to calculate
@@ -107,8 +108,9 @@ def cy_find_building_locations(
         pathing_grid:
         points_to_avoid_grid: Grid containing `1`s where we shouldn't
             place anything.
+        building_width:
+        building_height:
         avoid_creep: Ensure this is False if checking Zerg structures.
-        include_addon: Check if there is room for addon too.
 
     Returns:
         Final list of positions that make up the building formation.
