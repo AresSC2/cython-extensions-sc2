@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.6.2 (2025-04-25)
+
+### Bug Fixes
+
+- Correct version number for cibuildwheel
+  ([`6395630`](https://github.com/AresSC2/cython-extensions-sc2/commit/63956305a33e5f3978760f64f0095b7c6cfa959d))
+
+
 ## v0.6.1 (2025-04-25)
 
 ### Bug Fixes
