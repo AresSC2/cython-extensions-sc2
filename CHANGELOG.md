@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.6.3 (2025-04-25)
+
+### Bug Fixes
+
+- Wheels build on mac
+  ([`7a11cf3`](https://github.com/AresSC2/cython-extensions-sc2/commit/7a11cf3f3e1d9b7c64c16f7c4c42018138daa2c7))
+
+
 ## v0.6.2 (2025-04-25)
 
 ### Bug Fixes
