@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.6.1 (2025-04-25)
+
+### Bug Fixes
+
+- Wheels build on python 3.13
+  ([`17fa3fe`](https://github.com/AresSC2/cython-extensions-sc2/commit/17fa3fe299f91ce432494b4fc6ce520180778e86))
+
+
 ## v0.6.0 (2025-04-06)
 
 ### Features
