@@ -264,9 +264,7 @@ cpdef cy_find_aoe_position(
     """
     Find the best place to put an AoE effect so that it hits the most units.
     """
-    cdef:
-        double x_min, x_max, y_min, y_max
-        unsigned int len_targets = len(targets)
+    cdef unsigned int len_targets = len(targets)
     if not bonus_tags:
         bonus_tags = set()
     if len_targets == 0:
@@ -274,14 +272,12 @@ cpdef cy_find_aoe_position(
     elif len_targets == 1:
         return targets.first.position
 
-    # Get bounding box
     (x_min, x_max), (y_min, y_max) = cy_get_bounding_box({u.position_tuple for u in targets})
-    cdef double[:, :] boundaries = np.array([[x_min, x_max], [y_min, y_max]])
+    bounds = [(x_min, x_max), (y_min, y_max)]
 
-    # OptimizeResult
     result = differential_evolution(
         f_wrapper,
-        bounds=boundaries,
+        bounds=bounds,
         args=(targets, effect_radius, bonus_tags),
         tol=1e-10
     )
