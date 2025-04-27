@@ -1,6 +1,15 @@
 # CHANGELOG
 
 
+## v0.6.4 (2025-04-27)
+
+### Bug Fixes
+
+- Correct dtype for bounds in find_aoe
+  ([#26](https://github.com/AresSC2/cython-extensions-sc2/pull/26),
+  [`1038e76`](https://github.com/AresSC2/cython-extensions-sc2/commit/1038e76143d551fd6a15767e2111c34bc96da2c1))
+
+
 ## v0.6.3 (2025-04-25)
 
 ### Bug Fixes

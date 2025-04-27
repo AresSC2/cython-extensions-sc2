@@ -1,5 +1,5 @@
 [tool.poetry]
-version = "0.6.3"
+version = "0.6.4"
 name = "cython-extensions-sc2"
 description = ""
 authors = ["Tom Kerr <tomkerrdev@gmail.com>"]
