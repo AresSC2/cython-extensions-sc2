@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.6.5 (2025-05-07)
+
+### Bug Fixes
+
+- **units_utils**: Fix incorrect variable reference in units loop
+  ([`09686df`](https://github.com/AresSC2/cython-extensions-sc2/commit/09686dfc712a21d86db5b0e750ca9df3c8793ffd))
+
+
 ## v0.6.4 (2025-04-27)
 
 ### Bug Fixes
