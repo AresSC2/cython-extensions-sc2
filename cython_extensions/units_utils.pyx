@@ -122,7 +122,7 @@ cpdef list cy_in_attack_range(object unit, object units, double bonus_distance =
     for x in range(len_units):
         u = units[x]
         # this is faster than getting the UnitTypeID
-        type_id_int = unit._proto.unit_type
+        type_id_int = u._proto.unit_type
         unit_data = UNIT_DATA_INT_KEYS.get(type_id_int, None)
         if unit_data:
             other_unit_flying = unit_data["flying"]
