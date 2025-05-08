@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.6.6 (2025-05-08)
+
+### Bug Fixes
+
+- **unit_data**: Add 'flying' attribute to ChangelingZealot unit
+  ([`666ead9`](https://github.com/AresSC2/cython-extensions-sc2/commit/666ead93eb8d0bf721ef3c14272c6d462ca06adf))
+
+
 ## v0.6.5 (2025-05-07)
 
 ### Bug Fixes
