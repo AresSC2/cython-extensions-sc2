@@ -728,7 +728,13 @@ UNIT_DATA: Dict[UnitID, Dict] = {
         "radius": 0.375,
         "flying": False,
     },
-    UnitID.CHANGELINGZEALOT: {"minerals": 0, "gas": 0, "supply": 0, "army_value": 0.01},
+    UnitID.CHANGELINGZEALOT: {
+        "minerals": 0,
+        "gas": 0,
+        "supply": 0,
+        "army_value": 0.01,
+        "flying": False
+    },
     UnitID.CHANGELINGZERGLING: {
         "minerals": 0,
         "gas": 0,
