@@ -1,6 +1,16 @@
 # CHANGELOG
 
 
+## v0.6.7 (2025-05-13)
+
+### Bug Fixes
+
+- Update default value for turn_rate in get_turn_rate function
+  ([`1c91282`](https://github.com/AresSC2/cython-extensions-sc2/commit/1c9128298995779ee8445696a1a7510b50316b44))
+
+Prevents function returning `None`
+
+
 ## v0.6.6 (2025-05-08)
 
 ### Bug Fixes
