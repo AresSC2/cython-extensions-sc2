@@ -19,9 +19,8 @@ cpdef double cy_get_turn_speed(unit, unsigned int unit_type_int):
     """Returns turn speed of unit in radians"""
     cdef double turn_rate
 
-    turn_rate = TURN_RATE_INT_KEYS.get(unit_type_int, None)
-    if turn_rate:
-        return turn_rate * 1.4 * pi / 180
+    turn_rate = TURN_RATE_INT_KEYS.get(unit_type_int, 500.0)
+    return turn_rate * 1.4 * pi / 180
 
 cpdef double cy_range_vs_target(unit, target):
     """Get the range of a unit to a target."""
