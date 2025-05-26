@@ -212,7 +212,7 @@ cpdef dict cy_adjust_moving_formation(
 
 
 cdef double optimization_function(
-    double[:] params,
+    const double[:] params,
     object targets,
     double effect_radius,
     set bonus_tags
@@ -247,7 +247,7 @@ cdef double optimization_function(
 
 # Wrapper for the optimization function
 cdef double f_wrapper(
-    double[:] params,
+    const double[:] params,
     object targets,
     double effect_radius,
     set bonus_tags
