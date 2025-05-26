@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.6.8 (2025-05-26)
+
+### Bug Fixes
+
+- Optimization func works with writable and read only np arrays
+  ([`68b36c7`](https://github.com/AresSC2/cython-extensions-sc2/commit/68b36c7b95f2b59253301dd62f5113cd4f7b090e))
+
+
 ## v0.6.7 (2025-05-13)
 
 ### Bug Fixes
