@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.7.1 (2025-09-04)
+
+### Bug Fixes
+
+- Drop python 3.10 support for macos wheels
+  ([`a254dd6`](https://github.com/AresSC2/cython-extensions-sc2/commit/a254dd6c3aeaa9fe9c566110f4a1d6048e7088f9))
+
+
 ## v0.7.0 (2025-09-04)
 
 ### Bug Fixes
