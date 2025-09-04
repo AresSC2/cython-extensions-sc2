@@ -1,6 +1,7 @@
 from typing import Union
 
 import numpy as np
+from sc2.position import Point2
 
 def cy_last_index_with_value(
     grid: np.ndarray, value: int, points: list[tuple[int, int]]
@@ -31,7 +32,9 @@ def cy_last_index_with_value(
     ...
 
 def cy_point_below_value(
-    grid: np.ndarray, position: tuple[int, int], weight_safety_limit: float = 1.0
+    grid: np.ndarray,
+    position: Point2 | tuple[float, float],
+    weight_safety_limit: float = 1.0,
 ) -> bool:
     """Check a position on a 2D grid.
     Is it below `weight_safety_limit`?
@@ -43,7 +46,7 @@ def cy_point_below_value(
 
     # pretend grid has enemy influence added
     grid = self.game_info.pathing_grid.data_numpy.T
-    safe: bool = cy_point_below_value(grid, self.start_location.rounded)
+    safe: bool = cy_point_below_value(grid, self.start_location)
     ```
 
     ```
