@@ -1,6 +1,38 @@
 # CHANGELOG
 
 
+## v0.7.0 (2025-09-04)
+
+### Bug Fixes
+
+- Update references to cy_in_pathing_grid with cy_in_pathing_grid_burny
+  ([`df7d2f4`](https://github.com/AresSC2/cython-extensions-sc2/commit/df7d2f4f6c3b3c25fd5ce00f934cbb240baf91aa))
+
+### Build System
+
+- Drop python 3.10 support
+  ([`0e6f6dc`](https://github.com/AresSC2/cython-extensions-sc2/commit/0e6f6dc5c989e9f864dba0ae8d055ae206e74260))
+
+### Documentation
+
+- Update README.md
+  ([`604253a`](https://github.com/AresSC2/cython-extensions-sc2/commit/604253a0f2a7aca10af73e98023b89c4c01d23a2))
+
+### Features
+
+- Add has creep and in pathing grid functions
+  ([`039af98`](https://github.com/AresSC2/cython-extensions-sc2/commit/039af983956f98bc95bdfabe7421e714739fc415))
+
+- Support float position types in cy_point_below_value function
+  ([`bd82346`](https://github.com/AresSC2/cython-extensions-sc2/commit/bd82346e9ccc49d0c9889fcf1227935b56c957e8))
+
+By performing rounding inside the cython function, we get a bit more performance for real world
+  scenarios
+
+- Updated notebooks
+  ([`f87a4d4`](https://github.com/AresSC2/cython-extensions-sc2/commit/f87a4d43a08acf78856d5db005ac829aa3599568))
+
+
 ## v0.6.8 (2025-05-26)
 
 ### Bug Fixes
