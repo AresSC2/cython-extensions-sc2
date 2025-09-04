@@ -17,16 +17,19 @@ This library also supports `python-sc2` and `sharpy-sc2` bots, see Getting Start
 Example speedups, results may vary depending on machine and exact scenario.
 This is by no means a list of all functionality offered.
 
-| function                      | speedup                                 |
-|-------------------------------|-----------------------------------------|
+| python-sc2 function           | cython speedup                           |
+|-------------------------------|------------------------------------------|
 | `units.closest_to`            | 6.85 - 13x speedup depending on scenario |
-| `distance_to`                 | 3 to 7x speedup depending on scenario   |
-| `position.center`             | 2x speedup                              |
-| `already_pending` for units   | 6.62x speedup                           |
-| `units.in_attack_range`       | 2.05x speedup                           |
-| `units.sorted_by_distance_to` | 8.62x speedup                           |
-| `unit.is_facing`              | 9.1x speedup                            |
-| `Point2.towards`              | 14.29x speedup                          |
+| `distance_to`                 | 3 to 7x speedup depending on scenario    |
+| `position.center`             | 2x speedup                               |
+| `already_pending` for units   | 6.62x speedup                            |
+| `units.in_attack_range`       | 2.05x speedup                            |
+| `units.sorted_by_distance_to` | 8.62x speedup                            |
+| `unit.is_facing`              | 9.1x speedup                             |
+| `Point2.towards`              | 14.29x speedup                           |
+| `has_creep`                   | 4 - 5x speedup                           |
+| `in_pathing_grid`             | 4 - 5x speedup                           |
+
 
 Tip: use `cy_distance_to_squared` where possible for extra 1.3x speedup.
 
