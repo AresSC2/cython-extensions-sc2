@@ -19,6 +19,8 @@ from cython_extensions import (
     cy_angle_diff,
     cy_closest_to,
     cy_find_units_center_mass,
+    cy_has_creep,
+    cy_in_pathing_grid_burny,
     cy_is_facing,
 )
 from cython_extensions.combat_utils import (
@@ -65,7 +67,8 @@ class BotTest(BotAI):
             return 0
 
     async def on_step(self, iteration: int):
-
+        pos = cy_find_aoe_position(3.0, self.workers)
+        print(pos)
         # TEST AOE
         # for unit in self.units:
         #     if unit.type_id == UnitTypeId.RAVAGER:
@@ -83,10 +86,24 @@ class BotTest(BotAI):
         #             unit.attack(self.enemy_start_locations[0])
 
         # TEST FUNCTIONS
-        print(cy_is_facing(self.workers[0], self.workers[1]))
-        print(cy_angle_diff(300.0, 250.0))
-        print(cy_closest_to(self.start_location, self.workers))
-
+        # print(cy_is_facing(self.workers[0], self.workers[1]))
+        # print(cy_angle_diff(300.0, 250.0))
+        # print(cy_closest_to(self.start_location, self.workers))
+        pos = self.start_location.towards(self.game_info.map_center, 7.0)
+        print(cy_has_creep(self.state.creep.data_numpy, pos))
+        print(self.has_creep(pos))
+        print(cy_has_creep(self.state.creep.data_numpy, self.game_info.map_center))
+        print(self.has_creep(self.game_info.map_center))
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        print(cy_in_pathing_grid_burny(self.game_info.pathing_grid.data_numpy.T, pos))
+        print(self.in_pathing_grid(pos))
+        print(
+            cy_in_pathing_grid_burny(
+                self.game_info.pathing_grid.data_numpy.T, self.start_location
+            )
+        )
+        print(self.in_pathing_grid(self.start_location))
+        print("---------------------------")
         # TEST UNIT FORMATION (play on micro arena)
         # if not self.enemy_units:
         #     return
@@ -131,7 +148,7 @@ if __name__ == "__main__":
     run_game(
         maps.get(random_map),
         [
-            Bot(Race.Protoss, BotTest()),
+            Bot(Race.Zerg, BotTest()),
             Computer(Race.Protoss, Difficulty.Medium),
         ],
         realtime=False,

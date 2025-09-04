@@ -1,7 +1,7 @@
-from cython import boundscheck, wraparound
 import numpy as np
-cimport numpy as cnp
+from cython import boundscheck, wraparound
 
+cimport numpy as cnp
 from libc.stdlib cimport malloc
 
 DEF HEAP_ARITY = 4

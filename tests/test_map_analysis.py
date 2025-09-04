@@ -6,13 +6,13 @@ from sc2.bot_ai import BotAI
 from sc2.position import Point2
 
 from cython_extensions import (
+    cy_all_points_below_max_value,
     cy_all_points_have_value,
+    cy_flood_fill_grid,
+    cy_get_bounding_box,
     cy_last_index_with_value,
     cy_point_below_value,
     cy_points_with_value,
-    cy_all_points_below_max_value,
-    cy_flood_fill_grid,
-    cy_get_bounding_box,
 )
 
 pytest_plugins = ("pytest_asyncio",)
