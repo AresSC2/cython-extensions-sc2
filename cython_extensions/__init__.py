@@ -10,16 +10,22 @@ from . import bootstrap
 bootstrap.bootstrap_cython_submodules()
 
 from cython_extensions.combat_utils import (
+    cy_adjust_moving_formation,
     cy_attack_ready,
+    cy_find_aoe_position,
     cy_get_turn_speed,
     cy_is_facing,
     cy_pick_enemy_target,
     cy_range_vs_target,
-    cy_find_aoe_position,
-    cy_adjust_moving_formation,
 )
 from cython_extensions.dijkstra import cy_dijkstra
-from cython_extensions.general_utils import cy_pylon_matrix_covers, cy_unit_pending
+from cython_extensions.general_utils import (
+    cy_has_creep,
+    cy_in_pathing_grid_burny,
+    cy_in_pathing_grid_ma,
+    cy_pylon_matrix_covers,
+    cy_unit_pending,
+)
 from cython_extensions.geometry import (
     cy_angle_diff,
     cy_angle_to,

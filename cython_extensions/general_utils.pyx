@@ -1,10 +1,14 @@
+import numpy as np
 from cython cimport boundscheck, wraparound
+from numpy.math cimport INFINITY
 
+from sc2.data import Race
 from sc2.dicts.unit_trained_from import UNIT_TRAINED_FROM
-from sc2.game_info import Race
 from sc2.ids.unit_typeid import UnitTypeId
 
 from cython_extensions.geometry import cy_distance_to_squared
+
+cimport numpy as cnp
 
 DOES_NOT_USE_LARVA: dict[UnitTypeId, UnitTypeId] = {
     UnitTypeId.BANELING: UnitTypeId.ZERGLING,
@@ -14,6 +18,38 @@ DOES_NOT_USE_LARVA: dict[UnitTypeId, UnitTypeId] = {
     UnitTypeId.OVERLORDTRANSPORT: UnitTypeId.OVERLORD,
     UnitTypeId.RAVAGER: UnitTypeId.ROACH,
 }
+
+@boundscheck(False)
+@wraparound(False)
+cpdef bint cy_has_creep(
+    cnp.ndarray[cnp.npy_bool, ndim=2] creep_numpy_grid,
+    (double, double) position,
+):
+    """Optimized creep checking function with internal rounding"""
+    cdef unsigned int x = int(position[0])
+    cdef unsigned int y = int(position[1])
+    return creep_numpy_grid[y, x] == 1
+
+@boundscheck(False)
+@wraparound(False)
+cpdef bint cy_in_pathing_grid_ma(
+    cnp.ndarray[cnp.float32_t, ndim=2] pathing_numpy_grid,
+    (double, double) position,
+):
+    cdef unsigned int x = int(position[0])
+    cdef unsigned int y = int(position[1])
+    cdef double weight = pathing_numpy_grid[x, y]
+    return weight >= 1.0 and weight != INFINITY
+
+@boundscheck(False)
+@wraparound(False)
+cpdef bint cy_in_pathing_grid_burny(
+    cnp.ndarray[cnp.npy_bool, ndim=2] pathing_numpy_grid,
+    (double, double) position,
+):
+    cdef unsigned int x = int(position[0])
+    cdef unsigned int y = int(position[1])
+    return pathing_numpy_grid[y, x] == 1
 
 @boundscheck(False)
 @wraparound(False)

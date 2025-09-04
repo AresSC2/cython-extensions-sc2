@@ -1,11 +1,117 @@
-from typing import TYPE_CHECKING, Union, Optional
+from typing import Optional, Union
 
 import numpy as np
-from sc2.bot_ai import BotAI
 from sc2.ids.unit_typeid import UnitTypeId as UnitID
 from sc2.position import Point2
 from sc2.unit import Unit
 from sc2.units import Units
+
+def cy_has_creep(creep_numpy_grid: np.ndarray, position: Point2) -> bool:
+    """
+    Check if a position has creep.
+
+    Example:
+    ```py
+    from cython_functions import cy_has_creep
+    from sc2.position import Point2
+
+    position: Point2 = self.start_location
+
+    has_creep: bool = cy_has_creep(
+        self.state.creep.data_numpy,
+        position
+    )
+    ```
+
+    ```
+    243 ns ± 4.4 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
+    ```
+
+    Args:
+        creep_numpy_grid: Position to check for power.
+        position: The pylons we want to check.
+
+
+    Returns:
+        True if `position` has creep, False otherwise.
+    """
+    ...
+
+def cy_in_pathing_grid_ma(pathing_numpy_grid: np.ndarray, position: Point2) -> bool:
+    """
+    Check if a position is pathable. This is optimized for use with
+    numpy pathing grids from MapAnalyzer that contain enemy influence.
+    The grids passed in here are already transposed vs the burnysc2
+    default pathing grid.
+    This may work with other custom numpy pathing grids that contain float values.
+
+    Example using ares sc2 (which has MapAnalyzer grids):
+    ```py
+    from cython_functions import cy_in_pathing_grid_ma
+    from sc2.position import Point2
+
+    position: Point2 = self.start_location
+    # ares function to get pathing grid containing enemy influence
+    grid: np.ndarray = self.mediator.get_ground_grid
+
+    is_pathable: bool = cy_in_pathing_grid_ma(
+        grid, position
+    )
+    ```
+
+    ```
+    243 ns ± 1.51 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
+    ```
+
+    Args:
+        pathing_numpy_grid: The 2D grid to check on.
+        position: The postions we want to check.
+
+
+    Returns:
+        True if `position` is pathable, False otherwise.
+    """
+    ...
+
+def cy_in_pathing_grid_burny(pathing_numpy_grid: np.ndarray, position: Point2) -> bool:
+    """
+    Check if a position is pathable. This is optimized for use with
+    the numpy pathing grid found in burnysc2.
+    `self.game_info.pathing_grid.data_numpy` which only contains
+    0s and 1s.
+
+    This is a fast replacement for `self.in_pathing_grid(position)` function
+    in burnysc2.
+
+    If using MapAnalyzer grids or some other type of numpy grid,
+    check out `cy_in_pathing_grid_ma` instead/
+
+    Example using burny sc2:
+    ```py
+    from cython_functions import cy_in_pathing_grid_burny
+    from sc2.position import Point2
+
+    position: Point2 = self.start_location
+
+    is_pathable: bool = cy_in_pathing_grid_burny(
+        self.game_info.pathing_grid.data_numpy,
+        position
+    )
+    ```
+
+    ```
+    243 ns ± 1.51 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
+    ```
+
+    Args:
+        pathing_numpy_grid: The 2D grid to check on.
+        position: The postions we want to check.
+
+
+    Returns:
+        True if `position` is pathable, False otherwise.
+    """
+    ...
 
 def cy_pylon_matrix_covers(
     position: Union[Point2, tuple[float, float]],
