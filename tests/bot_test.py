@@ -20,7 +20,7 @@ from cython_extensions import (
     cy_closest_to,
     cy_find_units_center_mass,
     cy_has_creep,
-    cy_in_pathing_grid,
+    cy_in_pathing_grid_burny,
     cy_is_facing,
 )
 from cython_extensions.combat_utils import (
@@ -95,10 +95,10 @@ class BotTest(BotAI):
         print(cy_has_creep(self.state.creep.data_numpy, self.game_info.map_center))
         print(self.has_creep(self.game_info.map_center))
         print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-        print(cy_in_pathing_grid(self.game_info.pathing_grid.data_numpy.T, pos))
+        print(cy_in_pathing_grid_burny(self.game_info.pathing_grid.data_numpy.T, pos))
         print(self.in_pathing_grid(pos))
         print(
-            cy_in_pathing_grid(
+            cy_in_pathing_grid_burny(
                 self.game_info.pathing_grid.data_numpy.T, self.start_location
             )
         )
