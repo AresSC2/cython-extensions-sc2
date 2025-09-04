@@ -1,8 +1,8 @@
 from pathlib import Path
 
 import numpy as np
-from numpy.testing import assert_equal
 import pytest
+from numpy.testing import assert_equal
 from sc2.bot_ai import BotAI
 
 from cython_extensions import cy_dijkstra
