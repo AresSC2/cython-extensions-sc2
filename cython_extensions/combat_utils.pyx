@@ -29,10 +29,6 @@ cpdef double cy_range_vs_target(unit, target):
     else:
         return unit.ground_range
 
-"""
-End of `cdef` functions
-"""
-
 cpdef bint cy_is_facing(unit, other_unit, double angle_error=0.3):
     cdef:
         (double, double) p1 = unit.position
@@ -269,7 +265,7 @@ cpdef cy_find_aoe_position(
     if len_targets == 0:
         return None
     elif len_targets == 1:
-        return targets.first.position
+        return targets[0].position
 
     (x_min, x_max), (y_min, y_max) = cy_get_bounding_box({u.position_tuple for u in targets})
     bounds = [(x_min, x_max), (y_min, y_max)]

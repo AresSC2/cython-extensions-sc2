@@ -22,6 +22,7 @@ from cython_extensions import (
     cy_has_creep,
     cy_in_pathing_grid_burny,
     cy_is_facing,
+    enable_safe_mode,
 )
 from cython_extensions.combat_utils import (
     cy_adjust_moving_formation,
@@ -32,6 +33,7 @@ from cython_extensions.combat_utils import (
 class BotTest(BotAI):
     def __init__(self):
         super().__init__()
+        # enable_safe_mode(False)
         self.unit_fodder_values: dict[UnitTypeId, int] = {
             UnitTypeId.STALKER: 4,
             UnitTypeId.ZEALOT: 1,
@@ -41,6 +43,9 @@ class BotTest(BotAI):
 
     async def on_start(self):
         self.client.game_step = 2
+        await self.client.debug_create_unit(
+            [[UnitTypeId.MARINE, 2, self.start_location, 2]]
+        )
         # uncomment to test AOE
         # await self.client.debug_create_unit([[UnitTypeId.RAVAGER, 5, self.start_location, 1]])
         # await self.client.debug_create_unit([[UnitTypeId.MARINE, 20, self.main_base_ramp.top_center, 2]])
@@ -67,8 +72,7 @@ class BotTest(BotAI):
             return 0
 
     async def on_step(self, iteration: int):
-        pos = cy_find_aoe_position(3.0, self.workers)
-        print(pos)
+        # pos = cy_find_aoe_position(3.0, [])
         # TEST AOE
         # for unit in self.units:
         #     if unit.type_id == UnitTypeId.RAVAGER:
@@ -86,9 +90,9 @@ class BotTest(BotAI):
         #             unit.attack(self.enemy_start_locations[0])
 
         # TEST FUNCTIONS
-        # print(cy_is_facing(self.workers[0], self.workers[1]))
-        # print(cy_angle_diff(300.0, 250.0))
-        # print(cy_closest_to(self.start_location, self.workers))
+        print(cy_is_facing(self.workers[0], self.workers[1]))
+        print(cy_angle_diff(300.0, 250.0))
+        print(cy_closest_to(self.start_location, self.workers))
         pos = self.start_location.towards(self.game_info.map_center, 7.0)
         print(cy_has_creep(self.state.creep.data_numpy, pos))
         print(self.has_creep(pos))
