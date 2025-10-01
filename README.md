@@ -39,7 +39,33 @@ To quickly get up and running locally (for python versions 3.10, 3.11, 3.12, 3.1
 
 `pip install cython-extensions-sc2`
 
-### Shipping to ladder
+## Type Safety
+
+`cython-extensions-sc2` includes type safety checking to prevent your bot failing with silent errors.
+This is enabled by default, but for a bit more performance you can disable it.
+
+```python
+from cython_extensions import enable_safe_mode
+# immediately after importing any cython functions
+enable_safe_mode(False)
+```
+
+Even with safe mode disabled, there will still be some function overhead, but it should be negligible.
+However, if you want to squeeze every last bit of performance out of your bot, you can import cython functions
+directly from the cython files to avoid using the type checker functionality all together.
+
+Example using `cy_closest_to` turning off safe mode for some performance:
+```python
+from cython_extensions import cy_closest_to, enable_safe_mode
+enable_safe_mode(False)
+```
+
+You could instead import `cy_closest_to` directly:
+```python
+from cython_extensions.units_utils import cy_closest_to
+```
+
+## Shipping to ladder
 When shipping to [ladder](https://aiarena.net/), grab `ubuntu-latest_python3.12.zip` from releases in this repo
 and extract `cython_extensions` directory within the zip to the root of your bot's directory, like so:
 
@@ -50,7 +76,7 @@ MyBot
 └───your bot files and directories
 ```
 
-### Alternative local setup
+## Alternative local setup
 If you already have a `python-sc2`, or `sharpy-sc2` development environment setup,
 then `cython-extensions` should work out the box with your bot without the need to install extra requirements. Simply check out the releases on this
 repo and download the correct `zip` for your system.
@@ -75,7 +101,7 @@ from cython_extensions import cy_distance_to, cy_attack_ready, cy_closest_to
 ```
 note: in this project all library functions have a `cy_` prefix to prevent confusion with python alternatives.
 
-### Contributor / Cloning the project
+## Contributor / Cloning the project
 Install [poetry](https://python-poetry.org/) if you do not already have it installed.
 
 Then to setup a full development environment run:
@@ -85,18 +111,34 @@ This will set up a new environment, install all required dependencies and compil
 
 If you modify the cython code, run `poetry build` to compile it.
 
-#### Jupyter Notebooks
+### Jupyter Notebooks
 Run `poetry run jupyter notebook` to open jupyter notebook in the environment. See the notebooks 
 directory for examples. Use `template_notebook.ipynb` as a starting point for your own notebooks.
 
-#### Run Test Bot
+### Run Test Bot
 Edit the map in `bot_test.py` and run with:
 `poetry run python tests/bot_test.py`
 
-#### Contributing
+## Contributing
 Contributors are very welcome! There are many missing alternative `python-sc2` functions, and if you're 
 into optimization, the existing functions could likely be improved.
 
+### Adding new functions
+If you want to add a new function, please add it to the relevant '.pyx' and '.pyi' files. See 
+existing functions for examples. Please also add tests for your function in the `tests` directory.
+
+Additionally, the new function should be added to the type checking system in `cython_extensions/type_checking`
+First add a validation function inside `cython_extensions/type_checking/validators.py` using the
+existing examples as guidance.
+
+Then add a `safe_wrapper` function inside `cython_extensions/type_checking/safe_wrappers.py` using the
+existing examples as an example. Ensure your new function is exported at the bottom of this file.
+Preferably check the new function works in a real bot before submitting a PR. You can use `tests/bot_test.py`
+to test your function.`
+
+
+
+### Commit messages
 Please use [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) if you choose to contribute, 
 it helps the automatic releases detect
 a new version and generates an accurate changelog.
