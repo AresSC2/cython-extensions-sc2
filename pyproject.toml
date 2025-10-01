@@ -4,11 +4,13 @@ name = "cython-extensions-sc2"
 description = ""
 authors = ["Tom Kerr <tomkerrdev@gmail.com>"]
 readme = "README.md"
+license = "GPL-3.0-or-later"
 packages = [{include = "cython_extensions"}]
- include = [
-   { path = "cython_extensions/*.so", format = "wheel" },
-   { path = "cython_extensions/*.pyd", format = "wheel" }
- ]
+include = [
+  { path = "LICENSE", format = "sdist" },
+  { path = "cython_extensions/*.so", format = "wheel" },
+  { path = "cython_extensions/*.pyd", format = "wheel" }
+]
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.14"
