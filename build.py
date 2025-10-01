@@ -1,10 +1,10 @@
 import os
 import shutil
-from distutils.command.build_ext import build_ext
-from distutils.core import Distribution, Extension
 
 import numpy
 from Cython.Build import cythonize
+from setuptools import Distribution, Extension
+from setuptools.command.build_ext import build_ext
 
 link_args = []
 include_dirs = [numpy.get_include()]
@@ -27,8 +27,11 @@ def build():
         compiler_directives={"binding": True, "language_level": 3},
     )
 
-    distribution = Distribution({"name": "extended", "ext_modules": extensions})
-    distribution.package_dir = "extended"
+    distribution = Distribution({
+        "name": "extended",
+        "ext_modules": extensions,
+        "package_dir": {"": "."}
+    })
 
     cmd = build_ext(distribution)
     cmd.ensure_finalized()
