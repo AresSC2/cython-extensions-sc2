@@ -9,50 +9,15 @@ from . import bootstrap
 # after that all other submodules can be loaded
 bootstrap.bootstrap_cython_submodules()
 
-from cython_extensions.combat_utils import (
-    cy_adjust_moving_formation,
-    cy_attack_ready,
-    cy_find_aoe_position,
-    cy_get_turn_speed,
-    cy_is_facing,
-    cy_pick_enemy_target,
-    cy_range_vs_target,
+# Import configuration functions from the safe module
+from cython_extensions.type_checking import (
+    enable_safe_mode,
+    disable_safe_mode,
+    is_safe_mode_enabled,
+    get_safe_mode_status,
+    safe_mode_context,
 )
-from cython_extensions.dijkstra import cy_dijkstra
-from cython_extensions.general_utils import (
-    cy_has_creep,
-    cy_in_pathing_grid_burny,
-    cy_in_pathing_grid_ma,
-    cy_pylon_matrix_covers,
-    cy_unit_pending,
-)
-from cython_extensions.geometry import (
-    cy_angle_diff,
-    cy_angle_to,
-    cy_distance_to,
-    cy_distance_to_squared,
-    cy_find_average_angle,
-    cy_find_correct_line,
-    cy_get_angle_between_points,
-    cy_towards,
-    cy_translate_point_along_line,
-)
-from cython_extensions.map_analysis import cy_flood_fill_grid, cy_get_bounding_box
-from cython_extensions.numpy_helper import (
-    cy_all_points_below_max_value,
-    cy_all_points_have_value,
-    cy_last_index_with_value,
-    cy_point_below_value,
-    cy_points_with_value,
-)
-from cython_extensions.placement_solver import (
-    cy_can_place_structure,
-    cy_find_building_locations,
-)
-from cython_extensions.units_utils import (
-    cy_center,
-    cy_closest_to,
-    cy_find_units_center_mass,
-    cy_in_attack_range,
-    cy_sorted_by_distance_to,
-)
+
+# Import all functions from the safe wrappers module
+# These handle the conditional validation internally
+from cython_extensions.type_checking.wrappers import *
