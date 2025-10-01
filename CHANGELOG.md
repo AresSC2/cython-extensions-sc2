@@ -1,6 +1,24 @@
 # CHANGELOG
 
 
+## v0.8.0 (2025-10-01)
+
+### Bug Fixes
+
+- Simplify target position access so it works with list of units
+  ([`c40f1cb`](https://github.com/AresSC2/cython-extensions-sc2/commit/c40f1cb3e9bc9e81a6ebe213647bc7ad5fdd694f))
+
+### Documentation
+
+- Add type safety usage guide and contributing details to README.md
+  ([`2487b74`](https://github.com/AresSC2/cython-extensions-sc2/commit/2487b74453966e71e6a52edd6d16d7e584348622))
+
+### Features
+
+- New type checking system using python wrappers
+  ([`ea12c8b`](https://github.com/AresSC2/cython-extensions-sc2/commit/ea12c8b128c5c0af1a9d88b04b7d134d905ce012))
+
+
 ## v0.7.1 (2025-09-04)
 
 ### Bug Fixes
