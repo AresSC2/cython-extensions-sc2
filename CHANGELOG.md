@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.8.1 (2025-10-01)
+
+### Bug Fixes
+
+- Update pyproject.toml to include license and additional package files
+  ([`9307026`](https://github.com/AresSC2/cython-extensions-sc2/commit/930702639c4af3384a37527e716510b584ab048c))
+
+
 ## v0.8.0 (2025-10-01)
 
 ### Bug Fixes
