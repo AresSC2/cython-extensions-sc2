@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.8.9 (2025-10-02)
+
+### Bug Fixes
+
+- Replace numpy.math INFINITY with libc.math INFINITY in general_utils.pyx
+  ([`bc0ca09`](https://github.com/AresSC2/cython-extensions-sc2/commit/bc0ca09f9fb6732af1b64ef962a37a9c5c015b17))
+
+
 ## v0.8.8 (2025-10-02)
 
 ### Bug Fixes
