@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.8.7 (2025-10-02)
+
+### Bug Fixes
+
+- Install pip and numpy dependencies before building wheels in GitHub Actions
+  ([`7a11713`](https://github.com/AresSC2/cython-extensions-sc2/commit/7a11713b42f304a37da56894689afff272ae70c6))
+
+
 ## v0.8.6 (2025-10-02)
 
 ### Bug Fixes
