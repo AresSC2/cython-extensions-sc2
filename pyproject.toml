@@ -4,10 +4,9 @@ name = "cython-extensions-sc2"
 description = ""
 authors = ["Tom Kerr <tomkerrdev@gmail.com>"]
 readme = "README.md"
-license = "GPL-3.0-or-later"
+license = "GPL-3.0"
 packages = [{include = "cython_extensions"}]
 include = [
-  { path = "LICENSE", format = "sdist" },
   { path = "cython_extensions/*.so", format = "wheel" },
   { path = "cython_extensions/*.pyd", format = "wheel" }
 ]
@@ -64,6 +63,9 @@ filterwarnings = [
 exclude_lines = [
     'if __name__ == "__main__":'
 ]
+
+[tool.setuptools]
+license-files = []
 
 [tool.isort]
 profile = "black"
