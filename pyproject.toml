@@ -65,7 +65,7 @@ exclude_lines = [
 ]
 
 [tool.setuptools]
-license-files = []
+license-files = ["LICENSE"]
 
 [tool.isort]
 profile = "black"
