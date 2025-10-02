@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.8.8 (2025-10-02)
+
+### Bug Fixes
+
+- Consolidate and upgrade dependencies in GitHub Actions workflows for wheel builds and release
+  ([`74e73a8`](https://github.com/AresSC2/cython-extensions-sc2/commit/74e73a827769596105d28c2657d32ee01dd6e200))
+
+
 ## v0.8.7 (2025-10-02)
 
 ### Bug Fixes
