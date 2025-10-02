@@ -64,9 +64,6 @@ exclude_lines = [
     'if __name__ == "__main__":'
 ]
 
-[tool.setuptools]
-license-files = ["LICENSE"]
-
 [tool.isort]
 profile = "black"
 
