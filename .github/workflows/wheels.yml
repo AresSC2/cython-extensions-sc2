@@ -159,6 +159,9 @@ jobs:
       - name: Install poetry
         run: pipx install poetry
 
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip numpy
+
       - name: Build wheels
         uses: pypa/cibuildwheel@v3.2.0
         env:
@@ -211,6 +214,9 @@ jobs:
       - name: Install poetry
         run: pipx install poetry
 
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip numpy
+
       - name: Build wheels
         uses: pypa/cibuildwheel@v3.2.0
         env:
@@ -258,6 +264,9 @@ jobs:
 
       - name: Install poetry
         run: pipx install poetry
+
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip numpy
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v3.2.0
