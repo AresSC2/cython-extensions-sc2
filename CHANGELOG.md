@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.8.4 (2025-10-02)
+
+### Bug Fixes
+
+- Include LICENSE file in setuptools configuration
+  ([`bb9dbec`](https://github.com/AresSC2/cython-extensions-sc2/commit/bb9dbecef24756660504c6559fcc9c75f9981454))
+
+
 ## v0.8.3 (2025-10-02)
 
 
