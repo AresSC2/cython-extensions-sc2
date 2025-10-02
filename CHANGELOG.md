@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.8.6 (2025-10-02)
+
+### Bug Fixes
+
+- Bump cibuildwheel to v3.2.0 in GitHub Actions workflow
+  ([`9f42ff4`](https://github.com/AresSC2/cython-extensions-sc2/commit/9f42ff4adff2838f1edc6e05c12586688aad749e))
+
+
 ## v0.8.5 (2025-10-02)
 
 ### Bug Fixes
