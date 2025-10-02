@@ -1,6 +1,6 @@
 import numpy as np
 from cython cimport boundscheck, wraparound
-from numpy.math cimport INFINITY
+from libc.math cimport INFINITY
 
 from sc2.data import Race
 from sc2.dicts.unit_trained_from import UNIT_TRAINED_FROM
