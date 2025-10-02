@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.8.5 (2025-10-02)
+
+### Bug Fixes
+
+- Remove redundant license-files field from setuptools configuration
+  ([`1b7618a`](https://github.com/AresSC2/cython-extensions-sc2/commit/1b7618a1cabee0141c20ca64bff5e4d34a2c4cdb))
+
+
 ## v0.8.4 (2025-10-02)
 
 ### Bug Fixes
