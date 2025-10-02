@@ -1,7 +1,15 @@
 # CHANGELOG
 
 
+## v0.8.3 (2025-10-02)
+
+
 ## v0.8.2 (2025-10-01)
+
+### Bug Fixes
+
+- Add license-files field to setuptools to prevent invalid metadata
+  ([`4e923be`](https://github.com/AresSC2/cython-extensions-sc2/commit/4e923be634b1d72d6f0f31435f98df0bc4b15820))
 
 
 ## v0.8.1 (2025-10-01)
