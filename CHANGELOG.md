@@ -1,6 +1,18 @@
 # CHANGELOG
 
 
+## v0.8.10 (2025-10-06)
+
+### Bug Fixes
+
+- Update GitHub Actions workflows for wheel builds
+  ([`3d99541`](https://github.com/AresSC2/cython-extensions-sc2/commit/3d99541a6f0c9d13697daf6cd13cee2b025004b5))
+
+- Limit `cibw_archs` to `x86_64` only due to issues with other architectures. - Switch to
+  `--no-build-isolation` in `CIBW_BUILD_FRONTEND`. - Pin `poetry` to version `1.8.4` in build
+  dependencies.
+
+
 ## v0.8.9 (2025-10-02)
 
 ### Bug Fixes
