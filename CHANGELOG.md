@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.8.11 (2025-10-07)
+
+### Bug Fixes
+
+- Pin poetry to version 1.8.4 in GitHub Actions workflows
+  ([`ea6c191`](https://github.com/AresSC2/cython-extensions-sc2/commit/ea6c1912b2a6b2a0e010b25c2e7847824d71a4be))
+
+
 ## v0.8.10 (2025-10-06)
 
 ### Bug Fixes
