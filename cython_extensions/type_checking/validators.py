@@ -16,14 +16,6 @@ def _validate_position(position, param_name: str = "position"):
             f"{param_name} must have exactly 2 elements (x, y), got {len(position)}"
         )
 
-    if not all(isinstance(coord, Number) for coord in position):
-        invalid_types = [
-            type(coord).__name__ for coord in position if not isinstance(coord, Number)
-        ]
-        raise TypeError(
-            f"{param_name} coordinates must be numbers, got {invalid_types}"
-        )
-
 
 def _validate_units(units, param_name: str = "units", allow_empty: bool = False):
     """Validate units parameter."""
