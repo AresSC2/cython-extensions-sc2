@@ -47,8 +47,8 @@ cdef class DijkstraOutput:
             Start point.
         limit :
             Maximum length of the returned path. Defaults to 0 indicating no limit.
-		max_distance :
-			Size of the search region for a valid starting point. Defaults to 1.
+        max_distance :
+            Size of the search region for a valid starting point. Defaults to 1.
 
         Returns
         -------
@@ -58,6 +58,11 @@ cdef class DijkstraOutput:
         """
         path = list[tuple[int, int]]()
         x, y = self.get_closest_reachable_point(source, max_distance=max_distance)
+
+        # check that source is within bounds
+        if x < 0 or y < 0 or x >= self.distance.shape[0] or y >= self.distance.shape[1]:
+            return []
+
         if limit == 0:
             # set a fallback limit to be safe
             # a path longer than this must contain a cycle, so it should never be hit anyway
@@ -65,6 +70,7 @@ cdef class DijkstraOutput:
 
         while len(path) < limit:
             if x < 0 or y < 0:
+                # pointer value of -1 marks no pointer
                 break
             path.append((x, y))
             x, y = self.forward_x[x, y], self.forward_y[x, y]
@@ -75,7 +81,7 @@ cdef class DijkstraOutput:
     cpdef (int, int) get_closest_reachable_point(self, (float, float) source, int max_distance):
         """
 
-        Search the region near a point for a point that can reach a target.
+        Search the region for a point that can reach a target.
 
         Parameters
         ----------
@@ -92,18 +98,13 @@ cdef class DijkstraOutput:
         """
         x0 = int(source[0])
         y0 = int(source[1])
-        distance0 = self.distance[x0, y0]
-
-        # early return if source is valid
-        if distance0 < np.inf:
-            return x0, y0
 
         x_min = x0
         y_min = y0
-        min_distance_squared = distance0**2
+        min_distance_squared = np.inf
 
-        for x in range(x0 - max_distance, x0 + max_distance + 1):
-            for y in range(y0 - max_distance, y0 + max_distance + 1):
+        for x in range(max(0, x0 - max_distance), min(self.distance.shape[0], x0 + max_distance + 1)):
+            for y in range(max(0, y0 - max_distance), min(self.distance.shape[1], y0 + max_distance + 1)):
                 if self.distance[x, y] < np.inf:
                     distance_squared = (x - source[0]) ** 2 + (y - source[1]) ** 2
                     if distance_squared < min_distance_squared:
