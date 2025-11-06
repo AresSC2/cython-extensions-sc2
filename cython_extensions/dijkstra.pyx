@@ -61,7 +61,7 @@ cdef class DijkstraOutput:
 
         # check that source is within bounds
         if x < 0 or y < 0 or x >= self.distance.shape[0] or y >= self.distance.shape[1]:
-            return []
+            return [(x, y)]
 
         if limit == 0:
             # set a fallback limit to be safe
