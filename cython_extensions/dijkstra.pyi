@@ -15,13 +15,14 @@ class DijkstraOutput:
     distance: np.ndarray
 
     def get_path(
-        self, source: tuple[int, int], limit: int = 0
+        self, source: tuple[float, float], limit: int = 0, max_distance: int = 1
     ) -> list[tuple[int, int]]:
         """Follow the path from a given source using the forward pointer grids.
 
         Args:
             source: Start point.
             limit: Maximum length of the returned path. Defaults to 0 indicating no limit.
+		    max_distance: Size of the search region for a valid starting point. Defaults to 1.
 
         Returns:
             The lowest cost path from source to any of the targets.
