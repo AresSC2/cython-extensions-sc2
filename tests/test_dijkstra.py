@@ -16,7 +16,7 @@ MAPS: list[Path] = [
 ]
 
 
-class TestDijkstraFailcases:
+class TestDijkstraGeneric:
 
     def test_raises_on_nonpositive_entries(self):
         targets = np.array([[0, 0]])
@@ -44,6 +44,31 @@ class TestDijkstraFailcases:
             [[np.inf, np.inf, 2], [np.inf, np.inf, 1], [np.inf, np.inf, 2]]
         )
         assert_equal(pathing.distance, distance_expected)
+
+    def test_find_valid_start(self):
+        # test that the algorithm searches for valid starting point near the given coordinates
+        # setup a rectangular map surrounded by unpathable border
+        cost = np.pad(np.ones((3, 3)), 1, constant_values=np.inf)
+        # find paths towards center
+        pathing = cy_dijkstra(cost, np.array([[2, 2]]))
+        # test that starting point will be rounded
+        assert_equal(
+            pathing.get_path((1.1, 1.3)),
+            [(1, 1), (2, 2)]
+        )
+        assert_equal(
+            pathing.get_path((0.8, 0.7)),
+            [(1, 1), (2, 2)]
+        )
+        # test that invalid start snaps to the closest valid one
+        assert_equal(
+            pathing.get_path((0.1, 2)),
+            [(1, 2), (2, 2)]
+        )
+        assert_equal(
+            pathing.get_path((-2.2, 6.9), max_distance=5),
+            [(1, 3), (2, 2)]
+        )
 
 
 @pytest.mark.parametrize("bot", MAPS, indirect=True)
