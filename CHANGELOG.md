@@ -1,6 +1,29 @@
 # CHANGELOG
 
 
+## v0.9.0 (2025-11-07)
+
+### Bug Fixes
+
+- Always return at least one point
+  ([`cc7d895`](https://github.com/AresSC2/cython-extensions-sc2/commit/cc7d89577bba681448c02e2fa0f9f7737a316b8c))
+
+### Continuous Integration
+
+- Set `fetch-depth: 0` in test workflow
+  ([`a3ff25c`](https://github.com/AresSC2/cython-extensions-sc2/commit/a3ff25c2d9104e4f385ac4fae9879ca105ded088))
+
+### Features
+
+- Search for valid starting point on path lookup
+  ([`eb30e25`](https://github.com/AresSC2/cython-extensions-sc2/commit/eb30e25ab8ac08fb133ce42655636feaeabd2758))
+
+### Testing
+
+- Add test for dijkstra start point search
+  ([`a5276a5`](https://github.com/AresSC2/cython-extensions-sc2/commit/a5276a59c31be05b324d00ff8beb73ccfcc81516))
+
+
 ## v0.8.12 (2025-10-09)
 
 
