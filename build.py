@@ -27,11 +27,9 @@ def build():
         compiler_directives={"binding": True, "language_level": 3},
     )
 
-    distribution = Distribution({
-        "name": "extended",
-        "ext_modules": extensions,
-        "package_dir": {"": "."}
-    })
+    distribution = Distribution(
+        {"name": "extended", "ext_modules": extensions, "package_dir": {"": "."}}
+    )
 
     cmd = build_ext(distribution)
     cmd.ensure_finalized()

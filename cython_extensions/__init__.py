@@ -11,10 +11,10 @@ bootstrap.bootstrap_cython_submodules()
 
 # Import configuration functions from the safe module
 from cython_extensions.type_checking import (
-    enable_safe_mode,
     disable_safe_mode,
-    is_safe_mode_enabled,
+    enable_safe_mode,
     get_safe_mode_status,
+    is_safe_mode_enabled,
     safe_mode_context,
 )
 

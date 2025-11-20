@@ -1,6 +1,7 @@
 """Validation functions for safe wrappers."""
 
 from numbers import Number
+
 import numpy as np
 
 
