@@ -162,4 +162,61 @@ def cy_sorted_by_distance_to(
         Units sorted by distance to position.
 
     """
-    ...
+    
+def cy_closer_than(units: Union[Units, list[Unit]], max_distance: float, position: Union[Point2, tuple[float, float]]) -> list[Unit]:
+    """Find all units closer than `distance` to `position`.
+
+    Example:
+    ```py
+    from cython_functions import cy_closer_than
+    from sc2.unit import Unit
+
+    close_units: list[Unit] = cy_closer_than(
+        self.workers, 5.0, self.start_location
+    )
+    ```
+
+    ```
+    1.37 µs ± 2.49 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
+
+    python-sc2's `units.closer_than(distance, position)` alternative:
+    12.7 µs ± 53.4 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
+    ```
+
+    Parameters:
+        units: Units we want to check.
+        max_distance: Maximum distance to consider.
+        position: Position to measure distance from.
+    Returns:
+        Units closer than `max_distance` to `position`.
+
+    """
+
+def cy_further_than(units: Union[Units, list[Unit]], min_distance: float, position: Union[Point2, tuple[float, float]]) -> list[Unit]:
+    """Find all units further than `distance` to `position`.
+
+    Example:
+    ```py
+    from cython_functions import cy_further_than
+    from sc2.unit import Unit
+
+    far_units: list[Unit] = cy_further_than(
+        self.workers, 5.0, self.start_location
+    )
+    ```
+
+    ```
+    1.01 µs ± 2.79 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
+
+    python-sc2's `units.further_than(distance, position)` alternative:
+    12.5 µs ± 52.6 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
+    ```
+
+    Parameters:
+        units: Units we want to check.
+        min_distance: Minimum distance to consider.
+        position: Position to measure distance from.
+    Returns:
+        Units further than `min_distance` to `position`.
+
+    """

@@ -14,6 +14,8 @@ from cython_extensions.type_checking.validators import (
     _validate_cy_find_units_center_mass,
     _validate_cy_in_attack_range,
     _validate_cy_sorted_by_distance_to,
+    _validate_cy_closer_than,
+    _validate_cy_further_than,
     _validate_cy_distance_to,
     _validate_cy_distance_to_squared,
     _validate_cy_towards,
@@ -91,6 +93,8 @@ from cython_extensions.units_utils import (
     cy_find_units_center_mass as _cy_find_units_center_mass,
     cy_in_attack_range as _cy_in_attack_range,
     cy_sorted_by_distance_to as _cy_sorted_by_distance_to,
+    cy_closer_than as _cy_closer_than,
+    cy_further_than as _cy_further_than,    
 )
 
 # Geometry
@@ -186,6 +190,16 @@ def cy_in_attack_range(unit, units, bonus_distance: float = 0.0):
 def cy_sorted_by_distance_to(units, position, reverse: bool = False):
     """Type-safe wrapper for cy_sorted_by_distance_to."""
     return _cy_sorted_by_distance_to(units, position, reverse)
+
+@safe_wrapper(_validate_cy_closer_than)
+def cy_closer_than(units, max_distance: float, position):
+    """Type-safe wrapper for cy_closer_than."""
+    return _cy_closer_than(units, float(max_distance), position)
+
+@safe_wrapper(_validate_cy_further_than)
+def cy_further_than(units, min_distance: float, position):
+    """Type-safe wrapper for cy_further_than."""
+    return _cy_further_than(units, float(min_distance), position)
 
 
 # ============================================================================
@@ -462,6 +476,8 @@ __all__ = [
     "cy_find_units_center_mass",
     "cy_in_attack_range",
     "cy_sorted_by_distance_to",
+    "cy_closer_than",
+    "cy_further_than",
     # Geometry
     "cy_distance_to",
     "cy_distance_to_squared",
