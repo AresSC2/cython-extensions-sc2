@@ -14,11 +14,11 @@ cpdef bint cy_can_place_structure(
     const unsigned char[:, :] placement_grid,
     const unsigned char[:, :] pathing_grid,
     bint avoid_creep = 1,
-    bint include_addon = 0
+    bint include_addon = 0,
+    bint skip_creep_check = 0
 ):
     """
     Fast alternative to python-sc2 `can_place`
-    # TODO: Test if this works / Fix if it doesn't
     # TODO: Addon check
     # 1.21 µs ± 891 ns per loop (mean ± std. dev. of 1000 runs, 10 loops each)
     """
@@ -28,13 +28,13 @@ cpdef bint cy_can_place_structure(
         unsigned int x = building_origin[0]
         unsigned int y = building_origin[1]
         unsigned int creep_check = 1 if avoid_creep else 0
+        Py_ssize_t i, j
 
-    cdef Py_ssize_t i, j
     for i in range(size_y):
         for j in range(size_x):
             if placement_grid[y + j, x + i] == 0:
                 return 0
-            if creep_grid[y + j, x + i] == creep_check:
+            if not skip_creep_check and creep_grid[y + j, x + i] == creep_check:
                 return 0
             if pathing_grid[y + j, x + i] == 0:
                 return 0

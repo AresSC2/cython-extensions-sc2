@@ -395,6 +395,7 @@ def cy_can_place_structure(
     pathing_grid,
     avoid_creep=True,
     include_addon=False,
+    skip_creep_check=False,
 ):
     """Type-safe wrapper for cy_can_place_structure."""
     return _cy_can_place_structure(
@@ -405,6 +406,7 @@ def cy_can_place_structure(
         pathing_grid,
         avoid_creep,
         include_addon,
+        skip_creep_check,
     )
 
 
