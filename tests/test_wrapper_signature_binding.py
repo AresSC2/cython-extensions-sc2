@@ -2,6 +2,7 @@
 Smoke test to verify all wrapper functions can be called with valid inputs.
 This catches signature binding issues between wrappers and validators.
 """
+
 import numpy as np
 import pytest
 from sc2.ids.unit_typeid import UnitTypeId
@@ -41,11 +42,14 @@ def test_all_wrapper_functions_callable():
         def __init__(self, x, y):
             self.x = x
             self.y = y
+
         def __iter__(self):
             # Support tuple unpacking for validator compatibility
             return iter((self.x, self.y))
+
         def __getitem__(self, idx):
             return (self.x, self.y)[idx]
+
         def __len__(self):
             return 2
 
@@ -121,9 +125,7 @@ def test_all_wrapper_functions_callable():
     # Placement solver
     ce.cy_can_place_structure((0, 0), (2, 2), u8_grid, u8_grid, u8_grid, True, False)
     ce.cy_find_building_locations(
-        u8_grid, 1, 1, (0, 1), (0, 1), 
-        u8_grid, u8_grid, u8_grid, u8_grid, 
-        2, 2, True
+        u8_grid, 1, 1, (0, 1), (0, 1), u8_grid, u8_grid, u8_grid, u8_grid, 2, 2, True
     )
 
     # Dijkstra

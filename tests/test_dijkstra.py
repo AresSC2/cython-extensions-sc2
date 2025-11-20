@@ -52,23 +52,11 @@ class TestDijkstraGeneric:
         # find paths towards center
         pathing = cy_dijkstra(cost, np.array([[2, 2]]))
         # test that starting point will be rounded
-        assert_equal(
-            pathing.get_path((1.1, 1.3)),
-            [(1, 1), (2, 2)]
-        )
-        assert_equal(
-            pathing.get_path((0.8, 0.7)),
-            [(1, 1), (2, 2)]
-        )
+        assert_equal(pathing.get_path((1.1, 1.3)), [(1, 1), (2, 2)])
+        assert_equal(pathing.get_path((0.8, 0.7)), [(1, 1), (2, 2)])
         # test that invalid start snaps to the closest valid one
-        assert_equal(
-            pathing.get_path((0.1, 2)),
-            [(1, 2), (2, 2)]
-        )
-        assert_equal(
-            pathing.get_path((-2.2, 6.9), max_distance=5),
-            [(1, 3), (2, 2)]
-        )
+        assert_equal(pathing.get_path((0.1, 2)), [(1, 2), (2, 2)])
+        assert_equal(pathing.get_path((-2.2, 6.9), max_distance=5), [(1, 3), (2, 2)])
 
 
 @pytest.mark.parametrize("bot", MAPS, indirect=True)
