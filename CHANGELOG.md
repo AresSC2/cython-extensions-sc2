@@ -1,6 +1,21 @@
 # CHANGELOG
 
 
+## v0.10.0 (2025-11-20)
+
+### Code Style
+
+- Auto formatters
+  ([`421b827`](https://github.com/AresSC2/cython-extensions-sc2/commit/421b827fa3e33772d918fd926d36c5cbe22bce8e))
+
+### Features
+
+- Add `skip_creep_check` parameter to placement functions
+  ([`8c9db5f`](https://github.com/AresSC2/cython-extensions-sc2/commit/8c9db5fdef8d80cd1406b5dd2518ee67ac66b72a))
+
+- Allows bypassing creep checks for structures like hatcheries or nydus canals.
+
+
 ## v0.9.0 (2025-11-07)
 
 ### Bug Fixes
