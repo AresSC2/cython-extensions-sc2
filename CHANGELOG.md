@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.11.0 (2025-11-22)
+
+### Refactoring
+
+- Fix wrappers.py that got broke while dealing with conflicts
+  ([`22d094d`](https://github.com/AresSC2/cython-extensions-sc2/commit/22d094d8bfe748ddf950bca9eafaf3dc179c44f3))
+
+
 ## v0.10.0 (2025-11-20)
 
 ### Code Style
@@ -8,12 +16,23 @@
 - Auto formatters
   ([`421b827`](https://github.com/AresSC2/cython-extensions-sc2/commit/421b827fa3e33772d918fd926d36c5cbe22bce8e))
 
+- Auto formatters
+  ([`bb183b4`](https://github.com/AresSC2/cython-extensions-sc2/commit/bb183b4c30fe340b0471eba3965bcb38af3d406a))
+
 ### Features
 
 - Add `skip_creep_check` parameter to placement functions
   ([`8c9db5f`](https://github.com/AresSC2/cython-extensions-sc2/commit/8c9db5fdef8d80cd1406b5dd2518ee67ac66b72a))
 
 - Allows bypassing creep checks for structures like hatcheries or nydus canals.
+
+- Add new cython function closer/further than
+  ([`cdd0840`](https://github.com/AresSC2/cython-extensions-sc2/commit/cdd0840f3ad19ec252ef7343174f33411656fbd7))
+
+### Testing
+
+- Add unit tests for cython utility functions in `tests/test_units_utils.py`
+  ([`8ff9574`](https://github.com/AresSC2/cython-extensions-sc2/commit/8ff9574fc4ad856a4054894640b1a7a64f00aaa5))
 
 
 ## v0.9.0 (2025-11-07)
