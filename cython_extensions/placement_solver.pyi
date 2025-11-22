@@ -8,6 +8,7 @@ def cy_can_place_structure(
     pathing_grid: np.ndarray,
     avoid_creep: bool = True,
     include_addon: bool = False,
+    skip_creep_check: bool = False,
 ) -> bool:
     """Simulate whether a structure can be placed at `building_origin`
     Fast alternative to python-sc2 `can_place`
@@ -41,6 +42,8 @@ def cy_can_place_structure(
         pathing_grid:
         avoid_creep: Ensure this is False if checking Zerg structures.
         include_addon: Check if there is room for addon too.
+        skip_creep_check: Useful for hatchery or nydus canals.
+            They can place on or off creep.
 
     Returns:
         Can we place structure at building_origin?
