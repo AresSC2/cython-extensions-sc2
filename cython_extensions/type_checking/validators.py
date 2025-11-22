@@ -1,6 +1,7 @@
 """Validation functions for safe wrappers."""
 
 from numbers import Number
+
 import numpy as np
 
 
@@ -148,13 +149,14 @@ def _validate_cy_sorted_by_distance_to(args):
     _validate_position(args["position"], "position")
     reverse = args.get("reverse", False)
     _validate_bool(reverse, "reverse")
-    
-    
+
+
 def _validate_cy_closer_than(args):
     _validate_units(args["units"], "units", allow_empty=True)
     _validate_position(args["position"], "position")
     _validate_number(args["max_distance"], "max_distance", allow_negative=False)
-    
+
+
 def _validate_cy_further_than(args):
     _validate_units(args["units"], "units", allow_empty=True)
     _validate_position(args["position"], "position")

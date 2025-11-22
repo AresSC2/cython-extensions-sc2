@@ -162,8 +162,12 @@ def cy_sorted_by_distance_to(
         Units sorted by distance to position.
 
     """
-    
-def cy_closer_than(units: Union[Units, list[Unit]], max_distance: float, position: Union[Point2, tuple[float, float]]) -> list[Unit]:
+
+def cy_closer_than(
+    units: Union[Units, list[Unit]],
+    max_distance: float,
+    position: Union[Point2, tuple[float, float]],
+) -> list[Unit]:
     """Find all units closer than `distance` to `position`.
 
     Example:
@@ -192,7 +196,11 @@ def cy_closer_than(units: Union[Units, list[Unit]], max_distance: float, positio
 
     """
 
-def cy_further_than(units: Union[Units, list[Unit]], min_distance: float, position: Union[Point2, tuple[float, float]]) -> list[Unit]:
+def cy_further_than(
+    units: Union[Units, list[Unit]],
+    min_distance: float,
+    position: Union[Point2, tuple[float, float]],
+) -> list[Unit]:
     """Find all units further than `distance` to `position`.
 
     Example:

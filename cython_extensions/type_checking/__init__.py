@@ -4,13 +4,12 @@ Provides type-safe wrappers for all Cython functions.
 """
 
 from cython_extensions.type_checking.config import (
-    enable_safe_mode,
     disable_safe_mode,
-    is_safe_mode_enabled,
+    enable_safe_mode,
     get_safe_mode_status,
+    is_safe_mode_enabled,
     safe_mode_context,
 )
-
 from cython_extensions.type_checking.wrappers import *
 
 __all__ = [

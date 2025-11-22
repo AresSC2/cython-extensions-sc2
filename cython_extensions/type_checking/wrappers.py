@@ -3,48 +3,48 @@ Complete safe wrapper functions for all Cython extensions.
 Provides type validation when safe mode is enabled.
 """
 
-from typing import Optional, Callable
-from functools import wraps
 import inspect
+from functools import wraps
+from typing import Callable, Optional
 
 from cython_extensions.type_checking.config import is_safe_mode_enabled
 from cython_extensions.type_checking.validators import (
-    _validate_cy_center,
-    _validate_cy_closest_to,
-    _validate_cy_find_units_center_mass,
-    _validate_cy_in_attack_range,
-    _validate_cy_sorted_by_distance_to,
-    _validate_cy_closer_than,
-    _validate_cy_further_than,
-    _validate_cy_distance_to,
-    _validate_cy_distance_to_squared,
-    _validate_cy_towards,
-    _validate_cy_angle_to,
-    _validate_cy_angle_diff,
-    _validate_cy_find_average_angle,
-    _validate_cy_get_angle_between_points,
-    _validate_cy_translate_point_along_line,
-    _validate_cy_attack_ready,
-    _validate_cy_is_facing,
-    _validate_cy_range_vs_target,
-    _validate_cy_pick_enemy_target,
-    _validate_cy_find_aoe_position,
-    _validate_cy_get_turn_speed,
-    _validate_cy_has_creep,
-    _validate_cy_in_pathing_grid_burny,
-    _validate_cy_in_pathing_grid_ma,
-    _validate_cy_unit_pending,
-    _validate_cy_pylon_matrix_covers,
-    _validate_cy_flood_fill_grid,
-    _validate_cy_get_bounding_box,
     _validate_cy_all_points_below_max_value,
     _validate_cy_all_points_have_value,
+    _validate_cy_angle_diff,
+    _validate_cy_angle_to,
+    _validate_cy_attack_ready,
+    _validate_cy_can_place_structure,
+    _validate_cy_center,
+    _validate_cy_closer_than,
+    _validate_cy_closest_to,
+    _validate_cy_dijkstra,
+    _validate_cy_distance_to,
+    _validate_cy_distance_to_squared,
+    _validate_cy_find_aoe_position,
+    _validate_cy_find_average_angle,
+    _validate_cy_find_building_locations,
+    _validate_cy_find_units_center_mass,
+    _validate_cy_flood_fill_grid,
+    _validate_cy_further_than,
+    _validate_cy_get_angle_between_points,
+    _validate_cy_get_bounding_box,
+    _validate_cy_get_turn_speed,
+    _validate_cy_has_creep,
+    _validate_cy_in_attack_range,
+    _validate_cy_in_pathing_grid_burny,
+    _validate_cy_in_pathing_grid_ma,
+    _validate_cy_is_facing,
+    _validate_cy_last_index_with_value,
+    _validate_cy_pick_enemy_target,
     _validate_cy_point_below_value,
     _validate_cy_points_with_value,
-    _validate_cy_last_index_with_value,
-    _validate_cy_can_place_structure,
-    _validate_cy_find_building_locations,
-    _validate_cy_dijkstra,
+    _validate_cy_pylon_matrix_covers,
+    _validate_cy_range_vs_target,
+    _validate_cy_sorted_by_distance_to,
+    _validate_cy_towards,
+    _validate_cy_translate_point_along_line,
+    _validate_cy_unit_pending,
 )
 
 
@@ -86,76 +86,85 @@ def safe_wrapper(validation_func: Optional[Callable] = None):
 
 
 # Import all original Cython functions
-# Units utils
-from cython_extensions.units_utils import (
-    cy_center as _cy_center,
-    cy_closest_to as _cy_closest_to,
-    cy_find_units_center_mass as _cy_find_units_center_mass,
-    cy_in_attack_range as _cy_in_attack_range,
-    cy_sorted_by_distance_to as _cy_sorted_by_distance_to,
-    cy_closer_than as _cy_closer_than,
-    cy_further_than as _cy_further_than,    
-)
-
-# Geometry
-from cython_extensions.geometry import (
-    cy_distance_to as _cy_distance_to,
-    cy_distance_to_squared as _cy_distance_to_squared,
-    cy_towards as _cy_towards,
-    cy_angle_to as _cy_angle_to,
-    cy_angle_diff as _cy_angle_diff,
-    cy_find_average_angle as _cy_find_average_angle,
-    cy_find_correct_line as _cy_find_correct_line,
-    cy_get_angle_between_points as _cy_get_angle_between_points,
-    cy_translate_point_along_line as _cy_translate_point_along_line,
-)
-
 # Combat utils
 from cython_extensions.combat_utils import (
     cy_adjust_moving_formation as _cy_adjust_moving_formation,
-    cy_attack_ready as _cy_attack_ready,
-    cy_find_aoe_position as _cy_find_aoe_position,
-    cy_get_turn_speed as _cy_get_turn_speed,
-    cy_is_facing as _cy_is_facing,
-    cy_pick_enemy_target as _cy_pick_enemy_target,
-    cy_range_vs_target as _cy_range_vs_target,
 )
+from cython_extensions.combat_utils import cy_attack_ready as _cy_attack_ready
+from cython_extensions.combat_utils import cy_find_aoe_position as _cy_find_aoe_position
+from cython_extensions.combat_utils import cy_get_turn_speed as _cy_get_turn_speed
+from cython_extensions.combat_utils import cy_is_facing as _cy_is_facing
+from cython_extensions.combat_utils import cy_pick_enemy_target as _cy_pick_enemy_target
+from cython_extensions.combat_utils import cy_range_vs_target as _cy_range_vs_target
+
+# Dijkstra
+from cython_extensions.dijkstra import cy_dijkstra as _cy_dijkstra
 
 # General utils
+from cython_extensions.general_utils import cy_has_creep as _cy_has_creep
 from cython_extensions.general_utils import (
-    cy_has_creep as _cy_has_creep,
     cy_in_pathing_grid_burny as _cy_in_pathing_grid_burny,
+)
+from cython_extensions.general_utils import (
     cy_in_pathing_grid_ma as _cy_in_pathing_grid_ma,
+)
+from cython_extensions.general_utils import (
     cy_pylon_matrix_covers as _cy_pylon_matrix_covers,
-    cy_unit_pending as _cy_unit_pending,
+)
+from cython_extensions.general_utils import cy_unit_pending as _cy_unit_pending
+
+# Geometry
+from cython_extensions.geometry import cy_angle_diff as _cy_angle_diff
+from cython_extensions.geometry import cy_angle_to as _cy_angle_to
+from cython_extensions.geometry import cy_distance_to as _cy_distance_to
+from cython_extensions.geometry import cy_distance_to_squared as _cy_distance_to_squared
+from cython_extensions.geometry import cy_find_average_angle as _cy_find_average_angle
+from cython_extensions.geometry import cy_find_correct_line as _cy_find_correct_line
+from cython_extensions.geometry import (
+    cy_get_angle_between_points as _cy_get_angle_between_points,
+)
+from cython_extensions.geometry import cy_towards as _cy_towards
+from cython_extensions.geometry import (
+    cy_translate_point_along_line as _cy_translate_point_along_line,
 )
 
 # Map analysis
-from cython_extensions.map_analysis import (
-    cy_flood_fill_grid as _cy_flood_fill_grid,
-    cy_get_bounding_box as _cy_get_bounding_box,
-)
+from cython_extensions.map_analysis import cy_flood_fill_grid as _cy_flood_fill_grid
+from cython_extensions.map_analysis import cy_get_bounding_box as _cy_get_bounding_box
 
 # Numpy helper
 from cython_extensions.numpy_helper import (
     cy_all_points_below_max_value as _cy_all_points_below_max_value,
-    cy_all_points_have_value as _cy_all_points_have_value,
-    cy_last_index_with_value as _cy_last_index_with_value,
-    cy_point_below_value as _cy_point_below_value,
-    cy_points_with_value as _cy_points_with_value,
 )
+from cython_extensions.numpy_helper import (
+    cy_all_points_have_value as _cy_all_points_have_value,
+)
+from cython_extensions.numpy_helper import (
+    cy_last_index_with_value as _cy_last_index_with_value,
+)
+from cython_extensions.numpy_helper import cy_point_below_value as _cy_point_below_value
+from cython_extensions.numpy_helper import cy_points_with_value as _cy_points_with_value
 
 # Placement solver
 from cython_extensions.placement_solver import (
     cy_can_place_structure as _cy_can_place_structure,
+)
+from cython_extensions.placement_solver import (
     cy_find_building_locations as _cy_find_building_locations,
 )
 
-# Dijkstra
-from cython_extensions.dijkstra import (
-    cy_dijkstra as _cy_dijkstra,
+# Units utils
+from cython_extensions.units_utils import cy_center as _cy_center
+from cython_extensions.units_utils import cy_closer_than as _cy_closer_than
+from cython_extensions.units_utils import cy_closest_to as _cy_closest_to
+from cython_extensions.units_utils import (
+    cy_find_units_center_mass as _cy_find_units_center_mass,
 )
-
+from cython_extensions.units_utils import cy_further_than as _cy_further_than
+from cython_extensions.units_utils import cy_in_attack_range as _cy_in_attack_range
+from cython_extensions.units_utils import (
+    cy_sorted_by_distance_to as _cy_sorted_by_distance_to,
+)
 
 # ============================================================================
 # UNITS UTILS WRAPPERS
@@ -191,10 +200,12 @@ def cy_sorted_by_distance_to(units, position, reverse: bool = False):
     """Type-safe wrapper for cy_sorted_by_distance_to."""
     return _cy_sorted_by_distance_to(units, position, reverse)
 
+
 @safe_wrapper(_validate_cy_closer_than)
 def cy_closer_than(units, max_distance: float, position):
     """Type-safe wrapper for cy_closer_than."""
     return _cy_closer_than(units, float(max_distance), position)
+
 
 @safe_wrapper(_validate_cy_further_than)
 def cy_further_than(units, min_distance: float, position):
