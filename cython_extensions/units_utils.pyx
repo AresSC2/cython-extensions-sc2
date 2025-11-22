@@ -157,3 +157,46 @@ cpdef list cy_sorted_by_distance_to(object units, (float, float) position, bint 
     indices = distances.argsort()
 
     return [units[j] for j in indices]
+
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef (list) cy_closer_than(object units, double max_distance, (float, float) position ):
+    cdef:
+        unsigned int len_units = len(units)
+        unsigned int i
+        double max_distance_sq = max_distance * max_distance
+        double dist_sq
+        (float, float) other_pos
+        list returned_units = []
+
+    for i in range(len_units):
+        other_pos = units[i].position
+        dist_sq = cy_distance_to_squared((other_pos[0], other_pos[1]), (position[0], position[1]))
+        if dist_sq < max_distance_sq:
+            returned_units.append(units[i])
+
+    return returned_units
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef (list) cy_further_than(object units, double min_distance, (float, float) position ):
+    cdef:
+        unsigned int len_units = len(units)
+        unsigned int i
+        double min_distance_sq = min_distance * min_distance
+        double dist_sq
+        (float, float) other_pos
+        list returned_units = []
+
+    for i in range(len_units):
+        other_pos = units[i].position
+        dist_sq = cy_distance_to_squared((other_pos[0], other_pos[1]), (position[0], position[1]))
+        if dist_sq > min_distance_sq:
+            returned_units.append(units[i])
+
+    return returned_units
+
+

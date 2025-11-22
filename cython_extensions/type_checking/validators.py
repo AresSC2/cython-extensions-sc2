@@ -151,6 +151,18 @@ def _validate_cy_sorted_by_distance_to(args):
     _validate_bool(reverse, "reverse")
 
 
+def _validate_cy_closer_than(args):
+    _validate_units(args["units"], "units", allow_empty=True)
+    _validate_position(args["position"], "position")
+    _validate_number(args["max_distance"], "max_distance", allow_negative=False)
+
+
+def _validate_cy_further_than(args):
+    _validate_units(args["units"], "units", allow_empty=True)
+    _validate_position(args["position"], "position")
+    _validate_number(args["min_distance"], "min_distance", allow_negative=False)
+
+
 # Geometry validations
 def _validate_cy_distance_to(args):
     _validate_position(args["p1"], "p1")
