@@ -120,7 +120,7 @@ class BotTest(BotAI):
         position= (base.position.x, base.position.y)
         #position = (base.position.x, base.position.y)
         a=(len(cy_closer_than(units, 10.0, base.position)))
-        b=(len(cy_further_than(units, 10.0, position)))
+        b=(len(cy_further_than(units_A, 10.0, position)))
         
         #summe
         print(f"Closer than 10: {a}, Further than 10: {b}, Total: {a+b}")

@@ -174,7 +174,7 @@ cpdef (list) cy_closer_than(object units, double max_distance, (float, float) po
     for i in range(len_units):
         other_pos = units[i].position
         dist_sq = cy_distance_to_squared((other_pos[0], other_pos[1]), (position[0], position[1]))
-        if dist_sq <= max_distance_sq:
+        if dist_sq < max_distance_sq:
             returned_units.append(units[i])
 
     return returned_units
@@ -194,7 +194,7 @@ cpdef (list) cy_further_than(object units, double min_distance, (float, float) p
     for i in range(len_units):
         other_pos = units[i].position
         dist_sq = cy_distance_to_squared((other_pos[0], other_pos[1]), (position[0], position[1]))
-        if dist_sq >= min_distance_sq:
+        if dist_sq > min_distance_sq:
             returned_units.append(units[i])
 
     return returned_units
