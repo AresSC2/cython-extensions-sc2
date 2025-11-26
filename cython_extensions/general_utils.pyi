@@ -193,8 +193,15 @@ def cy_structure_pending(ai: "BotAI", unit_type: UnitID, include_ares_planned: b
     ```py
     from cython_functions import cy_structure_pending
     from sc2.ids.unit_typeid import UnitTypeId
-    num_pylons_pending: int = cy_structure_pending(UnitTypeId.PYLON)
+    num_pylons_pending: int = cy_structure_pending(self, UnitTypeId.PYLON)
     ```
+    Example with Ares planned buildings included:
+    ```py
+    from cython_functions import cy_structure_pending
+    from sc2.ids.unit_typeid import UnitTypeId
+    num_techlabs_pending: int = cy_structure_pending(self, UnitTypeId.STARPORTTECHLAB, include_ares_planned=True)
+    ```
+    
     ```
     Cython version (without Ares planned buildings):
     907 ns ± 3.5 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
