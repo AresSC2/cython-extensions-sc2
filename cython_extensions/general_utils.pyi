@@ -207,6 +207,7 @@ def cy_structure_pending(ai: "BotAI", unit_type: UnitID, include_ares_planned: b
         ai: Bot object that will be running the game.
         unit_type: Unit type we want to check.
         include_ares_planned: If True, includes ares planned structures in the count.
+            IMPORTANT: You need to work with Ares sc2 bot for this to work
             Default is False.
     Returns:
         How many structures of unit_type are currently building.
