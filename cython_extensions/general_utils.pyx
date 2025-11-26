@@ -7,7 +7,7 @@ from sc2.dicts.unit_trained_from import UNIT_TRAINED_FROM
 from sc2.ids.unit_typeid import UnitTypeId
 
 from cython_extensions.geometry import cy_distance_to_squared
-
+from cython_extensions.ability_mapping import map_value
 cimport numpy as cnp
 
 DOES_NOT_USE_LARVA: dict[UnitTypeId, UnitTypeId] = {
@@ -141,3 +141,41 @@ cpdef unsigned int cy_unit_pending(object bot, object unit_type):
             ):
                 num_pending += 1
         return num_pending
+
+@boundscheck(False)
+@wraparound(False)
+cpdef unsigned int cy_structure_pending(
+        object bot,
+        object structure_type,
+        bool include_ares_planned = False # standard behavior excludes ares planned structures
+    ):
+    cdef:
+        unsigned int num_pending = 0
+        object structures_collection, structure
+        object counts_and_progress = bot._abilities_count_and_build_progress[0]
+        object building_tracker
+        int ability_int
+        object ability_obj
+        cdef int count
+        cdef int target = <int> structure_type.value
+
+    if include_ares_planned:
+        building_tracker = bot.mediator.get_building_tracker_dict
+        for tag, info in building_tracker.items():
+            if info["id"] == structure_type:
+                num_pending += 1
+    for ability_obj, count in counts_and_progress.items():
+        ability_int = <int> ability_obj.value
+        if map_value(target) == ability_int:
+            num_pending += count
+
+    return num_pending
+
+      
+                 
+
+
+
+
+
+

@@ -180,4 +180,37 @@ def cy_unit_pending(ai: "BotAI", unit_type: UnitID) -> int:
 
 
     """
+
+def cy_structure_pending(ai: "BotAI", unit_type: UnitID, include_ares_planned: bool = False) -> int:
+    """Check how many structures of unit_type are pending
+    Faster structure specific alternative to `python-sc2`'s `already_pending`
+    
+    Attention: This only counts buildings that are being constructed, or are in unit.order_queue.
+    It does not count buildings, which are in a plan to be built, but have not started construction yet.
+    
+    
+    Example:
+    ```py
+    from cython_functions import cy_structure_pending
+    from sc2.ids.unit_typeid import UnitTypeId
+    num_pylons_pending: int = cy_structure_pending(UnitTypeId.PYLON)
+    ```
+    ```
+    Cython version (without Ares planned buildings):
+    907 ns ± 3.5 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
+    Cython version (with Ares planned buildings):
+    ~1µs
+    Python-sc2 `already_pending` alternative:
+    2.06 µs ± 6.49 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
+    ```
+    Args:
+        ai: Bot object that will be running the game.
+        unit_type: Unit type we want to check.
+        include_ares_planned: If True, includes ares planned structures in the count.
+            Default is False.
+    Returns:
+        How many structures of unit_type are currently building.
+    """
+    
+    
     ...
