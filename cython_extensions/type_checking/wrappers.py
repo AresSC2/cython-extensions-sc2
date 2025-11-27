@@ -45,7 +45,8 @@ from cython_extensions.type_checking.validators import (
     _validate_cy_towards,
     _validate_cy_translate_point_along_line,
     _validate_cy_unit_pending,
-    _validate_cy_structure_pending
+    _validate_cy_structure_pending,
+    _validate_cy_structure_pending_ares
 )
 
 
@@ -113,6 +114,7 @@ from cython_extensions.general_utils import (
 )
 from cython_extensions.general_utils import cy_unit_pending as _cy_unit_pending
 from cython_extensions.general_utils import cy_structure_pending as _cy_structure_pending
+from cython_extensions.general_utils import cy_structure_pending_ares as _cy_structure_pending_ares
 
 # Geometry
 from cython_extensions.geometry import cy_angle_diff as _cy_angle_diff
@@ -346,9 +348,14 @@ def cy_unit_pending(bot, unit_type):
     return _cy_unit_pending(bot, unit_type)
 
 @safe_wrapper(_validate_cy_structure_pending)
-def cy_structure_pending(bot, unit_type, include_ares_planned: bool = False):
+def cy_structure_pending(bot, unit_type):
     """Type-safe wrapper for cy_structure_pending."""
-    return _cy_structure_pending(bot, unit_type, include_ares_planned)
+    return _cy_structure_pending(bot, unit_type)
+
+@safe_wrapper(_validate_cy_structure_pending_ares)
+def cy_structure_pending_ares(bot, unit_type, include_planned: bool = True):
+    """Type-safe wrapper for cy_structure_pending_ares."""
+    return _cy_structure_pending_ares(bot, unit_type, include_planned=include_planned)
 
 
 @safe_wrapper(_validate_cy_pylon_matrix_covers)
@@ -523,6 +530,7 @@ __all__ = [
     "cy_pylon_matrix_covers",
     "cy_unit_pending",
     "cy_structure_pending",
+    "cy_structure_pending_ares",
     # Map analysis
     "cy_flood_fill_grid",
     "cy_get_bounding_box",

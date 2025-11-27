@@ -280,8 +280,18 @@ def _validate_cy_structure_pending(args):
     # cy_structure_pending(bot, unit_type)
     bot = args["bot"]  # presence check only
     unit_type = args["unit_type"]
-    include_ares_planned = args.get("include_ares_planned", False)
-    _validate_bool(include_ares_planned, "include_ares_planned")
+    # Validate unit_type can be either int-like enum with .name/.value or similar; keep minimal:
+    if not isinstance(unit_type, int) and not hasattr(unit_type, "name"):
+        # keeping this permissive to avoid breaking behavior
+        pass  # do not raise here to avoid changing logic
+    
+    
+def _validate_cy_structure_pending_ares(args):
+    # cy_structure_pending_ares(bot, unit_type, include_planned)
+    bot = args["bot"]  # presence check only
+    unit_type = args["unit_type"]
+    include_planned = args.get("include_planned", True)
+    _validate_bool(include_planned, "include_planned")
     # Validate unit_type can be either int-like enum with .name/.value or similar; keep minimal:
     if not isinstance(unit_type, int) and not hasattr(unit_type, "name"):
         # keeping this permissive to avoid breaking behavior

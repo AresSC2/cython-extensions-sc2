@@ -8,6 +8,7 @@ from sc2.ids.unit_typeid import UnitTypeId
 
 from cython_extensions.geometry import cy_distance_to_squared
 from cython_extensions.ability_mapping import map_value
+from cython_extensions.ability_order_tracker import cy_abilities_count_and_build_progress
 cimport numpy as cnp
 
 DOES_NOT_USE_LARVA: dict[UnitTypeId, UnitTypeId] = {
@@ -147,32 +148,66 @@ cpdef unsigned int cy_unit_pending(object bot, object unit_type):
 cpdef unsigned int cy_structure_pending(
         object bot,
         object structure_type,
-        bool include_ares_planned = False # standard behavior excludes ares planned structures
     ):
     cdef:
         unsigned int num_pending = 0
-        object structures_collection, structure
-        object counts_and_progress = bot._abilities_count_and_build_progress[0]
-        object building_tracker
+        object counts_and_progress
+        object creation_ability = None
+        object local_get
         int ability_int
         object ability_obj
-        cdef int count
-        cdef int target = <int> structure_type.value
+        int count
+        int target = <int> structure_type.value
 
-    if include_ares_planned:
+    # Use optimized Cython function to get ability counts
+    counts_and_progress = cy_abilities_count_and_build_progress(bot)
+
+    # Fast path: resolve creation ability id once and read the precomputed count
+
+
+    # local_get reduces repeated attribute accesses
+    for ability_obj in counts_and_progress.keys():
+        ability_int = <int> ability_obj.value
+        if ability_int == map_value(target):
+            num_pending += <int> counts_and_progress[ability_obj]
+    return num_pending
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef unsigned int cy_structure_pending_ares(
+        object bot,
+        object unit_type,
+        include_planned=True
+    ):
+    cdef:
+        unsigned int num_pending = 0
+        object building_tracker
+        object structure_collection = bot.mediator.get_own_structures_dict[unit_type]
+        object s
+        object tag
+        object info
+
+    # Add Ares planned buildings/units
+    if include_planned:
         building_tracker = bot.mediator.get_building_tracker_dict
         for tag, info in building_tracker.items():
-            if info["id"] == structure_type:
+            if info["id"] == unit_type:
                 num_pending += 1
-    for ability_obj, count in counts_and_progress.items():
-        ability_int = <int> ability_obj.value
-        if map_value(target) == ability_int:
-            num_pending += count
+
+
+    # Track ongoing constructions
+    if bot.race != "Terran":
+        for s in structure_collection:
+            if s.build_progress < 1.0:
+                num_pending += 1
+
 
     return num_pending
 
-      
-                 
+
+
+
 
 
 

@@ -195,8 +195,8 @@ class BotTest(BotAI):
         
         
         if iteration % 7 ==0:
-            print(cy_structure_pending(self, UnitTypeId.BARRACKS))
-            print(cy_structure_pending(self, UnitTypeId.STARPORTTECHLAB))
+            print(cy_structure_pending(self, UnitTypeId.SUPPLYDEPOT))
+            #print(cy_structure_pending(self, UnitTypeId.STARPORTTECHLAB))
         
         
         #print(f"Pending Spawning Pools: {pending_spawning_pools}")
