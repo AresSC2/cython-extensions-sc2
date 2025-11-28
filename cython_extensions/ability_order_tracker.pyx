@@ -8,11 +8,8 @@ from sc2.data import Race
 from sc2.ids.ability_id import AbilityId
 from sc2.ids.unit_typeid import UnitTypeId
 
-# Hardcoded fixes for specific unit types that don't have standard creation abilities
-cdef dict CREATION_ABILITY_FIX = {
-    UnitTypeId.ARCHON: AbilityId.ARCHON_WARP_TARGET,
-    # Add other rich geyser or special cases here as needed
-}
+
+
 
 cpdef dict cy_abilities_count_and_build_progress(object bot):
     """
@@ -117,4 +114,46 @@ cpdef dict cy_abilities_count_and_build_progress(object bot):
     
     return abilities_amount
 
+#TEMPORRARY placing it here until we cythonize the tracker file, does not work yet
+@cache_per_game_loop
+def _abilities_count_structures(bot):
+    """Cache for the already_pending function, includes protoss units warping in,
+    all units in production and all structures, and all morphs"""
+    abilities_amount: Counter[AbilityId] = Counter()
 
+    for worker in bot.workers:
+        for order in worker.orders:
+            abilities_amount[order.ability.exact_id] += 1
+    if bot.race == Race.Terran:
+        return abilities_amount
+
+    for structure in bot.structures:
+        if structure.build_progress < 1.0:
+            # If an SCV is constructing a building, already_pending would count this structure twice
+            # (once from the SCV order, and once from "not structure.is_ready")
+            type_id = structure.type_id
+            if type_id in UNIT_TYPE_ID_TO_ABILITY_MAP:
+                creation_ability: AbilityId = UNIT_TYPE_ID_TO_ABILITY_MAP[type_id]
+                abilities_amount[creation_ability] += 1
+
+    return abilities_amount
+
+
+
+def cache_per_game_loop(func):
+    """Decorator to cache a method's result until bot.state.game_loop changes."""
+    cache_name = f"_{func.__name__}_cache"
+    loop_name = f"_{func.__name__}_loop"
+
+    def wrapper(bot, *args, **kwargs):
+        current_loop = bot.state.game_loop
+        if getattr(bot, loop_name, object()) == current_loop:
+            return getattr(bot, cache_name)
+        result = func(bot, *args, **kwargs)
+        setattr(bot, cache_name, result)
+        setattr(bot, loop_name, current_loop)
+        return result
+    return wrapper
+
+
+# Willl edit general_utils.pyx to use this cythonized function later
