@@ -1,0 +1,82 @@
+# cython: boundscheck=False, wraparound=False, cdivision=True
+"""
+Optimized Cython implementation for tracking ability counts and build progress.
+Replaces the Python _abilities_count_and_build_progress method for maximum speed.
+"""
+
+from sc2.data import Race
+from sc2.ids.ability_id import AbilityId
+from sc2.ids.unit_typeid import UnitTypeId
+
+from cython_extensions.ability_mapping import map_value
+from collections import Counter
+from sc2.ids.ability_id import AbilityId
+from sc2.ids.unit_typeid import UnitTypeId
+from sc2.data import Race
+from cython cimport boundscheck, wraparound
+from libc.stdlib cimport malloc, free
+from libc.string cimport memset
+
+
+
+
+#TEMPORARRY placing it here until we cythonize the tracker file, does not work yet
+cdef struct AbilityCount:
+    int ability_id
+    int count
+
+# Disable Python checks for speed
+@boundscheck(False)
+@wraparound(False)
+cpdef AbilityCount[:] abilities_count_structures(object bot):
+    """
+    Build a C array indexed by ability_id that stores counts.
+    Returns: memoryview of AbilityCount (size = 5000)
+    """
+
+    cdef int MAX_ABILITIES = 4200
+    cdef AbilityCount* arr = <AbilityCount*> malloc(MAX_ABILITIES * sizeof(AbilityCount))
+
+    # ... fill arr ...
+
+    memset(arr, 0, MAX_ABILITIES * sizeof(AbilityCount))
+
+    cdef object unit
+    cdef object order
+    cdef int aid
+
+    # Workers orders → ability_id count
+    for unit in bot.workers:
+        for order in unit.orders:
+            aid = <int> order.ability.exact_id.value
+            if 0 <= aid < MAX_ABILITIES:
+                arr[aid].count += 1
+
+    # Structures → build progress < 1.0 → increment creation ability
+    if bot.race != Race.Terran:
+        for unit in bot.structures:
+            if unit.build_progress < 1.0:
+                aid = <int> map_value(unit.type_id.value)
+                if 0 <= aid < MAX_ABILITIES:
+                    arr[aid].count += 1
+
+    # Return as Python-usable memoryview
+    return <AbilityCount[:MAX_ABILITIES]> arr
+
+
+def cache_per_game_loop(func):
+    cache_name = f"_{func.__name__}_cache"
+    loop_name = f"_{func.__name__}_loop"
+    def wrapper(bot, *args, **kwargs):
+        current_loop = bot.state.game_loop
+        if getattr(bot, loop_name, None) == current_loop:
+            return getattr(bot, cache_name)
+        result = func(bot, *args, **kwargs)
+        setattr(bot, cache_name, result)
+        setattr(bot, loop_name, current_loop)
+        return result
+    return wrapper
+
+@cache_per_game_loop
+def cy_abilities_count_structures(bot):
+    return abilities_count_structures(bot)
