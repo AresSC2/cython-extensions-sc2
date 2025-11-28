@@ -8,14 +8,12 @@ cdef int mapping_array[4200]
 
 @cython.cfunc
 @cython.inline
-cdef int _map_value(int key) nogil:
+cpdef int map_value(int key) nogil:
     if 0 <= key < MAX_KEY:
         return mapping_array[key]
     return -1
 
 
-def map_value(int key):
-    return _map_value(key)
 
 # Rewritten mappings from UNIT_TYPE_ID_TO_ABILITY_MAP
 mapping_array[18] = 318  # COMMANDCENTER

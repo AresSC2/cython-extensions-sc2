@@ -198,10 +198,9 @@ def cy_structure_pending(ai: "BotAI", unit_type: UnitID) -> int:
 
     
     ```
-    Cython version (without Ares planned buildings):
-    907 ns ± 3.5 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
-    Cython version (with Ares planned buildings):
-    ~1µs
+    Cython version:
+    544 ns ± 5.76 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
+
     Python-sc2 `already_pending` alternative:
     2.06 µs ± 6.49 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
     ```

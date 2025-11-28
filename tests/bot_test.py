@@ -194,8 +194,9 @@ class BotTest(BotAI):
         #     }"
         
         
+        
         if iteration % 7 ==0:
-            print(cy_structure_pending(self, UnitTypeId.SUPPLYDEPOT))
+            print("--c ", cy_structure_pending(self, UnitTypeId.PYLON))
             #print(cy_structure_pending(self, UnitTypeId.STARPORTTECHLAB))
         
         
@@ -273,7 +274,7 @@ if __name__ == "__main__":
     run_game(
         maps.get(random_map),
         [
-            Bot(Race.Terran, BotTest()),
+            Bot(Race.Protoss, BotTest()),
             Computer(Race.Protoss, Difficulty.Medium),
         ],
         realtime=True,

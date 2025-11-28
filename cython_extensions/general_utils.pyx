@@ -7,8 +7,8 @@ from sc2.dicts.unit_trained_from import UNIT_TRAINED_FROM
 from sc2.ids.unit_typeid import UnitTypeId
 
 from cython_extensions.geometry import cy_distance_to_squared
-from cython_extensions.ability_mapping import map_value
-from cython_extensions.ability_order_tracker import cy_abilities_count_and_build_progress
+from cython_extensions.ability_mapping cimport map_value
+from cython_extensions.ability_order_tracker import cy_abilities_count_structures
 cimport numpy as cnp
 
 DOES_NOT_USE_LARVA: dict[UnitTypeId, UnitTypeId] = {
@@ -143,6 +143,12 @@ cpdef unsigned int cy_unit_pending(object bot, object unit_type):
                 num_pending += 1
         return num_pending
 
+
+
+cdef struct AbilityCount:
+    int ability_id
+    int count
+
 @boundscheck(False)
 @wraparound(False)
 cpdef unsigned int cy_structure_pending(
@@ -158,18 +164,20 @@ cpdef unsigned int cy_structure_pending(
         object ability_obj
         int count
         int target = <int> structure_type.value
+        cdef AbilityCount item
 
     # Use optimized Cython function to get ability counts
-    counts_and_progress = cy_abilities_count_and_build_progress(bot)
+
+    counts_and_progress = cy_abilities_count_structures(bot) #returns a c array memoryview
 
     # Fast path: resolve creation ability id once and read the precomputed count
 
-
     # local_get reduces repeated attribute accesses
-    for ability_obj in counts_and_progress.keys():
-        ability_int = <int> ability_obj.value
-        if ability_int == map_value(target):
-            num_pending += <int> counts_and_progress[ability_obj]
+    arr_len = counts_and_progress.shape[0]
+    target_created_ability = <int> map_value(target)
+    if 0 <= target_created_ability < arr_len:
+        item = counts_and_progress[target_created_ability]
+        num_pending += item.count
     return num_pending
 
 
