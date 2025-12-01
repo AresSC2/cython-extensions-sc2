@@ -5,10 +5,8 @@ Replaces the Python _abilities_count_and_build_progress method for maximum speed
 """
 
 from sc2.data import Race
-from sc2.ids.ability_id import AbilityId
-from sc2.ids.unit_typeid import UnitTypeId
 
-from cython_extensions.ability_mapping import map_value
+from cython_extensions.ability_mapping cimport map_value
 from collections import Counter
 from sc2.ids.ability_id import AbilityId
 from sc2.ids.unit_typeid import UnitTypeId
@@ -31,10 +29,10 @@ cdef struct AbilityCount:
 cpdef AbilityCount[:] abilities_count_structures(object bot):
     """
     Build a C array indexed by ability_id that stores counts.
-    Returns: memoryview of AbilityCount (size = 5000)
+    Returns: memoryview of AbilityCount (size = 2200)
     """
 
-    cdef int MAX_ABILITIES = 4200
+    cdef int MAX_ABILITIES = 2200
     cdef AbilityCount* arr = <AbilityCount*> malloc(MAX_ABILITIES * sizeof(AbilityCount))
 
     # ... fill arr ...
@@ -44,9 +42,12 @@ cpdef AbilityCount[:] abilities_count_structures(object bot):
     cdef object unit
     cdef object order
     cdef int aid
+    cdef object structures = bot.structures
+    cdef object workers = bot.workers
+
 
     # Workers orders → ability_id count
-    for unit in bot.workers:
+    for unit in workers:
         for order in unit.orders:
             aid = <int> order.ability.exact_id.value
             if 0 <= aid < MAX_ABILITIES:
@@ -54,8 +55,8 @@ cpdef AbilityCount[:] abilities_count_structures(object bot):
 
     # Structures → build progress < 1.0 → increment creation ability
     if bot.race != Race.Terran:
-        for unit in bot.structures:
-            if unit.build_progress < 1.0:
+        for unit in structures:
+            if <double> unit.build_progress < 1.0:
                 aid = <int> map_value(unit.type_id.value)
                 if 0 <= aid < MAX_ABILITIES:
                     arr[aid].count += 1

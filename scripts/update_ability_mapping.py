@@ -23,6 +23,7 @@ If you omit the path it defaults to `cython_extensions/ability_mapping.pyx`.
 import re
 import sys
 from pathlib import Path
+import datetime
 
 try:
     from sc2.ids.unit_typeid import UnitTypeId
@@ -89,6 +90,7 @@ UNIT_TYPE_ID_TO_ABILITY_MAP = {
     UnitTypeId.ASSIMILATORRICH: AbilityId.PROTOSSBUILD_ASSIMILATOR,
     UnitTypeId.EXTRACTORRICH: AbilityId.ZERGBUILD_EXTRACTOR,
     UnitTypeId.REFINERYRICH: AbilityId.TERRANBUILD_REFINERY,
+    UnitTypeId.TECHLAB: AbilityId.BUILD_TECHLAB,
 }
 
 
@@ -215,7 +217,7 @@ def main():
     backup.write_text(text, encoding="utf8")
 
     new_text = ''.join(out_lines)
-    new_text += "\n# Rewritten mappings from UNIT_TYPE_ID_TO_ABILITY_MAP\n"
+    new_text += "\n# Rewritten mappings from UNIT_TYPE_ID_TO_ABILITY_MAP, Updated at {}\n".format(datetime.datetime.now())
     new_text += ''.join(mapping_lines)
 
     path.write_text(new_text, encoding="utf8")

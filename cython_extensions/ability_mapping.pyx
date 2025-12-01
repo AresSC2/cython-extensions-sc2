@@ -3,8 +3,8 @@ cimport cython
 
 
 
-cdef int MAX_KEY = 4200
-cdef int mapping_array[4200]
+cdef int MAX_KEY = 2200
+cdef int mapping_array[2200]
 
 @cython.cfunc
 @cython.inline
@@ -15,7 +15,10 @@ cpdef int map_value(int key) nogil:
 
 
 
-# Rewritten mappings from UNIT_TYPE_ID_TO_ABILITY_MAP
+
+
+# Rewritten mappings from UNIT_TYPE_ID_TO_ABILITY_MAP, Updated at 2025-12-01 23:33:44.409410
+mapping_array[5] = 3682  # TECHLAB
 mapping_array[18] = 318  # COMMANDCENTER
 mapping_array[19] = 319  # SUPPLYDEPOT
 mapping_array[20] = 320  # REFINERY

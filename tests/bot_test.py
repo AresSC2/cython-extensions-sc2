@@ -81,6 +81,7 @@ class BotTest(BotAI):
         # await self.client.debug_create_unit([[UnitTypeId.MARINE, 20, self.main_base_ramp.top_center, 2]])
         await self.client.debug_all_resources()
         await self.client.debug_tech_tree()
+        
 
     def detect_fodder_value(self, units) -> int:
         """
@@ -116,6 +117,16 @@ class BotTest(BotAI):
 
 
     async def on_step(self, iteration: int):
+        
+        if self.state.chat:
+            for m in self.state.chat:
+                msg_lower = m.message.lower()
+                if msg_lower=="o":
+                    await self.client.debug_fast_build()
+                    print("Enabled/disabled fast build")
+                    
+        
+        
         # pos = cy_find_aoe_position(3.0, [])
         # TEST AOE
         # for unit in self.units:
@@ -167,7 +178,7 @@ class BotTest(BotAI):
         # if self.one_time_executed==False:
         #     pr_cy = profile_func(cy_structure_pending, 100000, self, UnitTypeId.SUPPLYDEPOT)
         #     print("Profiling done 1")
-        #     pr_py = profile_func(self.already_pending, 100000, UnitTypeId.SUPPLYDEPOT)
+        # pr_py = profile_func(self.already_pending, 100000, UnitTypeId.SUPPLYDEPOT)
         #     print("Profiling done 2")
         #     self.one_time_executed = True
         
@@ -195,8 +206,17 @@ class BotTest(BotAI):
         
         
         
-        if iteration % 7 ==0:
-            print("--c ", cy_structure_pending(self, UnitTypeId.PYLON))
+        if iteration % 3 ==0:
+            #print("--c ", cy_structure_pending(self, UnitTypeId.SUPPLYDEPOT))
+            print(self._abilities_count_and_build_progress[0])
+            print("factory: ", cy_structure_pending(self, UnitTypeId.ORBITALCOMMAND))
+            print("armory: ", cy_structure_pending(self, UnitTypeId.PLANETARYFORTRESS))
+            # print("barracks reactor ", cy_structure_pending(self, UnitTypeId.BARRACKSREACTOR))
+            # print("barracks techlab ", cy_structure_pending(self, UnitTypeId.BARRACKSTECHLAB))
+            # print("starport techlab ", cy_structure_pending(self, UnitTypeId.STARPORTTECHLAB))
+            # print("starport reactor ", cy_structure_pending(self, UnitTypeId.STARPORTREACTOR))
+            # print("factory techlab ", cy_structure_pending(self, UnitTypeId.FACTORYTECHLAB))
+            
             #print(cy_structure_pending(self, UnitTypeId.STARPORTTECHLAB))
         
         
@@ -274,7 +294,7 @@ if __name__ == "__main__":
     run_game(
         maps.get(random_map),
         [
-            Bot(Race.Protoss, BotTest()),
+            Bot(Race.Terran, BotTest()),
             Computer(Race.Protoss, Difficulty.Medium),
         ],
         realtime=True,

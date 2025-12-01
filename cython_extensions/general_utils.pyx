@@ -170,11 +170,11 @@ cpdef unsigned int cy_structure_pending(
 
     counts_and_progress = cy_abilities_count_structures(bot) #returns a c array memoryview
 
-    # Fast path: resolve creation ability id once and read the precomputed count
 
     # local_get reduces repeated attribute accesses
     arr_len = counts_and_progress.shape[0]
     target_created_ability = <int> map_value(target)
+    #print("target_created_ability:", target_created_ability, "struct:",  structure_type)
     if 0 <= target_created_ability < arr_len:
         item = counts_and_progress[target_created_ability]
         num_pending += item.count
