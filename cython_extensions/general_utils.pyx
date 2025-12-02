@@ -20,6 +20,18 @@ DOES_NOT_USE_LARVA: dict[UnitTypeId, UnitTypeId] = {
     UnitTypeId.RAVAGER: UnitTypeId.ROACH,
 }
 
+SPECIAL_TERRAN_BUILDINGS = {
+    UnitTypeId.ORBITALCOMMAND,
+    UnitTypeId.PLANETARYFORTRESS,
+    UnitTypeId.BARRACKSREACTOR,
+    UnitTypeId.BARRACKSTECHLAB,
+    UnitTypeId.FACTORYREACTOR,
+    UnitTypeId.FACTORYTECHLAB,
+    UnitTypeId.STARPORTREACTOR,
+    UnitTypeId.STARPORTTECHLAB,
+}   
+
+
 @boundscheck(False)
 @wraparound(False)
 cpdef bint cy_has_creep(
@@ -205,7 +217,7 @@ cpdef unsigned int cy_structure_pending_ares(
 
 
     # Track ongoing constructions
-    if bot.race != "Terran":
+    if bot.race != "Terran" or unit_type in SPECIAL_TERRAN_BUILDINGS:
         for s in structure_collection:
             if s.build_progress < 1.0:
                 num_pending += 1

@@ -42,14 +42,28 @@ cpdef AbilityCount[:] abilities_count_structures(object bot):
     cdef object unit
     cdef object order
     cdef int aid
+    # special ability ids that should always be counted if seen
+    cdef bint SPECIAL_AIDS_TABLE[1600]
+
     cdef object structures = bot.structures
     cdef object workers = bot.workers
 
 
     # Workers orders → ability_id count
+    memset(SPECIAL_AIDS_TABLE, 0, sizeof(SPECIAL_AIDS_TABLE))
+    SPECIAL_AIDS_TABLE[488] = True
+    SPECIAL_AIDS_TABLE[487] = True
+    SPECIAL_AIDS_TABLE[455] = True
+    SPECIAL_AIDS_TABLE[454] = True
+    SPECIAL_AIDS_TABLE[422] = True
+    SPECIAL_AIDS_TABLE[421] = True
+    SPECIAL_AIDS_TABLE[1450] = True
+    SPECIAL_AIDS_TABLE[1516] = True
+
+    
     for unit in workers:
         for order in unit.orders:
-            aid = <int> order.ability.exact_id.value
+            aid = <int> order.ability.exact_id.value #FUTURE add mapping table for order.ability?
             if 0 <= aid < MAX_ABILITIES:
                 arr[aid].count += 1
 
@@ -58,9 +72,22 @@ cpdef AbilityCount[:] abilities_count_structures(object bot):
         for unit in structures:
             if <double> unit.build_progress < 1.0:
                 aid = <int> map_value(unit.type_id.value)
-                if 0 <= aid < MAX_ABILITIES:
+                if aid!=-1:
                     arr[aid].count += 1
-
+    
+    #for terran, count PF, OC, Reactor, Tech Lab too
+    else:
+        for unit in structures:
+            aid = <int> map_value(unit.type_id.value)
+            if <double> unit.build_progress < 1.0:
+                if SPECIAL_AIDS_TABLE[aid]:
+                    arr[aid].count += 1
+            elif aid == 318: # Command Center for OC and PF
+                for order in unit.orders:
+                    aid = <int> order.ability.exact_id.value
+                    if SPECIAL_AIDS_TABLE[aid]:
+                        arr[aid].count += 1
+        
     # Return as Python-usable memoryview
     return <AbilityCount[:MAX_ABILITIES]> arr
 

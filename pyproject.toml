@@ -12,7 +12,7 @@ include = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.11,<3.14"
+python = ">=3.11,<3.12"
 burnysc2 = ">=7.0.0"
 jupyterlab = "^4.4.6"
 
