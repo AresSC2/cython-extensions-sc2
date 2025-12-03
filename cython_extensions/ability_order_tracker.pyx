@@ -53,7 +53,7 @@ cpdef AbilityCount[:] abilities_count_structures(object bot):
     
     for unit in workers:
         for order in unit.orders:
-            aid = <int> order.ability.exact_id.value #FUTURE add mapping table for order.ability?
+            aid = <int> order.ability._proto.ability_id #FUTURE add mapping table for order.ability?
             if 0 <= aid < MAX_ABILITIES:
                 arr[aid].count += 1
 
@@ -74,7 +74,7 @@ cpdef AbilityCount[:] abilities_count_structures(object bot):
                     arr[aid].count += 1
             elif aid == 318: # Command Center for OC and PF
                 for order in unit.orders:
-                    aid = <int> order.ability.exact_id.value
+                    aid = <int> order.ability._proto.ability_id
                     if STRUCT_ABILITIES[aid]:
                         arr[aid].count += 1
         
