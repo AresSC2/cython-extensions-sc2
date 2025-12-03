@@ -217,14 +217,24 @@ class BotTest(BotAI):
             # print(self._abilities_count_and_build_progress[0])
             print("OC: ", cy_structure_pending(self, UnitTypeId.ORBITALCOMMAND))
             print("PF: ", cy_structure_pending(self, UnitTypeId.PLANETARYFORTRESS))
-            print("barracks: ", cy_structure_pending(self, UnitTypeId.BARRACKS))
-            print("reactor barracks: ", cy_structure_pending(self, UnitTypeId.BARRACKSREACTOR))
-            print("techlab barracks: ", cy_structure_pending(self, UnitTypeId.BARRACKSTECHLAB))
-            print("barracks reactor ", cy_structure_pending(self, UnitTypeId.BARRACKSREACTOR))
-            print("barracks techlab ", cy_structure_pending(self, UnitTypeId.BARRACKSTECHLAB))
-            print("starport techlab ", cy_structure_pending(self, UnitTypeId.STARPORTTECHLAB))
-            print("starport reactor ", cy_structure_pending(self, UnitTypeId.STARPORTREACTOR))
-            print("factory techlab ", cy_structure_pending(self, UnitTypeId.FACTORYTECHLAB))
+            print("Hive: ", cy_structure_pending(self, UnitTypeId.HIVE))
+            print("Lair: ", cy_structure_pending(self, UnitTypeId.LAIR))
+            print("Barracks: ", cy_structure_pending(self, UnitTypeId.BARRACKSREACTOR))
+            # worker = self.workers.first
+            # print(worker.orders[0].ability.exact_id.value)
+            
+            # print(worker.orders[0].ability._proto.ability_id)
+            
+            # print(self.already_pending(UnitTypeId.ORBITALCOMMAND))
+            # print(self.already_pending(UnitTypeId.PLANETARYFORTRESS))
+            # print("barracks: ", cy_structure_pending(self, UnitTypeId.BARRACKS))
+            # print("reactor barracks: ", cy_structure_pending(self, UnitTypeId.BARRACKSREACTOR))
+            # print("techlab barracks: ", cy_structure_pending(self, UnitTypeId.BARRACKSTECHLAB))
+            # print("barracks reactor ", cy_structure_pending(self, UnitTypeId.BARRACKSREACTOR))
+            # print("barracks techlab ", cy_structure_pending(self, UnitTypeId.BARRACKSTECHLAB))
+            # print("starport techlab ", cy_structure_pending(self, UnitTypeId.STARPORTTECHLAB))
+            # print("starport reactor ", cy_structure_pending(self, UnitTypeId.STARPORTREACTOR))
+            # print("factory techlab ", cy_structure_pending(self, UnitTypeId.FACTORYTECHLAB))
             
             #print(cy_structure_pending(self, UnitTypeId.STARPORTTECHLAB))
         
