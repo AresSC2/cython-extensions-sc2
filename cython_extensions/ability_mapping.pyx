@@ -8,19 +8,25 @@ cdef int MAX_KEY = 2200
 cdef int mapping_array[2200]
 cdef bint STRUCT_ABILITIES[1600]
 
+cdef int SPECIAL_IDS[8]
 
-cdef:
-    void __init_special_aids_table__() nogil:
-        memset(STRUCT_ABILITIES, 0, sizeof(STRUCT_ABILITIES))
+def init_constants():
+    SPECIAL_IDS[0] = AbilityId.BUILD_REACTOR_STARPORT.value
+    SPECIAL_IDS[1] = AbilityId.BUILD_TECHLAB_STARPORT.value
+    SPECIAL_IDS[2] = AbilityId.BUILD_REACTOR_FACTORY.value
+    SPECIAL_IDS[3] = AbilityId.BUILD_TECHLAB_FACTORY.value
+    SPECIAL_IDS[4] = AbilityId.BUILD_REACTOR_BARRACKS.value
+    SPECIAL_IDS[5] = AbilityId.BUILD_TECHLAB_BARRACKS.value
+    SPECIAL_IDS[6] = AbilityId.UPGRADETOPLANETARYFORTRESS_PLANETARYFORTRESS.value
+    SPECIAL_IDS[7] = AbilityId.UPGRADETOORBITAL_ORBITALCOMMAND.value
 
-        STRUCT_ABILITIES[488] = True
-        STRUCT_ABILITIES[487] = True
-        STRUCT_ABILITIES[455] = True
-        STRUCT_ABILITIES[454] = True
-        STRUCT_ABILITIES[422] = True
-        STRUCT_ABILITIES[421] = True
-        STRUCT_ABILITIES[1450] = True
-        STRUCT_ABILITIES[1516] = True
+
+cdef void __init_special_aids_table__() nogil:
+    memset(STRUCT_ABILITIES, 0, 1600 * sizeof(bint))
+
+    for i in range(8):
+        STRUCT_ABILITIES[SPECIAL_IDS[i]] = True
+
 
 
 
