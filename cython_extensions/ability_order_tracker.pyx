@@ -7,7 +7,7 @@ Replaces the Python _abilities_count_and_build_progress method for maximum speed
 from sc2.data import Race
 
 from cython_extensions.ability_mapping cimport map_value
-from collections import Counter
+from cython_extensions.ability_mapping cimport STRUCT_ABILITIES
 from sc2.ids.ability_id import AbilityId
 from sc2.ids.unit_typeid import UnitTypeId
 from sc2.data import Race
@@ -43,22 +43,12 @@ cpdef AbilityCount[:] abilities_count_structures(object bot):
     cdef object order
     cdef int aid
     # special ability ids that should always be counted if seen
-    cdef bint SPECIAL_AIDS_TABLE[1600]
 
     cdef object structures = bot.structures
     cdef object workers = bot.workers
 
 
     # Workers orders → ability_id count
-    memset(SPECIAL_AIDS_TABLE, 0, sizeof(SPECIAL_AIDS_TABLE))
-    SPECIAL_AIDS_TABLE[488] = True
-    SPECIAL_AIDS_TABLE[487] = True
-    SPECIAL_AIDS_TABLE[455] = True
-    SPECIAL_AIDS_TABLE[454] = True
-    SPECIAL_AIDS_TABLE[422] = True
-    SPECIAL_AIDS_TABLE[421] = True
-    SPECIAL_AIDS_TABLE[1450] = True
-    SPECIAL_AIDS_TABLE[1516] = True
 
     
     for unit in workers:
@@ -80,12 +70,12 @@ cpdef AbilityCount[:] abilities_count_structures(object bot):
         for unit in structures:
             aid = <int> map_value(unit.type_id.value)
             if <double> unit.build_progress < 1.0:
-                if SPECIAL_AIDS_TABLE[aid]:
+                if STRUCT_ABILITIES[aid]:
                     arr[aid].count += 1
             elif aid == 318: # Command Center for OC and PF
                 for order in unit.orders:
                     aid = <int> order.ability.exact_id.value
-                    if SPECIAL_AIDS_TABLE[aid]:
+                    if STRUCT_ABILITIES[aid]:
                         arr[aid].count += 1
         
     # Return as Python-usable memoryview

@@ -1,10 +1,29 @@
 # cython: boundscheck=False, wraparound=False, cdivision=True
 cimport cython
-
+from sc2.ids.ability_id import AbilityId
+from libc.string cimport memset
 
 
 cdef int MAX_KEY = 2200
 cdef int mapping_array[2200]
+cdef bint STRUCT_ABILITIES[1600]
+
+
+cdef:
+    void __init_special_aids_table__() nogil:
+        memset(STRUCT_ABILITIES, 0, sizeof(STRUCT_ABILITIES))
+
+        STRUCT_ABILITIES[488] = True
+        STRUCT_ABILITIES[487] = True
+        STRUCT_ABILITIES[455] = True
+        STRUCT_ABILITIES[454] = True
+        STRUCT_ABILITIES[422] = True
+        STRUCT_ABILITIES[421] = True
+        STRUCT_ABILITIES[1450] = True
+        STRUCT_ABILITIES[1516] = True
+
+
+
 
 @cython.cfunc
 @cython.inline
@@ -14,10 +33,13 @@ cpdef int map_value(int key) nogil:
     return -1
 
 
+__init_special_aids_table__()
 
 
 
 # Rewritten mappings from UNIT_TYPE_ID_TO_ABILITY_MAP, Updated at 2025-12-01 23:33:44.409410
+
+# Rewritten mappings from UNIT_TYPE_ID_TO_ABILITY_MAP, Updated at 2025-12-03 18:21:29.118069
 mapping_array[5] = 3682  # TECHLAB
 mapping_array[18] = 318  # COMMANDCENTER
 mapping_array[19] = 319  # SUPPLYDEPOT
@@ -65,9 +87,13 @@ mapping_array[96] = 1162  # BANELINGNEST
 mapping_array[97] = 1165  # ROACHWARREN
 mapping_array[98] = 1166  # SPINECRAWLER
 mapping_array[99] = 1167  # SPORECRAWLER
+mapping_array[100] = 1216  # LAIR
+mapping_array[101] = 1218  # HIVE
 mapping_array[130] = 1450  # PLANETARYFORTRESS
 mapping_array[132] = 1516  # ORBITALCOMMAND
 mapping_array[1910] = 895  # SHIELDBATTERY
 mapping_array[1943] = 320  # REFINERYRICH
 mapping_array[1994] = 882  # ASSIMILATORRICH
 mapping_array[1995] = 1154  # EXTRACTORRICH
+
+
