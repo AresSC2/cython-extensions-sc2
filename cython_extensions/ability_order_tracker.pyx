@@ -57,13 +57,28 @@ cpdef AbilityCount[:] abilities_count_structures(object bot):
             if 0 <= aid < MAX_ABILITIES:
                 arr[aid].count += 1
 
+
+    race = bot.race
     # Structures → build progress < 1.0 → increment creation ability
-    if bot.race != Race.Terran:
+    if race == Race.Protoss:
         for unit in structures:
             if <double> unit.build_progress < 1.0:
                 aid = <int> map_value(unit.type_id.value)
                 if aid!=-1:
                     arr[aid].count += 1
+
+    elif race == Race.Zerg:
+        for unit in structures:
+            aid = <int> map_value(unit.type_id.value)
+            if <double> unit.build_progress < 1.0:
+                if aid!=-1:
+                    arr[aid].count += 1
+            elif STRUCT_ABILITIES[aid]==2:  #identify Lair, Hive in the same way as others to save time
+             # Lair and Hive
+                for order in unit.orders:
+                    aid = <int> order.ability._proto.ability_id
+                    if STRUCT_ABILITIES[aid]:
+                        arr[aid].count += 1
     
     #for terran, count PF, OC, Reactor, Tech Lab too
     else:
@@ -72,7 +87,8 @@ cpdef AbilityCount[:] abilities_count_structures(object bot):
             if <double> unit.build_progress < 1.0:
                 if STRUCT_ABILITIES[aid]:
                     arr[aid].count += 1
-            elif aid == 318: # Command Center for OC and PF
+            elif STRUCT_ABILITIES[aid]==2:  #identify Commandcenter, but in the same way as others to save time
+             # Command Center for OC and PF
                 for order in unit.orders:
                     aid = <int> order.ability._proto.ability_id
                     if STRUCT_ABILITIES[aid]:
