@@ -35,7 +35,6 @@ _init_struct_abilities()
 
 
 
-
 @cython.cfunc
 @cython.inline
 cpdef int map_value(int key) nogil:
@@ -43,6 +42,10 @@ cpdef int map_value(int key) nogil:
         return mapping_array[key]
     return -1
 
+cpdef int get_struct_ability(int ability_id) nogil:
+    if 0 <= ability_id < 1620:
+        return STRUCT_ABILITIES[ability_id]
+    return 0
 
 
 # Rewritten mappings from UNIT_TYPE_ID_TO_ABILITY_MAP, Updated at 2025-12-01 23:33:44.409410

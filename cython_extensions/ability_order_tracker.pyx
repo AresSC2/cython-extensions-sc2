@@ -17,7 +17,6 @@ from libc.string cimport memset
 
 
 
-
 #TEMPORARRY placing it here until we cythonize the tracker file, does not work yet
 cdef struct AbilityCount:
     int ability_id
@@ -50,7 +49,7 @@ cpdef AbilityCount[:] abilities_count_structures(object bot):
 
     # Workers orders → ability_id count
 
-    
+    #FUTURE exclude this for ares?
     for unit in workers:
         for order in unit.orders:
             aid = <int> order.ability._proto.ability_id #FUTURE add mapping table for order.ability?

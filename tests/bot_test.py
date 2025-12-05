@@ -215,14 +215,20 @@ class BotTest(BotAI):
             
             
             # print(self._abilities_count_and_build_progress[0])
-            print("OC: ", cy_structure_pending(self, UnitTypeId.ORBITALCOMMAND))
-            print("PF: ", cy_structure_pending(self, UnitTypeId.PLANETARYFORTRESS))
-            # print("Hive: ", cy_structure_pending(self, UnitTypeId.HIVE))
-            # print("Lair: ", cy_structure_pending(self, UnitTypeId.LAIR))
-            print("pylon: ", cy_structure_pending(self, UnitTypeId.PYLON))
-            print("gateway: ", cy_structure_pending(self, UnitTypeId.GATEWAY))
-            print("techlab factory: ", cy_structure_pending(self, UnitTypeId.FACTORYTECHLAB))
-            print("Barracks: ", cy_structure_pending(self, UnitTypeId.BARRACKS))
+            # print("OC: ", cy_structure_pending(self, UnitTypeId.ORBITALCOMMAND))
+            # print("PF: ", cy_structure_pending(self, UnitTypeId.PLANETARYFORTRESS))
+            # # print("Hive: ", cy_structure_pending(self, UnitTypeId.HIVE))
+            # # print("Lair: ", cy_structure_pending(self, UnitTypeId.LAIR))
+            # print("pylon: ", cy_structure_pending(self, UnitTypeId.PYLON))
+            # print("gateway: ", cy_structure_pending(self, UnitTypeId.GATEWAY))
+            # print("techlab factory: ", cy_structure_pending(self, UnitTypeId.FACTORYTECHLAB))
+            # print("Barracks: ", cy_structure_pending(self, UnitTypeId.BARRACKS))
+            print("hatchery: ", cy_structure_pending(self, UnitTypeId.HATCHERY))
+            print("spawning pool: ", cy_structure_pending(self, UnitTypeId.SPAWNINGPOOL))
+            
+            
+            
+            
             # worker = self.workers.first
             # print(worker.orders[0].ability.exact_id.value)
             
@@ -316,7 +322,7 @@ if __name__ == "__main__":
     run_game(
         maps.get(random_map),
         [
-            Bot(Race.Protoss, BotTest()),
+            Bot(Race.Zerg, BotTest()),
             Computer(Race.Protoss, Difficulty.Medium),
         ],
         realtime=True,

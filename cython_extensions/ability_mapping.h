@@ -28,7 +28,7 @@
   #define DL_IMPORT(_T) _T
 #endif
 
-__PYX_EXTERN_C int STRUCT_ABILITIES[1600];
+__PYX_EXTERN_C int STRUCT_ABILITIES[1620];
 
 #endif /* !__PYX_HAVE_API__cython_extensions__ability_mapping */
 

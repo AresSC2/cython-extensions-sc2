@@ -207,6 +207,7 @@ cpdef unsigned int cy_structure_pending_ares(
         object s
         object tag
         object info
+        int target = <int> unit_type.value
 
     # Add Ares planned buildings/units
     if include_planned:
@@ -216,15 +217,37 @@ cpdef unsigned int cy_structure_pending_ares(
                 num_pending += 1
 
 
-    # Track ongoing constructions
-    if bot.race != "Terran" or unit_type in SPECIAL_TERRAN_BUILDINGS:
-        for s in structure_collection:
-            if s.build_progress < 1.0:
-                num_pending += 1
+
+
+    counts_and_progress = cy_abilities_count_structures(bot) #returns a c array memoryview
+
+
+    # local_get reduces repeated attribute accesses
+    arr_len = counts_and_progress.shape[0]
+    target_created_ability = <int> map_value(target)
+    #print("target_created_ability:", target_created_ability, "struct:",  structure_type)
+    if 0 <= target_created_ability < arr_len:
+        item = counts_and_progress[target_created_ability]
+        num_pending += item.count
+    return num_pending
+
+
+
+
+    # # Track ongoing constructions
+    # if bot.race != Race.Terran or unit_type in SPECIAL_TERRAN_BUILDINGS:
+    #     for s in structure_collection:
+    #         if s.build_progress < 1.0:
+    #             num_pending += 1
 
 
     return num_pending
 
+
+
+# {4349231105: {'id': UnitTypeId.PYLON, 'target': (145.0, 130.0), 'time_order_commenced': 8.57, 'building_purpose': <BuildingPurpose.NORMAL_BUILDING: 1>, 'structure_order_complete': True}}
+# {4350017537: {'id': UnitTypeId.PYLON, 'target': (120.0, 34.0), 'time_order_commenced': 9.0625, 'building_purpose': <BuildingPurpose.NORMAL_BUILDING: 1>, 'structure_order_complete': True}}
+# {4350017537: {'id': UnitTypeId.PYLON, 'target': (120.0, 34.0), 'time_order_commenced': 9.0625, 'building_purpose': <BuildingPurpose.NORMAL_BUILDING: 1>, 'structure_order_complete': True}}
 
 
 
