@@ -6,30 +6,30 @@ from libc.string cimport memset
 
 cdef int MAX_KEY = 2200
 cdef int mapping_array[2200]
-cdef public int STRUCT_ABILITIES[1620] #changes nothing 
+cdef public int STRUCT_ABILITIES_NOTEBOOK[1620] #changes nothing 
 
 
 
 
 # Python-level initialization (requires GIL — allowed at import)
 cdef void _init_struct_abilities():
-    memset(STRUCT_ABILITIES, 0, 1620 * sizeof(int)) #changes nothing
+    memset(STRUCT_ABILITIES_NOTEBOOK, 0, 1620 * sizeof(int)) #changes nothing
 
-    STRUCT_ABILITIES[AbilityId.BUILD_REACTOR_STARPORT.value] = 1
-    STRUCT_ABILITIES[AbilityId.BUILD_TECHLAB_STARPORT.value] = 1
-    STRUCT_ABILITIES[AbilityId.BUILD_REACTOR_FACTORY.value] = 1
-    STRUCT_ABILITIES[AbilityId.BUILD_TECHLAB_FACTORY.value] = 1
-    STRUCT_ABILITIES[AbilityId.BUILD_REACTOR_BARRACKS.value] = 1
-    STRUCT_ABILITIES[AbilityId.BUILD_TECHLAB_BARRACKS.value] = 1
-    STRUCT_ABILITIES[AbilityId.UPGRADETOPLANETARYFORTRESS_PLANETARYFORTRESS.value] = 1
-    STRUCT_ABILITIES[AbilityId.UPGRADETOORBITAL_ORBITALCOMMAND.value] = 1
-    STRUCT_ABILITIES[AbilityId.TERRANBUILD_COMMANDCENTER.value] = 2  #used to identify CC in ability order tracker
-    STRUCT_ABILITIES[AbilityId.ZERGBUILD_HATCHERY.value] = 2
-    STRUCT_ABILITIES[AbilityId.UPGRADETOHIVE_HIVE.value] = 1
+    STRUCT_ABILITIES_NOTEBOOK[AbilityId.BUILD_REACTOR_STARPORT.value] = 1
+    STRUCT_ABILITIES_NOTEBOOK[AbilityId.BUILD_TECHLAB_STARPORT.value] = 1
+    STRUCT_ABILITIES_NOTEBOOK[AbilityId.BUILD_REACTOR_FACTORY.value] = 1
+    STRUCT_ABILITIES_NOTEBOOK[AbilityId.BUILD_TECHLAB_FACTORY.value] = 1
+    STRUCT_ABILITIES_NOTEBOOK[AbilityId.BUILD_REACTOR_BARRACKS.value] = 1
+    STRUCT_ABILITIES_NOTEBOOK[AbilityId.BUILD_TECHLAB_BARRACKS.value] = 1
+    STRUCT_ABILITIES_NOTEBOOK[AbilityId.UPGRADETOPLANETARYFORTRESS_PLANETARYFORTRESS.value] = 1
+    STRUCT_ABILITIES_NOTEBOOK[AbilityId.UPGRADETOORBITAL_ORBITALCOMMAND.value] = 1
+    STRUCT_ABILITIES_NOTEBOOK[AbilityId.TERRANBUILD_COMMANDCENTER.value] = 2  #used to identify CC in ability order tracker
+    STRUCT_ABILITIES_NOTEBOOK[AbilityId.ZERGBUILD_HATCHERY.value] = 2
+    STRUCT_ABILITIES_NOTEBOOK[AbilityId.UPGRADETOHIVE_HIVE.value] = 1
     # Special case Lair. Since upgradetolair ability is used from transition from Hatchery to Lair, but also used to identify Lair structure, since its mapped in mapping_array
     # Therefore, we set it to 2 to identify it as a structure in the ability order tracker. It should have both 2 and 1.
 
-    STRUCT_ABILITIES[AbilityId.UPGRADETOLAIR_LAIR.value] = 2 
+    STRUCT_ABILITIES_NOTEBOOK[AbilityId.UPGRADETOLAIR_LAIR.value] = 2
 # Auto-run initializer at module import
 _init_struct_abilities()
 
@@ -37,14 +37,14 @@ _init_struct_abilities()
 
 @cython.cfunc
 @cython.inline
-cpdef int map_value(int key) nogil:
+cpdef int map_value_notebook(int key) nogil:
     if 0 <= key < MAX_KEY:
         return mapping_array[key]
     return -1
 
-cpdef int get_struct_ability(int ability_id) nogil:
+cpdef int get_struct_ability_notebook(int ability_id) nogil:
     if 0 <= ability_id < 1620:
-        return STRUCT_ABILITIES[ability_id]
+        return STRUCT_ABILITIES_NOTEBOOK[ability_id]
     return 0
 
 
