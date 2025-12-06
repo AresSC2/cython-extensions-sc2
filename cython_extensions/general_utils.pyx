@@ -208,6 +208,7 @@ cpdef unsigned int cy_structure_pending_ares(
         object tag
         object info
         int target = <int> unit_type.value
+        AbilityCount item
 
     # Add Ares planned buildings/units
     if include_planned:
@@ -218,17 +219,33 @@ cpdef unsigned int cy_structure_pending_ares(
 
 
 
+    if (
+        not include_planned or 
+        (bot.race != Race.Terran or unit_type in SPECIAL_TERRAN_BUILDINGS)
+    ):
+        #Attention:
+        # If a Include planned is true, buildings under construction for terran works only for special buildings
 
-    counts_and_progress = cy_abilities_count_structures(bot) #returns a c array memoryview
+        # IT DOES NOT INCLUDE ANY STRUCTURES WHICH ARE CURRENTLY BUILD OUTSIDE OF ARES KNOWLEDGE
+        #For that, use the normal pending structure function or disable include planned
+
+        #if include planned is false, it checks every structure under construction, for terran too
+
+        counts_and_progress = cy_abilities_count_structures(bot) #returns a c array memoryview
 
 
-    # local_get reduces repeated attribute accesses
-    arr_len = counts_and_progress.shape[0]
-    target_created_ability = <int> map_value(target)
-    #print("target_created_ability:", target_created_ability, "struct:",  structure_type)
-    if 0 <= target_created_ability < arr_len:
-        item = counts_and_progress[target_created_ability]
-        num_pending += item.count
+        # local_get reduces repeated attribute accesses
+        arr_len = counts_and_progress.shape[0]
+        target_created_ability = <int> map_value(target)
+        #print("target_created_ability:", target_created_ability, "struct:",  structure_type)
+        if 0 <= target_created_ability < arr_len:
+            item = counts_and_progress[target_created_ability]
+            num_pending += item.count
+    
+    
+    
+    
+    
     return num_pending
 
 
