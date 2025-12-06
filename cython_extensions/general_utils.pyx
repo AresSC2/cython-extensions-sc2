@@ -170,23 +170,20 @@ cpdef unsigned int cy_structure_pending(
     cdef:
         unsigned int num_pending = 0
         object counts_and_progress
-        object creation_ability = None
-        object local_get
-        int ability_int
-        object ability_obj
-        int count
         int target = <int> structure_type.value
-        cdef AbilityCount item
+        AbilityCount item
+        Py_ssize_t arr_len
+        int target_created_ability
+
+        
 
     # Use optimized Cython function to get ability counts
 
     counts_and_progress = cy_abilities_count_structures(bot) #returns a c array memoryview
 
-
-    # local_get reduces repeated attribute accesses
     arr_len = counts_and_progress.shape[0]
     target_created_ability = <int> map_value(target)
-    #print("target_created_ability:", target_created_ability, "struct:",  structure_type)
+    
     if 0 <= target_created_ability < arr_len:
         item = counts_and_progress[target_created_ability]
         num_pending += item.count
@@ -204,11 +201,13 @@ cpdef unsigned int cy_structure_pending_ares(
         unsigned int num_pending = 0
         object building_tracker
         object structure_collection = bot.mediator.get_own_structures_dict[unit_type]
-        object s
         object tag
         object info
         int target = <int> unit_type.value
         AbilityCount item
+        Py_ssize_t arr_len
+        int target_created_ability
+
 
     # Add Ares planned buildings/units
     if include_planned:
@@ -234,10 +233,9 @@ cpdef unsigned int cy_structure_pending_ares(
         counts_and_progress = cy_abilities_count_structures(bot) #returns a c array memoryview
 
 
-        # local_get reduces repeated attribute accesses
         arr_len = counts_and_progress.shape[0]
         target_created_ability = <int> map_value(target)
-        #print("target_created_ability:", target_created_ability, "struct:",  structure_type)
+
         if 0 <= target_created_ability < arr_len:
             item = counts_and_progress[target_created_ability]
             num_pending += item.count
@@ -249,16 +247,6 @@ cpdef unsigned int cy_structure_pending_ares(
     return num_pending
 
 
-
-
-    # # Track ongoing constructions
-    # if bot.race != Race.Terran or unit_type in SPECIAL_TERRAN_BUILDINGS:
-    #     for s in structure_collection:
-    #         if s.build_progress < 1.0:
-    #             num_pending += 1
-
-
-    return num_pending
 
 
 

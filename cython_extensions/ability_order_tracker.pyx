@@ -8,8 +8,6 @@ from sc2.data import Race
 
 from cython_extensions.ability_mapping cimport map_value
 from cython_extensions.ability_mapping cimport STRUCT_ABILITIES
-from sc2.ids.ability_id import AbilityId
-from sc2.ids.unit_typeid import UnitTypeId
 from sc2.data import Race
 from cython cimport boundscheck, wraparound
 from libc.stdlib cimport malloc, free
@@ -32,11 +30,11 @@ cpdef AbilityCount[:] abilities_count_structures(object bot):
     """
 
     cdef int MAX_ABILITIES = 2200
-    cdef AbilityCount* arr = <AbilityCount*> malloc(MAX_ABILITIES * sizeof(AbilityCount))
+    cdef AbilityBuffer buf = AbilityBuffer(MAX_ABILITIES)
+    cdef AbilityCount* arr = buf.ptr
 
-    # ... fill arr ...
 
-    memset(arr, 0, MAX_ABILITIES * sizeof(AbilityCount))
+
 
     cdef object unit
     cdef object order
@@ -45,6 +43,7 @@ cpdef AbilityCount[:] abilities_count_structures(object bot):
 
     cdef object structures = bot.structures
     cdef object workers = bot.workers
+    cdef object race = bot.race
 
 
     # Workers orders → ability_id count
@@ -57,7 +56,6 @@ cpdef AbilityCount[:] abilities_count_structures(object bot):
                 arr[aid].count += 1
 
 
-    race = bot.race
     # Structures → build progress < 1.0 → increment creation ability
     if race == Race.Protoss:
         for unit in structures:
@@ -94,7 +92,7 @@ cpdef AbilityCount[:] abilities_count_structures(object bot):
                         arr[aid].count += 1
         
     # Return as Python-usable memoryview
-    return <AbilityCount[:MAX_ABILITIES]> arr
+    return buf.mv
 
 
 def cache_per_game_loop(func):
@@ -113,3 +111,24 @@ def cache_per_game_loop(func):
 @cache_per_game_loop
 def cy_abilities_count_structures(bot):
     return abilities_count_structures(bot)
+
+
+
+cdef class AbilityBuffer:
+    cdef AbilityCount* ptr
+    cdef int size
+
+    def __cinit__(self, int size):
+        self.size = size
+        self.ptr = <AbilityCount*> malloc(size * sizeof(AbilityCount))
+        memset(self.ptr, 0, size * sizeof(AbilityCount))
+
+    def __dealloc__(self):
+        if self.ptr != NULL:
+            free(self.ptr)
+            self.ptr = NULL
+
+    property mv:
+        def __get__(self):
+            # Return a Python memoryview
+            return <AbilityCount[:self.size]> self.ptr

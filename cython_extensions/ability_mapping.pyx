@@ -26,10 +26,13 @@ cdef void _init_struct_abilities():
     STRUCT_ABILITIES[AbilityId.TERRANBUILD_COMMANDCENTER.value] = 2  #used to identify CC in ability order tracker
     STRUCT_ABILITIES[AbilityId.ZERGBUILD_HATCHERY.value] = 2
     STRUCT_ABILITIES[AbilityId.UPGRADETOHIVE_HIVE.value] = 1
-    # Special case Lair. Since upgradetolair ability is used from transition from Hatchery to Lair, but also used to identify Lair structure, since its mapped in mapping_array
-    # Therefore, we set it to 2 to identify it as a structure in the ability order tracker. It should have both 2 and 1.
+    # Special case Lair. Since upgradetolair ability is used from transition from Hatchery to Lair, but also used to identify Lair structure, lair has a special role
+    # Therefore, we set it to 2 to identify it as a structure in the ability order tracker, but its also identified as an upgrade ability to lair.
+    #It should have both 2 and 1.
 
     STRUCT_ABILITIES[AbilityId.UPGRADETOLAIR_LAIR.value] = 2 
+
+    
 # Auto-run initializer at module import
 _init_struct_abilities()
 
