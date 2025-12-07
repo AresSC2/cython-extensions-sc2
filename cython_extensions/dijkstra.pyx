@@ -2,7 +2,7 @@ import numpy as np
 from cython import boundscheck, wraparound
 
 cimport numpy as cnp
-from libc.stdlib cimport malloc
+from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
 
 DEF HEAP_ARITY = 4
 
@@ -143,7 +143,7 @@ cpdef DijkstraOutput cy_dijkstra(
     """
 
     cdef:
-        PriorityQueueItem* pq
+        PriorityQueueItem* heap
         PriorityQueueItem root
         Py_ssize_t i, swap, index, parent
 
@@ -167,9 +167,11 @@ cpdef DijkstraOutput cy_dijkstra(
         )):
             raise Exception(f"Target out of bounds")
 
-    capacity = cost.size
-    heap = <PriorityQueueItem*>malloc(capacity * sizeof(PriorityQueueItem))
-    size = targets.shape[0]
+    capacity = targets.shape[0]
+    heap = <PriorityQueueItem*>PyMem_Malloc(capacity * sizeof(PriorityQueueItem))
+    if not heap:
+        raise MemoryError()
+    size = capacity
 
     # initialize queue with targets
     for i in range(targets.shape[0]):
@@ -224,6 +226,11 @@ cpdef DijkstraOutput cy_dijkstra(
                 # enqueue
                 index = size
                 size += 1
+                if size > capacity:
+                    capacity *= HEAP_ARITY
+                    heap = <PriorityQueueItem*>PyMem_Realloc(heap, capacity * sizeof(PriorityQueueItem))
+                    if not heap:
+                        raise MemoryError()
                 heap[index] = PriorityQueueItem(x2, y2, alternative)
                 while index != 0:
                     parent = (index - 1) // HEAP_ARITY
@@ -233,4 +240,5 @@ cpdef DijkstraOutput cy_dijkstra(
                     else:
                         break
 
+    PyMem_Free(heap)
     return DijkstraOutput(forward_x, forward_y, distance)
