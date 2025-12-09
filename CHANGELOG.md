@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.11.1 (2025-12-09)
+
+### Bug Fixes
+
+- Dynamically allocate and release memory
+  ([`a5bbf25`](https://github.com/AresSC2/cython-extensions-sc2/commit/a5bbf2554f80fee0ff91d10fed64401870ade274))
+
+
 ## v0.11.0 (2025-11-22)
 
 ### Refactoring
