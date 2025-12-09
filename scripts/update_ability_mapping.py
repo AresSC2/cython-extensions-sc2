@@ -97,6 +97,25 @@ UNIT_TYPE_ID_TO_ABILITY_MAP = {
     UnitTypeId.ORBITALCOMMAND: AbilityId.UPGRADETOORBITAL_ORBITALCOMMAND,
 }
 
+STRUCT_ABILITIES= {}
+
+
+STRUCT_ABILITIES[AbilityId.BUILD_REACTOR_STARPORT.value] = 1
+STRUCT_ABILITIES[AbilityId.BUILD_TECHLAB_STARPORT.value] = 1
+STRUCT_ABILITIES[AbilityId.BUILD_REACTOR_FACTORY.value] = 1
+STRUCT_ABILITIES[AbilityId.BUILD_TECHLAB_FACTORY.value] = 1
+STRUCT_ABILITIES[AbilityId.BUILD_REACTOR_BARRACKS.value] = 1
+STRUCT_ABILITIES[AbilityId.BUILD_TECHLAB_BARRACKS.value] = 1
+STRUCT_ABILITIES[AbilityId.UPGRADETOPLANETARYFORTRESS_PLANETARYFORTRESS.value] = 1
+STRUCT_ABILITIES[AbilityId.UPGRADETOORBITAL_ORBITALCOMMAND.value] = 1
+STRUCT_ABILITIES[AbilityId.TERRANBUILD_COMMANDCENTER.value] = 2  #used to identify CC in ability order tracker
+STRUCT_ABILITIES[AbilityId.ZERGBUILD_HATCHERY.value] = 2
+STRUCT_ABILITIES[AbilityId.UPGRADETOHIVE_HIVE.value] = 1
+# Special case Lair. Since upgradetolair ability is used from transition from Hatchery to Lair, but also used to identify Lair structure, lair has a special role
+# Therefore, we set it to 2 to identify it as a structure in the ability order tracker, but its also identified as an upgrade ability to lair.
+#It should have both 2 and 1.
+
+STRUCT_ABILITIES[AbilityId.UPGRADETOLAIR_LAIR.value] = 2 
 
 
 
@@ -223,6 +242,23 @@ def main():
     new_text = ''.join(out_lines)
     new_text += "\n# Rewritten mappings from UNIT_TYPE_ID_TO_ABILITY_MAP, Updated at {}\n".format(datetime.datetime.now())
     new_text += ''.join(mapping_lines)
+    # Append STRUCT_ABILITIES block generated from this script's STRUCT_ABILITIES dict
+    try:
+        struct_items = sorted(((int(k), int(v)) for k, v in STRUCT_ABILITIES.items()))
+    except Exception:
+        struct_items = []
+
+    if struct_items:
+        new_text += "\n# Rewritten STRUCT_ABILITIES (ability_id -> flag), Updated at {}\n".format(datetime.datetime.now())
+        for aid, flag in struct_items:
+            try:
+                ability_name = AbilityId(aid).name
+            except Exception:
+                ability_name = None
+            if ability_name:
+                new_text += f"STRUCT_ABILITIES[{aid}] = {flag}  # {ability_name}\n"
+            else:
+                new_text += f"STRUCT_ABILITIES[{aid}] = {flag}\n"
 
     path.write_text(new_text, encoding="utf8")
     print(f"Updated {path}; original backed up to {backup}")

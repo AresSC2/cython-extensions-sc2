@@ -1,10 +1,40 @@
 # cython: boundscheck=False, wraparound=False, cdivision=True
 cimport cython
-
+from sc2.ids.ability_id import AbilityId
+from libc.string cimport memset
 
 
 cdef int MAX_KEY = 2200
 cdef int mapping_array[2200]
+cdef public int STRUCT_ABILITIES[1620] #changes nothing 
+
+
+
+# Python-level initialization (requires GIL — allowed at import)
+cdef void _init_struct_abilities():
+    STRUCT_ABILITIES[AbilityId.BUILD_REACTOR_STARPORT.value] = 1
+    STRUCT_ABILITIES[AbilityId.BUILD_TECHLAB_STARPORT.value] = 1
+    STRUCT_ABILITIES[AbilityId.BUILD_REACTOR_FACTORY.value] = 1
+    STRUCT_ABILITIES[AbilityId.BUILD_TECHLAB_FACTORY.value] = 1
+    STRUCT_ABILITIES[AbilityId.BUILD_REACTOR_BARRACKS.value] = 1
+    STRUCT_ABILITIES[AbilityId.BUILD_TECHLAB_BARRACKS.value] = 1
+    STRUCT_ABILITIES[AbilityId.UPGRADETOPLANETARYFORTRESS_PLANETARYFORTRESS.value] = 1
+    STRUCT_ABILITIES[AbilityId.UPGRADETOORBITAL_ORBITALCOMMAND.value] = 1
+    STRUCT_ABILITIES[AbilityId.TERRANBUILD_COMMANDCENTER.value] = 2  #used to identify CC in ability order tracker
+    STRUCT_ABILITIES[AbilityId.ZERGBUILD_HATCHERY.value] = 2
+    STRUCT_ABILITIES[AbilityId.UPGRADETOHIVE_HIVE.value] = 1
+    # Special case Lair. Since upgradetolair ability is used from transition from Hatchery to Lair, but also used to identify Lair structure, lair has a special role
+    # Therefore, we set it to 2 to identify it as a structure in the ability order tracker, but its also identified as an upgrade ability to lair.
+    #It should have both 2 and 1.
+
+    STRUCT_ABILITIES[AbilityId.UPGRADETOLAIR_LAIR.value] = 2 
+
+    
+# Auto-run initializer at module import
+_init_struct_abilities()
+
+
+
 
 @cython.cfunc
 @cython.inline
@@ -15,9 +45,9 @@ cpdef int map_value(int key) nogil:
 
 
 
-
-
 # Rewritten mappings from UNIT_TYPE_ID_TO_ABILITY_MAP, Updated at 2025-12-01 23:33:44.409410
+
+# Rewritten mappings from UNIT_TYPE_ID_TO_ABILITY_MAP, Updated at 2025-12-03 18:21:29.118069
 mapping_array[5] = 3682  # TECHLAB
 mapping_array[18] = 318  # COMMANDCENTER
 mapping_array[19] = 319  # SUPPLYDEPOT
@@ -65,9 +95,13 @@ mapping_array[96] = 1162  # BANELINGNEST
 mapping_array[97] = 1165  # ROACHWARREN
 mapping_array[98] = 1166  # SPINECRAWLER
 mapping_array[99] = 1167  # SPORECRAWLER
+mapping_array[100] = 1216  # LAIR
+mapping_array[101] = 1218  # HIVE
 mapping_array[130] = 1450  # PLANETARYFORTRESS
 mapping_array[132] = 1516  # ORBITALCOMMAND
 mapping_array[1910] = 895  # SHIELDBATTERY
 mapping_array[1943] = 320  # REFINERYRICH
 mapping_array[1994] = 882  # ASSIMILATORRICH
 mapping_array[1995] = 1154  # EXTRACTORRICH
+
+

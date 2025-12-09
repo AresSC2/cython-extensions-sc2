@@ -10,8 +10,9 @@ from cython_extensions.ability_mapping cimport map_value
 from cython_extensions.ability_mapping cimport STRUCT_ABILITIES
 from sc2.data import Race
 from cython cimport boundscheck, wraparound
-from libc.stdlib cimport malloc, free
 from libc.string cimport memset
+from cpython.mem cimport PyMem_Malloc, PyMem_Free
+
 
 
 
@@ -120,12 +121,12 @@ cdef class AbilityBuffer:
 
     def __cinit__(self, int size):
         self.size = size
-        self.ptr = <AbilityCount*> malloc(size * sizeof(AbilityCount))
+        self.ptr = <AbilityCount*> PyMem_Malloc(size * sizeof(AbilityCount))
         memset(self.ptr, 0, size * sizeof(AbilityCount))
 
     def __dealloc__(self):
         if self.ptr != NULL:
-            free(self.ptr)
+            PyMem_Free(self.ptr)
             self.ptr = NULL
 
     property mv:
