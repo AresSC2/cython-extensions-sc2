@@ -195,7 +195,7 @@ cpdef unsigned int cy_structure_pending(
 cpdef unsigned int cy_structure_pending_ares(
         object bot,
         object unit_type,
-        include_planned=True
+        bool include_planned=True
     ):
     cdef:
         unsigned int num_pending = 0

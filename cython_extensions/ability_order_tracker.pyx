@@ -29,68 +29,94 @@ cpdef AbilityCount[:] abilities_count_structures(object bot):
     Build a C array indexed by ability_id that stores counts.
     Returns: memoryview of AbilityCount (size = 2200)
     """
-
-    cdef int MAX_ABILITIES = 2200
-    cdef AbilityBuffer buf = AbilityBuffer(MAX_ABILITIES)
-    cdef AbilityCount* arr = buf.ptr
-
-
-
-
-    cdef object unit
-    cdef object order
-    cdef int aid
-    # special ability ids that should always be counted if seen
-
-    cdef object structures = bot.structures
-    cdef object workers = bot.workers
-    cdef object race = bot.race
+    cdef:
+        unsigned int MIN_ABILITIES = 0
+        unsigned int MAX_ABILITIES = 2200
+        AbilityBuffer buf = AbilityBuffer(MAX_ABILITIES)
+        AbilityCount* arr = buf.ptr
+        object unit, order, orders
+        int ability_id
 
 
-    # Workers orders → ability_id count
+
+        object structures = bot.structures
+        object workers = bot.workers
+        bint is_protoss = bot.race == Race.Protoss
+
+        bint is_zerg = bot.race == Race.Zerg
+
+        unsigned int len_structures = len(structures)
+        unsigned int len_workers = len(workers)
+        unsigned int len_orders, i, j, struct_ability_int, unit_id_int
+
+        double completed_build_progress = 1.0
+
 
     #FUTURE exclude this for ares?
-    for unit in workers:
-        for order in unit.orders:
-            aid = <int> order.ability._proto.ability_id #FUTURE add mapping table for order.ability?
-            if 0 <= aid < MAX_ABILITIES:
-                arr[aid].count += 1
+    for i in range(len_workers):
+        unit = workers[i]
+        orders = unit.orders
+        len_orders = len(orders)
+        for j in range(len_orders):
+            order = orders[j]
+            ability_id = <int> order.ability._proto.ability_id 
+            if 0 <= ability_id < MAX_ABILITIES:
+                arr[ability_id].count += 1
 
 
     # Structures → build progress < 1.0 → increment creation ability
-    if race == Race.Protoss:
-        for unit in structures:
-            if <double> unit.build_progress < 1.0:
-                aid = <int> map_value(unit.type_id.value)
-                if aid!=-1:
-                    arr[aid].count += 1
+    if is_protoss:
+        for i in range(len_structures):
+            unit = structures[i]
+            if <double> unit._proto.build_progress < completed_build_progress:
+                unit_id_int = <int> unit._proto.unit_type
+                ability_id = <int> map_value(unit_id_int)
+                if ability_id!=-1:
+                    arr[ability_id].count += 1
 
-    elif race == Race.Zerg:
-        for unit in structures:
-            aid = <int> map_value(unit.type_id.value)
-            if <double> unit.build_progress < 1.0:
-                if aid!=-1:
-                    arr[aid].count += 1
-            elif STRUCT_ABILITIES[aid]==2:  #identify Lair, Hive in the same way as others to save time
-             # Lair and Hive
-                for order in unit.orders:
-                    aid = <int> order.ability._proto.ability_id
-                    if STRUCT_ABILITIES[aid]:
-                        arr[aid].count += 1
-    
-    #for terran, count PF, OC, Reactor, Tech Lab too
+    elif is_zerg:
+        #Terran and Zerg
+        for i in range(len_structures):
+            unit = structures[i]
+            unit_id_int = <int> unit._proto.unit_type
+            ability_id = <int> map_value(unit_id_int)
+            if <double> unit._proto.build_progress < 1.0:
+                
+                
+                if ability_id!=-1:
+                    arr[ability_id].count += 1
+            elif STRUCT_ABILITIES[ability_id]==2:  #identify Lair, Hive and Command Center
+                # Lair and Hive
+                orders = unit.orders
+                len_orders = len(orders)
+                for j in range(len_orders):
+                    order = orders[j]
+                    ability_id = <int> order.ability._proto.ability_id
+                    if STRUCT_ABILITIES[ability_id]:
+                        arr[ability_id].count += 1
+
     else:
-        for unit in structures:
-            aid = <int> map_value(unit.type_id.value)
+        for i in range(len_structures):
+            unit = structures[i]
+            unit_id_int = <int> unit._proto.unit_type
+            ability_id = <int> map_value(unit_id_int)
             if <double> unit.build_progress < 1.0:
-                if STRUCT_ABILITIES[aid]:
-                    arr[aid].count += 1
-            elif STRUCT_ABILITIES[aid]==2:  #identify Commandcenter, but in the same way as others to save time
+                
+                
+                if STRUCT_ABILITIES[ability_id]:
+                    arr[ability_id].count += 1
+
+            elif STRUCT_ABILITIES[ability_id]==2:  #identify Commandcenter, but in the same way as others to save time
              # Command Center for OC and PF
-                for order in unit.orders:
-                    aid = <int> order.ability._proto.ability_id
-                    if STRUCT_ABILITIES[aid]:
-                        arr[aid].count += 1
+                orders = unit.orders
+                len_orders = len(orders)
+                for j in range(len_orders):
+                    order = orders[j]
+                    ability_id = <int> order.ability._proto.ability_id
+                    if STRUCT_ABILITIES[ability_id]:
+                        arr[ability_id].count += 1
+
+
         
     # Return as Python-usable memoryview
     return buf.mv

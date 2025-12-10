@@ -214,21 +214,26 @@ class BotTest(BotAI):
             #         print(f"Building: {s.type_id} Progress: {s.build_progress}")
             
             
-            # print(self._abilities_count_and_build_progress[0])
-            print("OC: ", cy_structure_pending(self, UnitTypeId.ORBITALCOMMAND))
-            print("PF: ", cy_structure_pending(self, UnitTypeId.PLANETARYFORTRESS))
+            # # print(self._abilities_count_and_build_progress[0])
+            # print("OC: ", cy_structure_pending(self, UnitTypeId.ORBITALCOMMAND))
+            # print("PF: ", cy_structure_pending(self, UnitTypeId.PLANETARYFORTRESS))
             # print("Hive: ", cy_structure_pending(self, UnitTypeId.HIVE))
             # print("Lair: ", cy_structure_pending(self, UnitTypeId.LAIR))
-            # print("pylon: ", cy_structure_pending(self, UnitTypeId.PYLON))
-            # print("gateway: ", cy_structure_pending(self, UnitTypeId.GATEWAY))
-            print("techlab factory: ", cy_structure_pending(self, UnitTypeId.FACTORYTECHLAB))
-            print("Barracks: ", cy_structure_pending(self, UnitTypeId.BARRACKS))
-            print("hatchery: ", cy_structure_pending(self, UnitTypeId.HATCHERY))
+            print("pylon: ", cy_structure_pending(self, UnitTypeId.PYLON))
+            print("gateway: ", cy_structure_pending(self, UnitTypeId.GATEWAY))
+            # # print("techlab factory: ", cy_structure_pending(self, UnitTypeId.FACTORYTECHLAB))
+            # # print("Barracks: ", cy_structure_pending(self, UnitTypeId.BARRACKS))
+            # # print("hatchery: ", cy_structure_pending(self, UnitTypeId.HATCHERY))
             # print("spawning pool: ", cy_structure_pending(self, UnitTypeId.SPAWNINGPOOL))
             
             
             
-            
+            structure = self.structures.first
+        
+        
+            # print(structure.build_progress)
+            # print(structure._proto.build_progress)
+
             # worker = self.workers.first
             # print(worker.orders[0].ability.exact_id.value)
             
@@ -322,8 +327,8 @@ if __name__ == "__main__":
     run_game(
         maps.get(random_map),
         [
-            Bot(Race.Terran, BotTest()),
-            Computer(Race.Protoss, Difficulty.Medium),
+            Bot(Race.Protoss, BotTest()),
+            Computer(Race.Zerg, Difficulty.Medium),
         ],
         realtime=True,
     )
