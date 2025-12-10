@@ -100,7 +100,7 @@ cpdef AbilityCount[:] abilities_count_structures(object bot):
             unit = structures[i]
             unit_id_int = <int> unit._proto.unit_type
             ability_id = <int> map_value(unit_id_int)
-            if <double> unit.build_progress < 1.0:
+            if <double> unit._proto.build_progress < 1.0:
                 
                 
                 if STRUCT_ABILITIES[ability_id]:
