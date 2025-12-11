@@ -39,8 +39,8 @@ def cy_dijkstra(
     ```py
     from cython_extensions import cy_dijkstra
 
-    targets = np.array([u.position.rounded for u in bot.enemy_units], np.intp)
-    cost = np.where(bot.game_info.pathing_grid.data_numpy.T == 1, 1.0, np.inf).astype(np.float64)
+    targets = np.array([u.position.rounded for u in bot.enemy_units])
+    cost = np.where(bot.game_info.pathing_grid.data_numpy.T == 1, 1.0, np.inf)
     pathing = cy_dijkstra(cost, targets)
 
     for unit in bot.units:
