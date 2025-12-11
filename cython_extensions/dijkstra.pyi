@@ -1,18 +1,7 @@
 import numpy as np
 
-class DijkstraOutput:
-    """Result of Dijkstras algorithm containing distance and forward pointer grids.
-
-    Attributes:
-        forward_x: Forward pointer grid (x-coordinates).
-        forward_y: Forward pointer grid (y-coordinates).
-        distance: Distance grid.
-
-    """
-
-    forward_x: np.ndarray
-    forward_y: np.ndarray
-    distance: np.ndarray
+class DijkstraPathing:
+    """Result of Dijkstras algorithm containing distance and forward pointer grids."""
 
     def get_path(
         self, source: tuple[float, float], limit: int = 0, max_distance: int = 1
@@ -32,7 +21,7 @@ class DijkstraOutput:
 
 def cy_dijkstra(
     cost_grid: np.ndarray, targets: np.ndarray, checks_enabled: bool = True
-) -> DijkstraOutput:
+) -> DijkstraPathing:
     """Run Dijkstras algorithm on a grid, yielding many-target-shortest paths for each position.
 
     Example:

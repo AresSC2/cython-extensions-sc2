@@ -164,9 +164,9 @@ cdef void dijkstra_core(
 # Python Interface
 # -----------------------------------------------------------------------------
 
-cdef class DijkstraOutput:
-    cdef public DIR_t[:, ::1] direction
-    cdef public DTYPE_t[:, ::1] distance
+cdef class DijkstraPathing:
+    cdef DIR_t[:, ::1] direction
+    cdef DTYPE_t[:, ::1] distance
 
     cdef INDEX_t* index
     cdef DTYPE_t* priority
@@ -213,7 +213,25 @@ cdef class DijkstraOutput:
         PyMem_Free(self.priority)
 
     cpdef get_path(self, object source, int limit=0, int max_distance=1):
-        # find start integer coordinates
+        """
+
+        Follow the path from a given source using the forward pointer grids.
+
+        Parameters
+        ----------
+        source :
+            Start point.
+        limit :
+            Maximum length of the returned path. Defaults to 0 indicating no limit.
+        max_distance :
+            Size of the search region for a valid starting point. Defaults to 1.
+
+        Returns
+        -------
+        list[tuple[int, int]] :
+            The lowest cost path from source to any of the targets.
+
+        """
         cdef INDEX_t x0, y0
         x0, y0 = self._find_starting_point(np.asarray(source, dtype=np.float32), max_distance=max_distance)
         if x0 < 0 or y0 < 0 or x0 >= self.cost.shape[0] or y0 >= self.cost.shape[1] or self.cost[x0, y0] == INFINITY:
@@ -270,11 +288,30 @@ cdef class DijkstraOutput:
                         y_min = y
         return x_min, y_min
 
-cpdef DijkstraOutput cy_dijkstra(
+cpdef DijkstraPathing cy_dijkstra(
     object cost,
     object targets,
     bint checks_enabled = True,
 ):
+    """
+
+    Run Dijkstras algorithm on a grid, yielding many-target-shortest paths for each position.
+
+    Parameters
+    ----------
+    cost :
+        Cost grid. Entries must be positive. Set unpathable cells to infinity.
+    targets :
+        Target array of shape (*, 2) containing x and y coordinates of the target points.
+    checks_enabled :
+        Pass False to deactivate grid value and target coordinates checks. Defaults to True.
+
+    Returns
+    -------
+    DijkstraPathing :
+        Pathfinding object containing containing distance and forward pointer grids.
+
+    """
     cdef DTYPE_t[:, ::1] cost_array = np.ascontiguousarray(cost, dtype=np.float32)
     cdef INDEX_t[:, ::1] target_array = np.ascontiguousarray(targets, dtype=np.int32)
     if checks_enabled:
@@ -286,4 +323,4 @@ cpdef DijkstraOutput cy_dijkstra(
             or not np.less(targets[:, 1], cost.shape[1]).all()
         ):
             raise Exception(f"invalid target: coordinates out of bounds")
-    return DijkstraOutput(cost_array, target_array)
+    return DijkstraPathing(cost_array, target_array)
