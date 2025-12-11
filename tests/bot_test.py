@@ -228,7 +228,9 @@ class BotTest(BotAI):
             
             
             
-            structure = self.structures.first
+            # structure = self.structures.first
+            # print(UnitTypeId.value)
+            # print(structure._proto.value)
         
         
             # print(structure.build_progress)

@@ -169,7 +169,7 @@ cpdef unsigned int cy_structure_pending(
     ):
     cdef:
         unsigned int num_pending = 0
-        object counts_and_progress
+        AbilityCount[:] counts_and_progress
         int target = <int> structure_type.value
         AbilityCount item
         Py_ssize_t arr_len
@@ -195,7 +195,7 @@ cpdef unsigned int cy_structure_pending(
 cpdef unsigned int cy_structure_pending_ares(
         object bot,
         object unit_type,
-        bool include_planned=True
+        bint include_planned=True
     ):
     cdef:
         unsigned int num_pending = 0
@@ -207,6 +207,7 @@ cpdef unsigned int cy_structure_pending_ares(
         AbilityCount item
         Py_ssize_t arr_len
         int target_created_ability
+        AbilityCount[:] counts_and_progress
 
 
     # Add Ares planned buildings/units
