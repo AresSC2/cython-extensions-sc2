@@ -1,6 +1,24 @@
 # CHANGELOG
 
 
+## v0.12.0 (2025-12-12)
+
+### Bug Fixes
+
+- Dijkstra notebook
+  ([`6b7c488`](https://github.com/AresSC2/cython-extensions-sc2/commit/6b7c488f822de3930b7e0ddc6bc8752d85497aa3))
+
+### Features
+
+- Defer dijkstra evaluation
+  ([`02c3c38`](https://github.com/AresSC2/cython-extensions-sc2/commit/02c3c384d8d4919614d08f9983afeabd54f496a4))
+
+### Testing
+
+- Add dtype test, replace bot test with simple mazes
+  ([`291f38a`](https://github.com/AresSC2/cython-extensions-sc2/commit/291f38a73f3c0ba707b47ed67d2740a74abe9646))
+
+
 ## v0.11.1 (2025-12-09)
 
 ### Bug Fixes
