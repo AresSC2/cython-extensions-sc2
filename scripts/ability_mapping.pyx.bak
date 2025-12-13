@@ -9,45 +9,13 @@ cdef int mapping_array[2200]
 cdef public int STRUCT_ABILITIES[1620] #changes nothing 
 
 
-
-# Python-level initialization (requires GIL — allowed at import)
-cdef void _init_struct_abilities():
-    STRUCT_ABILITIES[AbilityId.BUILD_REACTOR_STARPORT.value] = 1
-    STRUCT_ABILITIES[AbilityId.BUILD_TECHLAB_STARPORT.value] = 1
-    STRUCT_ABILITIES[AbilityId.BUILD_REACTOR_FACTORY.value] = 1
-    STRUCT_ABILITIES[AbilityId.BUILD_TECHLAB_FACTORY.value] = 1
-    STRUCT_ABILITIES[AbilityId.BUILD_REACTOR_BARRACKS.value] = 1
-    STRUCT_ABILITIES[AbilityId.BUILD_TECHLAB_BARRACKS.value] = 1
-    STRUCT_ABILITIES[AbilityId.UPGRADETOPLANETARYFORTRESS_PLANETARYFORTRESS.value] = 1
-    STRUCT_ABILITIES[AbilityId.UPGRADETOORBITAL_ORBITALCOMMAND.value] = 1
-    STRUCT_ABILITIES[AbilityId.TERRANBUILD_COMMANDCENTER.value] = 2  #used to identify CC in ability order tracker
-    STRUCT_ABILITIES[AbilityId.ZERGBUILD_HATCHERY.value] = 2
-    STRUCT_ABILITIES[AbilityId.UPGRADETOHIVE_HIVE.value] = 1
-    # Special case Lair. Since upgradetolair ability is used from transition from Hatchery to Lair, but also used to identify Lair structure, lair has a special role
-    # Therefore, we set it to 2 to identify it as a structure in the ability order tracker, but its also identified as an upgrade ability to lair.
-    #It should have both 2 and 1.
-
-    STRUCT_ABILITIES[AbilityId.UPGRADETOLAIR_LAIR.value] = 2 
-
-    
-# Auto-run initializer at module import
-_init_struct_abilities()
-
-
-
-
 @cython.cfunc
 @cython.inline
 cpdef int map_value(int key) nogil:
     if 0 <= key < MAX_KEY:
         return mapping_array[key]
     return -1
-
-
-
-# Rewritten mappings from UNIT_TYPE_ID_TO_ABILITY_MAP, Updated at 2025-12-01 23:33:44.409410
-
-# Rewritten mappings from UNIT_TYPE_ID_TO_ABILITY_MAP, Updated at 2025-12-03 18:21:29.118069
+# Rewritten mappings from UNIT_TYPE_ID_TO_ABILITY_MAP, Updated at 2025-12-13 13:20:57.554244
 mapping_array[5] = 3682  # TECHLAB
 mapping_array[18] = 318  # COMMANDCENTER
 mapping_array[19] = 319  # SUPPLYDEPOT
@@ -104,4 +72,16 @@ mapping_array[1943] = 320  # REFINERYRICH
 mapping_array[1994] = 882  # ASSIMILATORRICH
 mapping_array[1995] = 1154  # EXTRACTORRICH
 
-
+# STRUCT_ABILLITIES
+STRUCT_ABILITIES[318] = 2  # TERRANBUILD_COMMANDCENTER
+STRUCT_ABILITIES[421] = 1  # BUILD_TECHLAB_BARRACKS
+STRUCT_ABILITIES[422] = 1  # BUILD_REACTOR_BARRACKS
+STRUCT_ABILITIES[454] = 1  # BUILD_TECHLAB_FACTORY
+STRUCT_ABILITIES[455] = 1  # BUILD_REACTOR_FACTORY
+STRUCT_ABILITIES[487] = 1  # BUILD_TECHLAB_STARPORT
+STRUCT_ABILITIES[488] = 1  # BUILD_REACTOR_STARPORT
+STRUCT_ABILITIES[1152] = 2  # ZERGBUILD_HATCHERY
+STRUCT_ABILITIES[1216] = 2  # UPGRADETOLAIR_LAIR
+STRUCT_ABILITIES[1218] = 1  # UPGRADETOHIVE_HIVE
+STRUCT_ABILITIES[1450] = 1  # UPGRADETOPLANETARYFORTRESS_PLANETARYFORTRESS
+STRUCT_ABILITIES[1516] = 1  # UPGRADETOORBITAL_ORBITALCOMMAND
