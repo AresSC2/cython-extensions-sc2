@@ -198,11 +198,23 @@ def cy_structure_pending(ai: "BotAI", unit_type: UnitID) -> int:
 
     
     ```
+    Benchmarked in a realistic scenario since caching is involved:
+    Simulated calling function 8 times per frame
+    Total time for 8 calls:
+
     Cython version:
-    544 ns ± 5.76 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
+    7.82 μs ± 78.8 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
 
     Python-sc2 `already_pending` alternative:
-    2.06 µs ± 6.49 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
+    36.2 μs ± 1.38 μs per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
+
+    Called only once per frame:
+
+    Cython version:
+    5.18 μs ± 51.2 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
+
+    Python-sc2 `already_pending` alternative:
+    22.6 μs ± 363 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
     ```
     Args:
         ai: Bot object that will be running the game.

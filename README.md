@@ -17,37 +17,40 @@ This library also supports `python-sc2` and `sharpy-sc2` bots, see Getting Start
 Example speedups, results may vary depending on machine and exact scenario.
 This is by no means a list of all functionality offered.
 
-| python-sc2 function           | cython speedup                           |
-|-------------------------------|------------------------------------------|
-| `units.closest_to`            | 6.85 - 13x speedup depending on scenario |
-| `distance_to`                 | 3 to 7x speedup depending on scenario    |
-| `position.center`             | 2x speedup                               |
-| `already_pending` for units   | 6.62x speedup                            |
-| `units.in_attack_range`       | 2.05x speedup                            |
-| `units.sorted_by_distance_to` | 8.62x speedup                            |
-| `unit.is_facing`              | 9.1x speedup                             |
-| `Point2.towards`              | 14.29x speedup                           |
-| `has_creep`                   | 4 - 5x speedup                           |
-| `in_pathing_grid`             | 4 - 5x speedup                           |
+| python-sc2 function              | cython speedup                           |
+|----------------------------------|------------------------------------------|
+| `units.closest_to`               | 6.85 - 13x speedup depending on scenario |
+| `distance_to`                    | 3 to 7x speedup depending on scenario    |
+| `position.center`                | 2x speedup                               |
+| `already_pending` for units      | 6.62x speedup                            |
+| `already_pending` for structures | 4x speedup                               |
+| `units.in_attack_range`          | 2.05x speedup                            |
+| `units.sorted_by_distance_to`    | 8.62x speedup                            |
+| `unit.is_facing`                 | 9.1x speedup                             |
+| `Point2.towards`                 | 14.29x speedup                           |
+| `has_creep`                      | 4 - 5x speedup                           |
+| `in_pathing_grid`                | 4 - 5x speedup                           |
+| `closer_than`                    | 12x speedup                              |
+| `further_than`                   | 12x speedup                              |
 
 
 Tip: use `cy_distance_to_squared` where possible for extra 1.3x speedup.
 
 ## Getting started
 
-To quickly get up and running locally (for python versions 3.10, 3.11, 3.12, 3.13), install `cython-extensions-sc2` with:
+To quickly get up and running locally (for python versions 3.11, 3.12), install `cython-extensions-sc2` with:
 
 `pip install cython-extensions-sc2`
 
 ## Type Safety
 
 `cython-extensions-sc2` includes type safety checking to prevent your bot failing with silent errors.
-This is enabled by default, but for a bit more performance you can disable it.
+This is disabled by default for pure performance reasons, to enable it call `enable_safe_mode(True)`.
 
 ```python
 from cython_extensions import enable_safe_mode
 # immediately after importing any cython functions
-enable_safe_mode(False)
+enable_safe_mode(True)
 ```
 
 Even with safe mode disabled, there will still be some function overhead, but it should be negligible.
@@ -83,7 +86,7 @@ repo and download the correct `zip` for your system.
 
 ![release](https://github.com/AresSC2/cython-extensions-sc2/assets/63355562/3c5084ee-5d61-4446-a0dc-4d0ce3421b34)
 
-For example a Windows user should download `windows-latest_python3.1.zip`.
+For example a Windows user should download `windows-latest_python3.12.zip`.
 
 Inside this zip you will find a `cython_extensions` directory, this should be placed in your bot's root directory
 like so:
@@ -114,6 +117,10 @@ If you modify the cython code, run `poetry build` to compile it.
 ### Jupyter Notebooks
 Run `poetry run jupyter notebook` to open jupyter notebook in the environment. See the notebooks 
 directory for examples. Use `template_notebook.ipynb` as a starting point for your own notebooks.
+
+### Updating ids
+`ability_mapping.pyx` ids are generated via a script, these should be updated after a new SC2 version is released.
+Run `poetry run python scripts/update_ability_mapping` to update the ids.
 
 ### Run Test Bot
 Edit the map in `bot_test.py` and run with:
