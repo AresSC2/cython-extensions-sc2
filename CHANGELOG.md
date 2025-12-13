@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.13.1 (2025-12-13)
+
+### Bug Fixes
+
+- Added deletion of old STRUCT_ABILITIES array after updating
+  ([`81f9212`](https://github.com/AresSC2/cython-extensions-sc2/commit/81f9212ed9d6b46a72140b1997c1aa43e7a29c9e))
+
+
 ## v0.13.0 (2025-12-13)
 
 ### Features
