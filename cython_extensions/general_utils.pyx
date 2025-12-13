@@ -175,10 +175,7 @@ cpdef unsigned int cy_structure_pending(
         Py_ssize_t arr_len
         int target_created_ability
 
-        
-
     # Use optimized Cython function to get ability counts
-
     counts_and_progress = cy_abilities_count_structures(bot) #returns a c array memoryview
 
     arr_len = counts_and_progress.shape[0]
@@ -209,15 +206,12 @@ cpdef unsigned int cy_structure_pending_ares(
         int target_created_ability
         AbilityCount[:] counts_and_progress
 
-
     # Add Ares planned buildings/units
     if include_planned:
         building_tracker = bot.mediator.get_building_tracker_dict
         for tag, info in building_tracker.items():
             if info["id"] == unit_type:
                 num_pending += 1
-
-
 
     if (
         not include_planned or 
@@ -241,25 +235,4 @@ cpdef unsigned int cy_structure_pending_ares(
             item = counts_and_progress[target_created_ability]
             num_pending += item.count
     
-    
-    
-    
-    
     return num_pending
-
-
-
-
-
-# {4349231105: {'id': UnitTypeId.PYLON, 'target': (145.0, 130.0), 'time_order_commenced': 8.57, 'building_purpose': <BuildingPurpose.NORMAL_BUILDING: 1>, 'structure_order_complete': True}}
-# {4350017537: {'id': UnitTypeId.PYLON, 'target': (120.0, 34.0), 'time_order_commenced': 9.0625, 'building_purpose': <BuildingPurpose.NORMAL_BUILDING: 1>, 'structure_order_complete': True}}
-# {4350017537: {'id': UnitTypeId.PYLON, 'target': (120.0, 34.0), 'time_order_commenced': 9.0625, 'building_purpose': <BuildingPurpose.NORMAL_BUILDING: 1>, 'structure_order_complete': True}}
-
-
-
-
-
-
-
-
-
