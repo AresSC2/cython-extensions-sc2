@@ -7,7 +7,8 @@ from sc2.dicts.unit_trained_from import UNIT_TRAINED_FROM
 from sc2.ids.unit_typeid import UnitTypeId
 
 from cython_extensions.geometry import cy_distance_to_squared
-
+from cython_extensions.ability_mapping cimport map_value
+from cython_extensions.ability_order_tracker import cy_abilities_count_structures
 cimport numpy as cnp
 
 DOES_NOT_USE_LARVA: dict[UnitTypeId, UnitTypeId] = {
@@ -18,6 +19,18 @@ DOES_NOT_USE_LARVA: dict[UnitTypeId, UnitTypeId] = {
     UnitTypeId.OVERLORDTRANSPORT: UnitTypeId.OVERLORD,
     UnitTypeId.RAVAGER: UnitTypeId.ROACH,
 }
+
+SPECIAL_TERRAN_BUILDINGS = {
+    UnitTypeId.ORBITALCOMMAND,
+    UnitTypeId.PLANETARYFORTRESS,
+    UnitTypeId.BARRACKSREACTOR,
+    UnitTypeId.BARRACKSTECHLAB,
+    UnitTypeId.FACTORYREACTOR,
+    UnitTypeId.FACTORYTECHLAB,
+    UnitTypeId.STARPORTREACTOR,
+    UnitTypeId.STARPORTTECHLAB,
+}   
+
 
 @boundscheck(False)
 @wraparound(False)
@@ -141,3 +154,85 @@ cpdef unsigned int cy_unit_pending(object bot, object unit_type):
             ):
                 num_pending += 1
         return num_pending
+
+
+
+cdef struct AbilityCount:
+    int ability_id
+    int count
+
+@boundscheck(False)
+@wraparound(False)
+cpdef unsigned int cy_structure_pending(
+        object bot,
+        object structure_type,
+    ):
+    cdef:
+        unsigned int num_pending = 0
+        AbilityCount[:] counts_and_progress
+        int target = <int> structure_type.value
+        AbilityCount item
+        Py_ssize_t arr_len
+        int target_created_ability
+
+    # Use optimized Cython function to get ability counts
+    counts_and_progress = cy_abilities_count_structures(bot) #returns a c array memoryview
+
+    arr_len = counts_and_progress.shape[0]
+    target_created_ability = <int> map_value(target)
+    
+    if 0 <= target_created_ability < arr_len:
+        item = counts_and_progress[target_created_ability]
+        num_pending += item.count
+    return num_pending
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef unsigned int cy_structure_pending_ares(
+        object bot,
+        object unit_type,
+        bint include_planned=True
+    ):
+    cdef:
+        unsigned int num_pending = 0
+        object building_tracker
+        object structure_collection = bot.mediator.get_own_structures_dict[unit_type]
+        object tag
+        object info
+        int target = <int> unit_type.value
+        AbilityCount item
+        Py_ssize_t arr_len
+        int target_created_ability
+        AbilityCount[:] counts_and_progress
+
+    # Add Ares planned buildings/units
+    if include_planned:
+        building_tracker = bot.mediator.get_building_tracker_dict
+        for tag, info in building_tracker.items():
+            if info["id"] == unit_type:
+                num_pending += 1
+
+    if (
+        not include_planned or 
+        (bot.race != Race.Terran or unit_type in SPECIAL_TERRAN_BUILDINGS)
+    ):
+        #Attention:
+        # If a Include planned is true, buildings under construction for terran works only for special buildings
+
+        # IT DOES NOT INCLUDE ANY STRUCTURES WHICH ARE CURRENTLY BUILD OUTSIDE OF ARES KNOWLEDGE
+        #For that, use the normal pending structure function or disable include planned
+
+        #if include planned is false, it checks every structure under construction, for terran too
+
+        counts_and_progress = cy_abilities_count_structures(bot) #returns a c array memoryview
+
+
+        arr_len = counts_and_progress.shape[0]
+        target_created_ability = <int> map_value(target)
+
+        if 0 <= target_created_ability < arr_len:
+            item = counts_and_progress[target_created_ability]
+            num_pending += item.count
+    
+    return num_pending

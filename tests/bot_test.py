@@ -16,7 +16,8 @@ from sc2.main import run_game
 from sc2.player import Bot, Computer
 from sc2.position import Point2
 
-import timeit
+
+import cProfile
 
 from cython_extensions import (
     cy_angle_diff,
@@ -27,13 +28,15 @@ from cython_extensions import (
     cy_is_facing,
     enable_safe_mode,
     cy_closer_than,
-    cy_further_than
+    cy_further_than,
+    cy_structure_pending,
 )
 from cython_extensions.combat_utils import (
     cy_adjust_moving_formation,
     cy_find_aoe_position,
 )
 enable_safe_mode(False)
+
 
 class BotTest(BotAI):
     def __init__(self):
@@ -45,6 +48,28 @@ class BotTest(BotAI):
             UnitTypeId.ADEPT: 2,
             UnitTypeId.PROBE: 3,
         }
+        self.one_time_executed = False
+        
+        
+        self.structures_to_track = [
+            UnitTypeId.NEXUS,
+            UnitTypeId.PYLON,
+            UnitTypeId.GATEWAY,
+            UnitTypeId.CYBERNETICSCORE,
+            UnitTypeId.STARGATE,
+            UnitTypeId.FLEETBEACON,
+            UnitTypeId.TWILIGHTCOUNCIL,
+            UnitTypeId.ROBOTICSFACILITY,
+            UnitTypeId.ROBOTICSBAY,
+            UnitTypeId.TEMPLARARCHIVE,
+            UnitTypeId.DARKSHRINE,
+            UnitTypeId.FORGE, 
+            UnitTypeId.PHOTONCANNON,
+            UnitTypeId.SHIELDBATTERY,
+            UnitTypeId.ASSIMILATOR,
+            
+            
+        ]
 
     async def on_start(self):
         self.client.game_step = 2
@@ -54,6 +79,9 @@ class BotTest(BotAI):
         # uncomment to test AOE
         # await self.client.debug_create_unit([[UnitTypeId.RAVAGER, 5, self.start_location, 1]])
         # await self.client.debug_create_unit([[UnitTypeId.MARINE, 20, self.main_base_ramp.top_center, 2]])
+        await self.client.debug_all_resources()
+        await self.client.debug_tech_tree()
+        
 
     def detect_fodder_value(self, units) -> int:
         """
@@ -75,8 +103,30 @@ class BotTest(BotAI):
             return min(unit_type_fodder_values)
         else:
             return 0
+        
+    async def track_multiple_structures(bot, structures, interval=2.0):
+        """
+        Repeatedly track and print status of multiple structures using cy_structure_pending.
+        """
+        if bot.time % 7 ==0:
+            print("==== STATUS UPDATE ====")
+            for structure_type in structures:
+                print(f"Tracking: {structure_type.name}")
+                cy_structure_pending(bot, structure_type)
+                print("----")
+
 
     async def on_step(self, iteration: int):
+        
+        if self.state.chat:
+            for m in self.state.chat:
+                msg_lower = m.message.lower()
+                if msg_lower=="o":
+                    await self.client.debug_fast_build()
+                    print("Enabled/disabled fast build")
+                    
+        
+        
         # pos = cy_find_aoe_position(3.0, [])
         # TEST AOE
         # for unit in self.units:
@@ -112,18 +162,118 @@ class BotTest(BotAI):
         #     )
         # )
         # print(self.in_pathing_grid(self.start_location))
-        units=self.all_own_units
-        #units= [s for s in units]
-        base = self.townhalls[0]
+        # units=self.all_own_units
+        # #units= [s for s in units]
+        # base = self.townhalls[0]
         
-        units_A = [u for u in units]
-        position= (base.position.x, base.position.y)
-        #position = (base.position.x, base.position.y)
-        a=(len(cy_closer_than(units, 10.0, base.position)))
-        b=(len(cy_further_than(units_A, 10.0, position)))
+        # units_A = [u for u in units]
+        # position= (base.position.x, base.position.y)
+        # #position = (base.position.x, base.position.y)
+        # a=(len(cy_closer_than(units, 10.0, base.position)))
+        # b=(len(cy_further_than(units_A, 10.0, position)))
         
-        #summe
-        print(f"Closer than 10: {a}, Further than 10: {b}, Total: {a+b}")
+        # #summe
+                
+        #self._abilities_count_and_build_progress
+        # if self.one_time_executed==False:
+        #     pr_cy = profile_func(cy_structure_pending, 100000, self, UnitTypeId.SUPPLYDEPOT)
+        #     print("Profiling done 1")
+        # pr_py = profile_func(self.already_pending, 100000, UnitTypeId.SUPPLYDEPOT)
+        #     print("Profiling done 2")
+        #     self.one_time_executed = True
+        
+        # ability = self.game_data.units[UnitTypeId.SUPPLYDEPOT.value].creation_ability.exact_id
+        # # print(f"Ability for SUPPLYDEPOT: {ability}")
+        # # print(F"self._abilities_count_and_build_progress: {self._abilities_count_and_build_progress[0][ability]}")
+        
+       # await self.track_multiple_structures(self, self.structures_to_track)
+
+
+        # if iteration % 100 ==0:
+        #     print("==== STATUS UPDATE ====")
+        #     for x in self.structures_to_track:
+        #         print(f"structure {x}: {cy_structure_pending(self, x)}")
+        
+        # string = "{
+        #     4349231105: {
+        #         'id': UnitTypeId.PYLON,
+        #         'target': (145.0, 130.0),
+        #         'time_order_commenced': 8.57,
+        #         'building_purpose': <BuildingPurpose.NORMAL_BUILDING: 1>,
+        #         'structure_order_complete': True
+        #     }
+        #     }"
+        
+        
+        
+        if iteration % 3 ==0:
+            #print("--c ", cy_structure_pending(self, UnitTypeId.SUPPLYDEPOT))
+            
+            # for s in self.structures:
+            #     if s.build_progress < 1.0:
+            #         print(f"Building: {s.type_id} Progress: {s.build_progress}")
+            
+            
+            # # print(self._abilities_count_and_build_progress[0])
+            # print("OC: ", cy_structure_pending(self, UnitTypeId.ORBITALCOMMAND))
+            # print("PF: ", cy_structure_pending(self, UnitTypeId.PLANETARYFORTRESS))
+            # print("Hive: ", cy_structure_pending(self, UnitTypeId.HIVE))
+            # print("Lair: ", cy_structure_pending(self, UnitTypeId.LAIR))
+            print("pylon: ", cy_structure_pending(self, UnitTypeId.PYLON))
+            print("gateway: ", cy_structure_pending(self, UnitTypeId.GATEWAY))
+            # # print("techlab factory: ", cy_structure_pending(self, UnitTypeId.FACTORYTECHLAB))
+            # # print("Barracks: ", cy_structure_pending(self, UnitTypeId.BARRACKS))
+            # # print("hatchery: ", cy_structure_pending(self, UnitTypeId.HATCHERY))
+            # print("spawning pool: ", cy_structure_pending(self, UnitTypeId.SPAWNINGPOOL))
+            
+            
+            
+            # structure = self.structures.first
+            # print(UnitTypeId.value)
+            # print(structure._proto.value)
+        
+        
+            # print(structure.build_progress)
+            # print(structure._proto.build_progress)
+
+            # worker = self.workers.first
+            # print(worker.orders[0].ability.exact_id.value)
+            
+            # print(worker.orders[0].ability._proto.ability_id)
+            
+            # print(self.already_pending(UnitTypeId.ORBITALCOMMAND))
+            # print(self.already_pending(UnitTypeId.PLANETARYFORTRESS))
+            # print("barracks: ", cy_structure_pending(self, UnitTypeId.BARRACKS))
+            # print("reactor barracks: ", cy_structure_pending(self, UnitTypeId.BARRACKSREACTOR))
+            # print("techlab barracks: ", cy_structure_pending(self, UnitTypeId.BARRACKSTECHLAB))
+            # print("barracks reactor ", cy_structure_pending(self, UnitTypeId.BARRACKSREACTOR))
+            # print("barracks techlab ", cy_structure_pending(self, UnitTypeId.BARRACKSTECHLAB))
+            # print("starport techlab ", cy_structure_pending(self, UnitTypeId.STARPORTTECHLAB))
+            # print("starport reactor ", cy_structure_pending(self, UnitTypeId.STARPORTREACTOR))
+            # print("factory techlab ", cy_structure_pending(self, UnitTypeId.FACTORYTECHLAB))
+            
+            #print(cy_structure_pending(self, UnitTypeId.STARPORTTECHLAB))
+        
+        
+        #print(f"Pending Spawning Pools: {pending_spawning_pools}")
+        #print(self.race.name=="Terran", self.race.name)
+        
+        # print(self.game_data.abilities[])
+        #self._proto #TODO investigate maybe get access filtered data out of bot object instead of all orders
+        
+        # wo= [w for w in self.workers if not w.is_collecting]
+        # print(f"Idle workers: {len(wo)}")
+        # for w in self.workers:
+        #     for x in range(len(w.orders)):
+        #         print("----------------")
+        #         order = w.orders[x]
+        #         print(f"Order: {order.ability}")
+        #         print("----------------")
+            #print(f"Orders len {len(w.orders)}")
+            #print(w.orders)
+        
+        
+        
 
         
         # time_taken = timeit.timeit(
@@ -133,7 +283,6 @@ class BotTest(BotAI):
         #print(f"Time taken for cy_closer_than: {time_taken} seconds")
         
         # print(len(cy_closer_than(self.units, 1, 15.0)))
-        print("---------------------------")
         # TEST UNIT FORMATION (play on micro arena)
         # if not self.enemy_units:
         #     return
@@ -180,8 +329,8 @@ if __name__ == "__main__":
     run_game(
         maps.get(random_map),
         [
-            Bot(Race.Zerg, BotTest()),
-            Computer(Race.Protoss, Difficulty.Medium),
+            Bot(Race.Protoss, BotTest()),
+            Computer(Race.Zerg, Difficulty.Medium),
         ],
         realtime=True,
     )
