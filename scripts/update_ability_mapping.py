@@ -32,7 +32,16 @@ except Exception:
     UnitTypeId = None
     AbilityId = None
 
-LINE_RE = re.compile(r"^(\s*)mapping_array\s*\[\s*(\d+)\s*\]\s*=\s*(\d+)(\s*#\s*(.*))?\s*$")
+MAPPING_RE = re.compile(r"^(\s*)mapping_array\s*\[\s*(\d+)\s*\]\s*=\s*(\d+)(\s*#\s*(.*))?\s*$")
+
+# Regex to match Struct_ABILITIES:
+STRUCT_RE = re.compile(r"^STRUCT_ABILITIES\s*\[\s*(\d+)\s*\]\s*=\s*(\d+)(\s*#\s*(.*))?\s*$") 
+
+
+# REGEX tto remove update header 
+HEADER_RE = re.compile(r"^#\s*Rewritten mappings from UNIT_TYPE_ID_TO_ABILITY_MAP(?:,\s*Updated at .+)?\s*$")
+
+STRUCT_HEADER_RE = re.compile(r"^#\s*(?:STRUCT_ABILITIES|STRUCT_ABILLITIES)")
 
 
 
@@ -146,7 +155,7 @@ def try_resolve_ability_name_from_value(val: int):
 
 
 def transform_line(line: str):
-    m = LINE_RE.match(line)
+    m = MAPPING_RE.match(line)
     if not m:
         return line
     indent, key_s, val_s, _, comment = m.groups()
@@ -210,7 +219,13 @@ def main():
 
     # Preserve all non-mapping lines; skip any existing mapping_array[...] lines
     for line in text.splitlines(True):
-        if LINE_RE.match(line):
+        if MAPPING_RE.match(line):
+            continue
+        if STRUCT_RE.match(line):
+            continue
+        if HEADER_RE.match(line):
+            continue
+        if STRUCT_HEADER_RE.match(line):
             continue
         out_lines.append(line)
 
@@ -249,7 +264,7 @@ def main():
         struct_items = []
 
     if struct_items:
-        new_text += "\n# Rewritten STRUCT_ABILITIES (ability_id -> flag), Updated at {}\n".format(datetime.datetime.now())
+        new_text += "\n# STRUCT_ABILLITIES\n"
         for aid, flag in struct_items:
             try:
                 ability_name = AbilityId(aid).name

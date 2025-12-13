@@ -17,14 +17,7 @@ cpdef int map_value(int key) nogil:
     return -1
 
 
-
-# Rewritten mappings from UNIT_TYPE_ID_TO_ABILITY_MAP, Updated at 2025-12-01 23:33:44.409410
-
-# Rewritten mappings from UNIT_TYPE_ID_TO_ABILITY_MAP, Updated at 2025-12-03 18:21:29.118069
-
-
-
-# Rewritten mappings from UNIT_TYPE_ID_TO_ABILITY_MAP, Updated at 2025-12-09 17:58:19.561294
+# Rewritten mappings from UNIT_TYPE_ID_TO_ABILITY_MAP, Updated at 2025-12-13 14:26:03.974413
 mapping_array[5] = 3682  # TECHLAB
 mapping_array[18] = 318  # COMMANDCENTER
 mapping_array[19] = 319  # SUPPLYDEPOT
@@ -81,7 +74,7 @@ mapping_array[1943] = 320  # REFINERYRICH
 mapping_array[1994] = 882  # ASSIMILATORRICH
 mapping_array[1995] = 1154  # EXTRACTORRICH
 
-# Rewritten STRUCT_ABILITIES (ability_id -> flag), Updated at 2025-12-09 17:58:19.561294
+# STRUCT_ABILLITIES
 STRUCT_ABILITIES[318] = 2  # TERRANBUILD_COMMANDCENTER
 STRUCT_ABILITIES[421] = 1  # BUILD_TECHLAB_BARRACKS
 STRUCT_ABILITIES[422] = 1  # BUILD_REACTOR_BARRACKS
