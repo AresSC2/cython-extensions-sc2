@@ -13,7 +13,7 @@ class SafeModeConfig:
 
     def _read_initial_state(self) -> bool:
         """Read initial state from environment variable."""
-        env_value = os.environ.get("CYTHON_EXTENSIONS_SAFE_MODE", "true")
+        env_value = os.environ.get("CYTHON_EXTENSIONS_SAFE_MODE", "false")
         return env_value.lower() in ("true", "1", "yes", "on")
 
     @property
