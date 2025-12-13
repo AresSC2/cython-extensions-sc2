@@ -183,62 +183,62 @@ jobs:
           name: ${{ env.ARTIFACT_NAME }}
           path: wheelhouse/*.whl
 
-  build_wheels_macos:
-    name: "${{ matrix.os }} ${{ matrix.cibw_archs }} ${{ matrix.cibw_build }}"
-    runs-on: macos-13
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [macos-13]
-        cibw_build: ["cp311-*", "cp312-*"]
-        cibw_archs: ["x86_64"]
-    env:
-      SYSTEM_VERSION_COMPAT: 0
-      CIBW_ARCHS_MACOS: ${{ matrix.cibw_archs }}
-      CIBW_ENVIRONMENT_MACOS: "ARCHFLAGS='-arch x86_64' _PYTHON_HOST_PLATFORM=macosx-10.9-x86_64 _PYTHON_SYSCONFIGDATA_NAME=_sysconfigdata__darwin_darwin"
-      CIBW_BEFORE_ALL: "export SYSTEM_VERSION_COMPAT=0"
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.tag }}
-          fetch-depth: 0
-
-      - name: Set up python 3.12 (x86_64)
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-          architecture: "x64"
-
-      - name: Install poetry
-        run: pipx install poetry
-
-      - name: Build wheels
-        uses: pypa/cibuildwheel@v3.2.0
-        env:
-          CIBW_ARCHS: ${{ matrix.cibw_archs }}
-          CIBW_BUILD: ${{ matrix.cibw_build }}
-          SYSTEM_VERSION_COMPAT: 0
-          CIBW_ENVIRONMENT_MACOS: "ARCHFLAGS='-arch x86_64' _PYTHON_HOST_PLATFORM=macosx-10.9-x86_64 _PYTHON_SYSCONFIGDATA_NAME=_sysconfigdata__darwin_darwin"
-          CIBW_BEFORE_ALL: "export SYSTEM_VERSION_COMPAT=0"
-          CIBW_BUILD_FRONTEND: "pip; args: --no-build-isolation"
-          CIBW_BEFORE_BUILD: "python -m pip install -U pip setuptools wheel poetry==1.8.4 poetry-core cython numpy"
-      - name: List dist contents (Unix)
-        if: runner.os != 'Windows'
-        run: if [ -d dist ]; then ls -lh dist/; else echo "dist/ does not exist"; fi
-      - name: List dist contents (Windows)
-        if: runner.os == 'Windows'
-        run: Get-ChildItem dist
-        shell: pwsh
-      - name: Sanitize artifact name
-        id: sanitize
-        run: |
-          echo "ARTIFACT_NAME=wheels-macos-${{ matrix.os }}-${{ matrix.cibw_archs }}-${{ matrix.cibw_build }}" | sed 's/\*//g' >> $GITHUB_ENV
-        shell: bash
-      - uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.ARTIFACT_NAME }}
-          path: wheelhouse/*.whl
+#  build_wheels_macos:
+#    name: "${{ matrix.os }} ${{ matrix.cibw_archs }} ${{ matrix.cibw_build }}"
+#    runs-on: macos-13
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        os: [macos-13]
+#        cibw_build: ["cp311-*", "cp312-*"]
+#        cibw_archs: ["x86_64"]
+#    env:
+#      SYSTEM_VERSION_COMPAT: 0
+#      CIBW_ARCHS_MACOS: ${{ matrix.cibw_archs }}
+#      CIBW_ENVIRONMENT_MACOS: "ARCHFLAGS='-arch x86_64' _PYTHON_HOST_PLATFORM=macosx-10.9-x86_64 _PYTHON_SYSCONFIGDATA_NAME=_sysconfigdata__darwin_darwin"
+#      CIBW_BEFORE_ALL: "export SYSTEM_VERSION_COMPAT=0"
+#    steps:
+#      - name: Check out repository
+#        uses: actions/checkout@v4
+#        with:
+#          ref: ${{ inputs.tag }}
+#          fetch-depth: 0
+#
+#      - name: Set up python 3.12 (x86_64)
+#        uses: actions/setup-python@v5
+#        with:
+#          python-version: "3.12"
+#          architecture: "x64"
+#
+#      - name: Install poetry
+#        run: pipx install poetry
+#
+#      - name: Build wheels
+#        uses: pypa/cibuildwheel@v3.2.0
+#        env:
+#          CIBW_ARCHS: ${{ matrix.cibw_archs }}
+#          CIBW_BUILD: ${{ matrix.cibw_build }}
+#          SYSTEM_VERSION_COMPAT: 0
+#          CIBW_ENVIRONMENT_MACOS: "ARCHFLAGS='-arch x86_64' _PYTHON_HOST_PLATFORM=macosx-10.9-x86_64 _PYTHON_SYSCONFIGDATA_NAME=_sysconfigdata__darwin_darwin"
+#          CIBW_BEFORE_ALL: "export SYSTEM_VERSION_COMPAT=0"
+#          CIBW_BUILD_FRONTEND: "pip; args: --no-build-isolation"
+#          CIBW_BEFORE_BUILD: "python -m pip install -U pip setuptools wheel poetry==1.8.4 poetry-core cython numpy"
+#      - name: List dist contents (Unix)
+#        if: runner.os != 'Windows'
+#        run: if [ -d dist ]; then ls -lh dist/; else echo "dist/ does not exist"; fi
+#      - name: List dist contents (Windows)
+#        if: runner.os == 'Windows'
+#        run: Get-ChildItem dist
+#        shell: pwsh
+#      - name: Sanitize artifact name
+#        id: sanitize
+#        run: |
+#          echo "ARTIFACT_NAME=wheels-macos-${{ matrix.os }}-${{ matrix.cibw_archs }}-${{ matrix.cibw_build }}" | sed 's/\*//g' >> $GITHUB_ENV
+#        shell: bash
+#      - uses: actions/upload-artifact@v4
+#        with:
+#          name: ${{ env.ARTIFACT_NAME }}
+#          path: wheelhouse/*.whl
 
   build_wheels_macos_arm64:
     name: "${{ matrix.os }} ${{ matrix.cibw_archs }} ${{ matrix.cibw_build }}"
