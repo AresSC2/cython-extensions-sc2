@@ -1,6 +1,88 @@
 # CHANGELOG
 
 
+## v0.13.0 (2025-12-13)
+
+### Features
+
+- New cy_strucutre_pending function
+  ([`4619c92`](https://github.com/AresSC2/cython-extensions-sc2/commit/4619c928752c5fd5fe246a66eb735517c05aab6c))
+
+* feat: added new function: cy_structure_pending
+
+* fix: fixed some things
+
+* fix: updated description in .pyi
+
+* - added a cy_structure_pending_ares function - updated cy_structure_pending to use its own
+  abilitytracker
+
+* feat: added a script which updates ability_mapping.pyx -Added python files in ability_tracker to
+  cythonize later
+
+* feat: Implementing the cache in the code improved performance by cythonizing code
+
+* Refactor ability mapping and update related Cython functions
+
+- Reduced MAX_KEY and mapping_array size from 4200 to 2200 in ability_mapping.pyx for optimization.
+  - Modified ability_order_tracker.pyx to reflect changes in mapping_array size and improved
+  structure handling. - Adjusted general_utils.pyx to ensure compatibility with updated ability
+  counts. - Revised cy_structure_pending function in the Jupyter notebook to utilize new mapping
+  logic. - Enhanced update_ability_mapping.py to include timestamp in comments for better tracking
+  of changes. - Improved bot_test.py to include debugging options and refined test cases for
+  structure pending checks.
+
+* feat: Enhance ability counting for Terran structures
+
+* reset pyproject version
+
+* fix: updated ability_mapping script -moved and renamed SPECIAL_AIDS_TABLE
+
+* fix: removed hardcoded Ability ids
+
+* fix: fixed broken PF and OC tracking - optimized worker orders queue -uploaded notebook with
+  broken code
+
+* Fix: Forgotten optimised code line for worker orders added
+
+* feat: Added detection for Zerg structures ‘Lair’ and ‘Hive’
+
+* fix: The integration of the notebook has been fixed so that it works with the current code.
+
+* fix: fixed double name error
+
+* fix: added cy_structure_pending ares support
+
+* fix: Clean up functions and fix potential memory leaks
+
+* fix: Updated memory management in Cython files - added STRUCT_ABILITIES to update script - fixed
+  notebook import
+
+* feat: proposed updates to `abilities_count_structures` in notebook
+
+* fix: optimized ability_order_tracker
+
+* fix: added forgotten _proto.build_progress
+
+* fix: added some more optimazations
+
+* feat: structure pending notebook
+
+* refactor: remove notebook ability mapping files
+
+* docs: update README with cython improvements, version compatibility, and usage notes
+
+* ci: comment out `build_wheels_macos` workflow
+
+* refactor: update default value for `CYTHON_EXTENSIONS_SAFE_MODE` to false
+
+* chore: update dependencies
+
+---------
+
+Co-authored-by: rasper <tomkerrdev@gmail.com>
+
+
 ## v0.12.0 (2025-12-12)
 
 ### Bug Fixes
