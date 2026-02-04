@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.13.2 (2026-02-04)
+
+### Bug Fixes
+
+- Increase `closest_dist` default value in cy_closest_to
+  ([`6c16837`](https://github.com/AresSC2/cython-extensions-sc2/commit/6c16837ae9ed6c68149109ce02a337388330ad95))
+
+
 ## v0.13.1 (2025-12-13)
 
 ### Bug Fixes
