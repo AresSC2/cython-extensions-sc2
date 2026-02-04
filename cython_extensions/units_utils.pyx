@@ -53,7 +53,7 @@ cpdef object cy_closest_to((float, float) position, object units):
     """
     cdef:
         object closest = units[0]
-        double closest_dist = 999.9
+        double closest_dist = 999999.9
         double dist = 0.0
         unsigned int len_units = len(units)
         (float, float) pos
