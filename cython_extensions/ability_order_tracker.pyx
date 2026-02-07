@@ -6,7 +6,7 @@ Replaces the Python _abilities_count_and_build_progress method for maximum speed
 
 from sc2.data import Race
 
-from cython_extensions.ability_mapping cimport map_value
+from cython_extensions.ability_mapping cimport map_unit_value
 from cython_extensions.ability_mapping cimport STRUCT_ABILITIES
 from sc2.data import Race
 from cython cimport boundscheck, wraparound
@@ -70,19 +70,17 @@ cpdef AbilityCount[:] abilities_count_structures(object bot):
             unit = structures[i]
             if <double> unit._proto.build_progress < completed_build_progress:
                 unit_id_int = <int> unit._proto.unit_type
-                ability_id = <int> map_value(unit_id_int)
+                ability_id = <int> map_unit_value(unit_id_int)
                 if ability_id!=-1:
                     arr[ability_id].count += 1
 
     elif is_zerg:
-        #Terran and Zerg
+        #Zerg
         for i in range(len_structures):
             unit = structures[i]
             unit_id_int = <int> unit._proto.unit_type
-            ability_id = <int> map_value(unit_id_int)
-            if <double> unit._proto.build_progress < 1.0:
-                
-                
+            ability_id = <int> map_unit_value(unit_id_int)
+            if <double> unit._proto.build_progress < 1.0:    
                 if ability_id!=-1:
                     arr[ability_id].count += 1
             elif STRUCT_ABILITIES[ability_id]==2:  #identify Lair, Hive and Command Center
@@ -99,7 +97,7 @@ cpdef AbilityCount[:] abilities_count_structures(object bot):
         for i in range(len_structures):
             unit = structures[i]
             unit_id_int = <int> unit._proto.unit_type
-            ability_id = <int> map_value(unit_id_int)
+            ability_id = <int> map_unit_value(unit_id_int)
             if <double> unit._proto.build_progress < 1.0:
                 
                 

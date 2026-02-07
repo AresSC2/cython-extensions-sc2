@@ -296,6 +296,15 @@ def _validate_cy_structure_pending_ares(args):
     if not isinstance(unit_type, int) and not hasattr(unit_type, "name"):
         # keeping this permissive to avoid breaking behavior
         pass  # do not raise here to avoid changing logic
+    
+def _validate_cy_upgrade_pending(args):
+    # cy_upgrade_pending(bot, upgrade_type)
+    bot = args["bot"]  # presence check only
+    upgrade_type = args["upgrade_type"]
+    # Validate upgrade_type can be either int-like enum with .name/.value or similar; keep minimal:
+    if not isinstance(upgrade_type, int) and not hasattr(upgrade_type, "name"):
+        # keeping this permissive to avoid breaking behavior
+        pass  # do not raise here to avoid changing logic
 
 
 def _validate_cy_pylon_matrix_covers(args):
