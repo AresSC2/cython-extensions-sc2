@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.13.3 (2026-02-13)
+
+### Bug Fixes
+
+- Removed unused variable
+  ([`8a42c1a`](https://github.com/AresSC2/cython-extensions-sc2/commit/8a42c1a9d604f7a48db69de05c6f105ce13ded77))
+
+
 ## v0.13.2 (2026-02-04)
 
 ### Bug Fixes
