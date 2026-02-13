@@ -242,7 +242,6 @@ cpdef unsigned int cy_structure_pending_ares(
 
 cpdef float  cy_upgrade_pending(object bot, object upgrade_type):
     cdef:
-        float num_pending = 0.0
         object researched_upgrades= bot.state.upgrades
 
         object structure_collection = bot.structures
@@ -250,7 +249,7 @@ cpdef float  cy_upgrade_pending(object bot, object upgrade_type):
 
         int target = <int> upgrade_type.value
         int target_upgrade_ability = <int> map_upgrade_value(target)
-        unsigned int len_orders, i, j
+        unsigned int i
 
 
     if upgrade_type in researched_upgrades:
