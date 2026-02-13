@@ -12,9 +12,12 @@ from sc2.bot_ai import BotAI
 from sc2.data import Difficulty, Race
 from sc2.ids.ability_id import AbilityId
 from sc2.ids.unit_typeid import UnitTypeId
+from sc2.ids.upgrade_id import UpgradeId
 from sc2.main import run_game
 from sc2.player import Bot, Computer
 from sc2.position import Point2
+
+
 
 
 import cProfile
@@ -30,6 +33,7 @@ from cython_extensions import (
     cy_closer_than,
     cy_further_than,
     cy_structure_pending,
+    cy_upgrade_pending
 )
 from cython_extensions.combat_utils import (
     cy_adjust_moving_formation,
@@ -219,12 +223,26 @@ class BotTest(BotAI):
             # print("PF: ", cy_structure_pending(self, UnitTypeId.PLANETARYFORTRESS))
             # print("Hive: ", cy_structure_pending(self, UnitTypeId.HIVE))
             # print("Lair: ", cy_structure_pending(self, UnitTypeId.LAIR))
-            print("pylon: ", cy_structure_pending(self, UnitTypeId.PYLON))
-            print("gateway: ", cy_structure_pending(self, UnitTypeId.GATEWAY))
+            # print("lurker: ", cy_structure_pending(self, UnitTypeId.LURKERDEN))
+            # print("gateway: ", cy_structure_pending(self, UnitTypeId.GATEWAY))
             # # print("techlab factory: ", cy_structure_pending(self, UnitTypeId.FACTORYTECHLAB))
             # # print("Barracks: ", cy_structure_pending(self, UnitTypeId.BARRACKS))
             # # print("hatchery: ", cy_structure_pending(self, UnitTypeId.HATCHERY))
             # print("spawning pool: ", cy_structure_pending(self, UnitTypeId.SPAWNINGPOOL))
+            
+            status=cy_upgrade_pending(self, UpgradeId.ZERGGROUNDARMORSLEVEL1)
+            status2= self.already_pending_upgrade(UpgradeId.ZERGGROUNDARMORSLEVEL1)
+            print("Zerg Ground Armor Level 1 upgrade pending: ", status)
+            print("Zerg Ground Armor Level 1 upgrade already pending: ", status2)   
+            
+            # sp= cy_structure_pending(self, UnitTypeId.HIVE)
+            # print("Hive pending: ", sp)
+            # ld = cy_structure_pending(self, UnitTypeId.LURKERDENMP)
+            # print("Lurker den pending: ", ld)
+            
+            # lair = cy_structure_pending(self, UnitTypeId.LAIR)
+            # print("Lair pending: ", lair)
+            
             
             
             
@@ -329,7 +347,7 @@ if __name__ == "__main__":
     run_game(
         maps.get(random_map),
         [
-            Bot(Race.Protoss, BotTest()),
+            Bot(Race.Zerg, BotTest()),
             Computer(Race.Zerg, Difficulty.Medium),
         ],
         realtime=True,

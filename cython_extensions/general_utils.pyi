@@ -256,3 +256,33 @@ def cy_structure_pending_ares(ai: "BotAI", unit_type: UnitID, include_planned=Tr
     Returns:
         How many structures of unit_type are currently building.
     """
+
+
+def cy_upgrade_pending(ai: "BotAI", upgrade_type: UpgradeId) -> float:
+    """Check if a specific upgrade is pending.
+
+    Faster upgrade specific alternative to `python-sc2`'s `already_pending`
+
+    Example:
+    ```py
+    from cython_functions import cy_upgrade_pending
+    from sc2.ids.upgrade_id import UpgradeId
+
+    banshee_cloak_pending: float = cy_upgrade_pending(self, UpgradeId.BANSHEECLOAK)
+    ```
+    ```
+    922 ns ± 5.9 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
+
+    Python-sc2 `already_pending` alternative:
+    3.41 μs ± 28.3 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
+    ```
+
+    Args:
+        ai: Bot object that will be running the game.
+        upgrade_type: Upgrade type we want to check.
+
+    Returns:
+        0 if the upgrade is not started, 
+        1 if finished,
+        Value between 0 and 1 if pending.
+    """

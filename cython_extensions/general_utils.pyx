@@ -5,9 +5,10 @@ from libc.math cimport INFINITY
 from sc2.data import Race
 from sc2.dicts.unit_trained_from import UNIT_TRAINED_FROM
 from sc2.ids.unit_typeid import UnitTypeId
+from sc2.ids.upgrade_id import UpgradeId
 
 from cython_extensions.geometry import cy_distance_to_squared
-from cython_extensions.ability_mapping cimport map_value
+from cython_extensions.ability_mapping cimport map_unit_value, RESEARCH_BUILDING_ARRAY, map_upgrade_value
 from cython_extensions.ability_order_tracker import cy_abilities_count_structures
 cimport numpy as cnp
 
@@ -161,6 +162,7 @@ cdef struct AbilityCount:
     int ability_id
     int count
 
+
 @boundscheck(False)
 @wraparound(False)
 cpdef unsigned int cy_structure_pending(
@@ -179,7 +181,7 @@ cpdef unsigned int cy_structure_pending(
     counts_and_progress = cy_abilities_count_structures(bot) #returns a c array memoryview
 
     arr_len = counts_and_progress.shape[0]
-    target_created_ability = <int> map_value(target)
+    target_created_ability = <int> map_unit_value(target)
     
     if 0 <= target_created_ability < arr_len:
         item = counts_and_progress[target_created_ability]
@@ -229,10 +231,44 @@ cpdef unsigned int cy_structure_pending_ares(
 
 
         arr_len = counts_and_progress.shape[0]
-        target_created_ability = <int> map_value(target)
+        target_created_ability = <int> map_unit_value(target)
 
         if 0 <= target_created_ability < arr_len:
             item = counts_and_progress[target_created_ability]
             num_pending += item.count
     
     return num_pending
+
+
+cpdef float  cy_upgrade_pending(object bot, object upgrade_type):
+    cdef:
+        object researched_upgrades= bot.state.upgrades
+
+        object structure_collection = bot.structures
+        Py_ssize_t len_structures = len(structure_collection)
+
+        int target = <int> upgrade_type.value
+        int target_upgrade_ability = <int> map_upgrade_value(target)
+        unsigned int i
+
+
+    if upgrade_type in researched_upgrades:
+        return 1.0
+
+    for i in range(len_structures):
+        structure = structure_collection[i]
+        structure_id_int = <int> structure._proto.unit_type #retrieve the structure type as an integer
+        if RESEARCH_BUILDING_ARRAY[structure_id_int] == 1: #check if the structure is a research building
+            if structure.orders:
+                order = structure.orders[0]
+                ability_id = <int> order.ability._proto.ability_id #get the ability id of the current order
+                if ability_id == target_upgrade_ability:
+                    #get the build progress of the upgrade, which is the same as the build progress of the structure
+                    return order.progress
+
+    return 0.0 
+
+    
+
+    # Check if upgrade is currently being researched
+

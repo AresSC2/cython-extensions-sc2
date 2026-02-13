@@ -5,9 +5,9 @@ and (when possible) the RHS uses `AbilityId.<NAME>.value`. If the ability name
 cannot be resolved, the script leaves the numeric literal on the RHS.
 
 The script updates lines like:
-    mapping_array[18] = 319 #SupplyDepot
+    mapping_unit_array[18] = 319 #SupplyDepot
 into:
-    mapping_array[UnitTypeId.SUPPLYDEPOT.value] = AbilityId.SOME_ABILITY.value  # SupplyDepot
+    mapping_unit_array[UnitTypeId.SUPPLYDEPOT.value] = AbilityId.SOME_ABILITY.value  # SupplyDepot
 
 It prefers using the trailing comment to determine the UnitTypeId name. If that
 is missing, it will try to resolve the unit name using `sc2.ids.unit_typeid.UnitTypeId(<key>)`.
@@ -28,20 +28,35 @@ import datetime
 try:
     from sc2.ids.unit_typeid import UnitTypeId
     from sc2.ids.ability_id import AbilityId
+    from sc2.ids.upgrade_id import UpgradeId
+    from sc2.dicts.unit_research_abilities import RESEARCH_INFO
 except Exception:
     UnitTypeId = None
     AbilityId = None
+    UpgradeId = None
+    print("Warning: Could not import sc2.ids. Updating script failed")
 
-MAPPING_RE = re.compile(r"^(\s*)mapping_array\s*\[\s*(\d+)\s*\]\s*=\s*(\d+)(\s*#\s*(.*))?\s*$")
+MAPPING_RE = re.compile(r"^(\s*)mapping_unit_array\s*\[\s*(\d+)\s*\]\s*=\s*(\d+)(\s*#\s*(.*))?\s*$")
 
 # Regex to match Struct_ABILITIES:
-STRUCT_RE = re.compile(r"^STRUCT_ABILITIES\s*\[\s*(\d+)\s*\]\s*=\s*(\d+)(\s*#\s*(.*))?\s*$") 
+STRUCT_RE = re.compile(r"^STRUCT_ABILITIES\s*\[\s*(\d+)\s*\]\s*=\s*(\d+)(\s*#\s*(.*))?\s*$")
+
+# Regex to match mapping_upgrade_array lines for deletion
+delete_upgrade_mapping_re = re.compile(r"^\s*mapping_upgrade_array\s*\[\s*\d+\s*\]\s*=\s*\d+(\s*#.*)?$")
+
+RESEARCH_BUILDING_RE = re.compile(r"^\s*RESEARCH_BUILDING_ARRAY\s*\[\s*\d+\s*\]\s*=\s*\d+(\s*#.*)?$")
 
 
 # REGEX tto remove update header 
 HEADER_RE = re.compile(r"^#\s*Rewritten mappings from UNIT_TYPE_ID_TO_ABILITY_MAP(?:,\s*Updated at .+)?\s*$")
 
 STRUCT_HEADER_RE = re.compile(r"^#\s*(?:STRUCT_ABILITIES|STRUCT_ABILLITIES)")
+
+#header regex to remove UPGRADE_ID_TO_ABILITY_MAP
+UPGRADE_HEADER_RE = re.compile(r"^#\s*UPGRADE_ID_TO_ABILITY_MAP\s*$")
+
+#header regex to remove RESEARCH_BUILDING_DICT
+RESEARCH_BUILDING_HEADER_RE = re.compile(r"^#\s*RESEARCH_BUILDING_ARRAY\s*$")
 
 
 
@@ -96,6 +111,7 @@ UNIT_TYPE_ID_TO_ABILITY_MAP = {
     UnitTypeId.INFESTATIONPIT: AbilityId.ZERGBUILD_INFESTATIONPIT,
     UnitTypeId.NYDUSNETWORK: AbilityId.ZERGBUILD_NYDUSNETWORK,
     UnitTypeId.BANELINGNEST: AbilityId.ZERGBUILD_BANELINGNEST,
+    UnitTypeId.LURKERDENMP: AbilityId.BUILD_LURKERDEN,
     UnitTypeId.ASSIMILATORRICH: AbilityId.PROTOSSBUILD_ASSIMILATOR,
     UnitTypeId.EXTRACTORRICH: AbilityId.ZERGBUILD_EXTRACTOR,
     UnitTypeId.REFINERYRICH: AbilityId.TERRANBUILD_REFINERY,
@@ -125,6 +141,42 @@ STRUCT_ABILITIES[AbilityId.UPGRADETOHIVE_HIVE.value] = 1
 #It should have both 2 and 1.
 
 STRUCT_ABILITIES[AbilityId.UPGRADETOLAIR_LAIR.value] = 2 
+
+UPGRADE_ID_TO_ABILITY_MAP: dict[UpgradeId, AbilityId] = {}
+
+for unit_id, upgrades in RESEARCH_INFO.items():
+    for upgrade_id, info in upgrades.items():
+        # This maps the UpgradeId to the AbilityId used to start it
+        UPGRADE_ID_TO_ABILITY_MAP[upgrade_id] = info["ability"]
+
+#RESEARCH BUILDING Dict
+RESEARCH_BUILDING_DICT = {}
+ 
+RESEARCH_BUILDING_DICT[UnitTypeId.FORGE]= 1 #FOrge
+RESEARCH_BUILDING_DICT[UnitTypeId.CYBERNETICSCORE]= 1 #Cybernetics Core
+RESEARCH_BUILDING_DICT[UnitTypeId.TWILIGHTCOUNCIL]= 1 #Twilight Council
+RESEARCH_BUILDING_DICT[UnitTypeId.ROBOTICSBAY]= 1 #Robotics Bay
+RESEARCH_BUILDING_DICT[UnitTypeId.FLEETBEACON]= 1 #Fleet Beacon
+RESEARCH_BUILDING_DICT[UnitTypeId.TEMPLARARCHIVE]= 1 #Templar Archive
+RESEARCH_BUILDING_DICT[UnitTypeId.DARKSHRINE]= 1 #Dark Shrine
+RESEARCH_BUILDING_DICT[UnitTypeId.ARMORY]= 1 #Armory
+RESEARCH_BUILDING_DICT[UnitTypeId.ENGINEERINGBAY]= 1 #Engineering Bay
+RESEARCH_BUILDING_DICT[UnitTypeId.TECHLAB] = 1 #Tech Lab
+RESEARCH_BUILDING_DICT[UnitTypeId.BARRACKSTECHLAB] = 1 #Barracks Tech Lab
+RESEARCH_BUILDING_DICT[UnitTypeId.FACTORYTECHLAB] = 1 #Factory Tech Lab
+RESEARCH_BUILDING_DICT[UnitTypeId.STARPORTTECHLAB] = 1 #Starport Tech Lab
+RESEARCH_BUILDING_DICT[UnitTypeId.FUSIONCORE] = 1 #Fusion Core
+RESEARCH_BUILDING_DICT[UnitTypeId.GHOSTACADEMY] = 1 #Ghost Academy
+RESEARCH_BUILDING_DICT[UnitTypeId.EVOLUTIONCHAMBER] = 1 #Evolution Chamber
+RESEARCH_BUILDING_DICT[UnitTypeId.SPIRE] = 1 #Spire
+RESEARCH_BUILDING_DICT[UnitTypeId.ULTRALISKCAVERN] = 1 #Ultralisk Cavern
+RESEARCH_BUILDING_DICT[UnitTypeId.LURKERDEN] = 1 #Lurker Den
+RESEARCH_BUILDING_DICT[UnitTypeId.BANELINGNEST] = 1 #Baneling Nest
+RESEARCH_BUILDING_DICT[UnitTypeId.ROACHWARREN] = 1 #Roach Warren
+RESEARCH_BUILDING_DICT[UnitTypeId.SPAWNINGPOOL] = 1 #Spawning Pool
+RESEARCH_BUILDING_DICT[UnitTypeId.HATCHERY] = 1 #Hatchery
+RESEARCH_BUILDING_DICT[UnitTypeId.HYDRALISKDEN] = 1 #Hydralisk Den
+RESEARCH_BUILDING_DICT[UnitTypeId.INFESTATIONPIT] = 1 #Infestation Pit
 
 
 
@@ -178,7 +230,7 @@ def transform_line(line: str):
     # script. Resolve the UnitTypeId enum for the key/comment and look up the
     # RHS ability from the mapping when available.
     ability_name = None
-    lhs = f"mapping_array[{key}]"
+    lhs = f"mapping_unit_array[{key}]"
     rhs = str(val)
     comment_text = f"  # {key}"
 
@@ -194,8 +246,8 @@ def transform_line(line: str):
 
     if unit_enum is not None:
         # Use numeric values for the generated mapping entries. This produces
-        # lines like: mapping_array[45] = 78  # BARRACKS
-        lhs = f"mapping_array[{unit_enum.value}]"
+        # lines like: mapping_unit_array[45] = 78  # BARRACKS
+        lhs = f"mapping_unit_array[{unit_enum.value}]"
         comment_text = f"  # {unit_enum.name}"
         if unit_enum in UNIT_TYPE_ID_TO_ABILITY_MAP:
             ability_enum = UNIT_TYPE_ID_TO_ABILITY_MAP[unit_enum]
@@ -217,15 +269,20 @@ def main():
     text = path.read_text(encoding="utf8")
     out_lines = []
 
-    # Preserve all non-mapping lines; skip any existing mapping_array[...] lines
+    # List of regex/header objects to filter lines
+    filter_patterns = [
+        MAPPING_RE,
+        STRUCT_RE,
+        HEADER_RE,
+        STRUCT_HEADER_RE,
+        delete_upgrade_mapping_re,
+        RESEARCH_BUILDING_RE,
+        UPGRADE_HEADER_RE,
+        RESEARCH_BUILDING_HEADER_RE,
+    ]
+
     for line in text.splitlines(True):
-        if MAPPING_RE.match(line):
-            continue
-        if STRUCT_RE.match(line):
-            continue
-        if HEADER_RE.match(line):
-            continue
-        if STRUCT_HEADER_RE.match(line):
+        if any(p.match(line) for p in filter_patterns):
             continue
         out_lines.append(line)
 
@@ -247,7 +304,23 @@ def main():
     # Sort entries by unit id for stable output
     entries.sort()
 
-    mapping_lines = [f"mapping_array[{uval}] = {aval}  # {uname}\n" for uval, aval, uname in entries]
+    mapping_lines = [f"mapping_unit_array[{uval}] = {aval}  # {uname}\n" for uval, aval, uname in entries]
+
+    # Generate mapping_upgrade_array lines from UPGRADE_ID_TO_ABILITY_MAP
+    upgrade_entries = []
+    for upgrade_enum, ability_enum in UPGRADE_ID_TO_ABILITY_MAP.items():
+        try:
+            uval = int(upgrade_enum.value)
+        except Exception:
+            continue
+        try:
+            aval = int(ability_enum.value) if ability_enum is not None else -1
+        except Exception:
+            aval = -1
+        uname = getattr(upgrade_enum, 'name', str(upgrade_enum))
+        upgrade_entries.append((uval, aval, uname))
+    upgrade_entries.sort()
+    upgrade_lines = [f"mapping_upgrade_array[{uval}] = {aval}  # {uname}\n" for uval, aval, uname in upgrade_entries]
 
     # Backup and overwrite with regenerated mappings. Place backup in `scripts/`.
     scripts_dir = Path(__file__).parent
@@ -257,6 +330,8 @@ def main():
     new_text = ''.join(out_lines)
     new_text += "\n# Rewritten mappings from UNIT_TYPE_ID_TO_ABILITY_MAP, Updated at {}\n".format(datetime.datetime.now())
     new_text += ''.join(mapping_lines)
+    new_text += "\n# UPGRADE_ID_TO_ABILITY_MAP\n"
+    new_text += ''.join(upgrade_lines)
     # Append STRUCT_ABILITIES block generated from this script's STRUCT_ABILITIES dict
     try:
         struct_items = sorted(((int(k), int(v)) for k, v in STRUCT_ABILITIES.items()))
@@ -274,6 +349,21 @@ def main():
                 new_text += f"STRUCT_ABILITIES[{aid}] = {flag}  # {ability_name}\n"
             else:
                 new_text += f"STRUCT_ABILITIES[{aid}] = {flag}\n"
+                
+                
+                
+    #add RESEARCH_BUILDING_DICT
+    new_text += "\n# RESEARCH_BUILDING_ARRAY\n"
+    for unit_enum, flag in RESEARCH_BUILDING_DICT.items():
+        try:
+            uval = int(unit_enum.value)
+        except Exception:
+            continue
+        try:
+            uname = unit_enum.name
+        except Exception:
+            uname = str(unit_enum)
+        new_text += f"RESEARCH_BUILDING_ARRAY[{uval}] = {flag}  # {uname}\n"
 
     path.write_text(new_text, encoding="utf8")
     print(f"Updated {path}; original backed up to {backup}")
@@ -281,3 +371,11 @@ def main():
 
 if __name__ == '__main__':
     main()
+    
+
+
+
+
+
+
+#TODO: test lurkerden
