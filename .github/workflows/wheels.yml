@@ -61,7 +61,7 @@ jobs:
       matrix:
         os: [windows-latest]
         cibw_build: ["cp311-*", "cp312-*", "cp313-*"]
-        cibw_archs: ["AMD64"]
+        cibw_archs: ["AMD64", "x86", "ARM64"]
 
     steps:
       - name: Check out repository
