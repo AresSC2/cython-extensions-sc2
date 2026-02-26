@@ -251,13 +251,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-13, macos-latest]
+        os: [macos-13-large, macos-14]
         cibw_build: ["cp311-*", "cp312-*", "cp313-*"]
         cibw_archs: ["x86_64", "arm64"]
         exclude:
-          - os: macos-13
+          - os: macos-13-large
             cibw_archs: arm64
-          - os: macos-latest
+          - os: macos-14
             cibw_archs: x86_64
 
     steps:
