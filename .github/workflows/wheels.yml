@@ -253,7 +253,7 @@ jobs:
       matrix:
         os: [macos-13, macos-14]
         cibw_build: ["cp311-*", "cp312-*", "cp313-*"]
-        cibw_archs: ["x86_64", "arm64"]
+        cibw_archs: ["arm64"]
         exclude:
           - os: macos-13
             cibw_archs: arm64
