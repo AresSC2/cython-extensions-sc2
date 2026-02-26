@@ -1,6 +1,9 @@
 name: Build Wheels
 
 on:
+  push:
+    branches:
+      - dev
   workflow_call:
     inputs:
       tag:
@@ -57,47 +60,49 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-latest]
-        python-version: ['3.11', '3.12', '3.13']
-#        cibw_build: ["cp310-*", "cp311-*", "cp312-*", "cp313-*"]
-#        cibw_archs: ["AMD64", "x86", "ARM64"]
+        cibw_build: ["cp311-*", "cp312-*", "cp313-*"]
+        cibw_archs: ["AMD64", "x86"]
 
     steps:
-        # install poetry
-        - name: Check out repository
-          uses: actions/checkout@v4
-          with:
-            ref: ${{ inputs.tag }}
-            fetch-depth: 0
-        - name: Setup Python ${{ matrix.python-version }}
-          uses: actions/setup-python@v5
-          with:
-            python-version: ${{ matrix.python-version }}
-        - name: Install poetry
-          run: pipx install poetry==1.8.4
-        - name: Install requirements and build extension
-          run: |
-            poetry install --with dev
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+          fetch-depth: 0
 
-        # build a wheel while we are here for later (pipi) and upload artifact
-        - name: Make wheel
-          run: poetry build
-        - name: List dist contents (Unix)
-          if: runner.os != 'Windows'
-          run: if [ -d dist ]; then ls -lh dist/; else echo "dist/ does not exist"; fi
-        - name: List dist contents (Windows)
-          if: runner.os == 'Windows'
-          run: Get-ChildItem dist
-          shell: pwsh
-        - name: Sanitize artifact name
-          id: sanitize
-          run: |
-            echo "ARTIFACT_NAME=wheels-windows-${{ matrix.os }}-${{ matrix.cibw_archs }}-${{ matrix.python-version }}-${{ matrix.cibw_build }}" | sed 's/\*//g' >> $GITHUB_ENV
-          shell: bash
-        - name: Upload wheels
-          uses: actions/upload-artifact@v4
-          with:
-            name: ${{ env.ARTIFACT_NAME }}
-            path: dist/*.whl
+      - name: Set up python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install poetry
+        run: pipx install poetry
+
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v3.2.0
+        env:
+          CIBW_ARCHS: ${{ matrix.cibw_archs }}
+          CIBW_BUILD: ${{ matrix.cibw_build }}
+          CIBW_BUILD_FRONTEND: "pip; args: --no-build-isolation"
+          CIBW_BEFORE_BUILD: "python -m pip install -U pip setuptools wheel poetry==1.8.4 poetry-core cython numpy"
+
+      - name: List dist contents (Unix)
+        if: runner.os != 'Windows'
+        run: if [ -d dist ]; then ls -lh dist/; else echo "dist/ does not exist"; fi
+      - name: List dist contents (Windows)
+        if: runner.os == 'Windows'
+        run: Get-ChildItem wheelhouse
+        shell: pwsh
+      - name: Sanitize artifact name
+        id: sanitize
+        run: |
+          echo "ARTIFACT_NAME=wheels-windows-${{ matrix.os }}-${{ matrix.cibw_archs }}-${{ matrix.cibw_build }}" | sed 's/\*//g' >> $GITHUB_ENV
+        shell: bash
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: wheelhouse/*.whl
 #      - name: "Set environment variables (Windows)"
 #        shell: pwsh
 #        run: |
@@ -240,14 +245,20 @@ jobs:
 #          name: ${{ env.ARTIFACT_NAME }}
 #          path: wheelhouse/*.whl
 
-  build_wheels_macos_arm64:
+  build_wheels_macos:
     name: "${{ matrix.os }} ${{ matrix.cibw_archs }} ${{ matrix.cibw_build }}"
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        os: [macos-latest]
-        cibw_build: ["cp311-*", "cp312-*"]
+        os: [macos-13, macos-14]
+        cibw_build: ["cp311-*", "cp312-*", "cp313-*"]
         cibw_archs: ["arm64"]
+        exclude:
+          - os: macos-13
+            cibw_archs: arm64
+          - os: macos-14
+            cibw_archs: x86_64
 
     steps:
       - name: Check out repository
@@ -268,7 +279,7 @@ jobs:
         env:
           CIBW_BUILD: ${{ matrix.cibw_build }}
           CIBW_ARCHS: ${{ matrix.cibw_archs }}
-          CIBW_TEST_SKIP: "*-macosx_arm64"
+          CIBW_TEST_SKIP: ${{ matrix.cibw_archs == 'arm64' && '*-macosx_arm64' || '' }}
           CIBW_BUILD_FRONTEND: "pip; args: --no-build-isolation"
           CIBW_BEFORE_BUILD: "python -m pip install -U pip setuptools wheel poetry==1.8.4 poetry-core cython numpy"
       - name: List dist contents (Unix)
