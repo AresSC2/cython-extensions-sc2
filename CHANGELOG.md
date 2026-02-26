@@ -1,6 +1,31 @@
 # CHANGELOG
 
 
+## v0.13.4 (2026-02-26)
+
+### Bug Fixes
+
+- Drop x86_64 support for macOS in wheels workflow
+  ([`04a234c`](https://github.com/AresSC2/cython-extensions-sc2/commit/04a234cf5f4f76233038e47fe3821e6fb9968ade))
+
+### Continuous Integration
+
+- Add support for additional architectures (x86, ARM64) in wheels workflow
+  ([`3c08882`](https://github.com/AresSC2/cython-extensions-sc2/commit/3c08882dbd831eba8f2eb3a9058d5ccefc021907))
+
+- Remove `-large` suffix from macOS-13 in wheels workflow matrix
+  ([`9cc009b`](https://github.com/AresSC2/cython-extensions-sc2/commit/9cc009ba59ae9e362a10e974811f954dea920637))
+
+- Trigger build on dev branch and update wheels workflow configuration
+  ([`2b24422`](https://github.com/AresSC2/cython-extensions-sc2/commit/2b244225c25fd52defc7c81978b9e00dc432a822))
+
+- Update macOS versions in wheels workflow matrix
+  ([`65ce0ff`](https://github.com/AresSC2/cython-extensions-sc2/commit/65ce0ff9756fc23657398f04f2f7e6a924b23410))
+
+- Update wheels workflow configuration
+  ([`3c2b964`](https://github.com/AresSC2/cython-extensions-sc2/commit/3c2b96424149feef4c6a62935451fb3d1c2ef8dc))
+
+
 ## v0.13.3 (2026-02-13)
 
 ### Bug Fixes
