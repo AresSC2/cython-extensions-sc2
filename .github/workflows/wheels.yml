@@ -61,7 +61,7 @@ jobs:
       matrix:
         os: [windows-latest]
         cibw_build: ["cp311-*", "cp312-*", "cp313-*"]
-        cibw_archs: ["AMD64", "x86", "ARM64"]
+        cibw_archs: ["AMD64", "x86"]
 
     steps:
       - name: Check out repository
@@ -245,14 +245,20 @@ jobs:
 #          name: ${{ env.ARTIFACT_NAME }}
 #          path: wheelhouse/*.whl
 
-  build_wheels_macos_arm64:
+  build_wheels_macos:
     name: "${{ matrix.os }} ${{ matrix.cibw_archs }} ${{ matrix.cibw_build }}"
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        os: [macos-latest]
-        cibw_build: ["cp311-*", "cp312-*"]
-        cibw_archs: ["arm64"]
+        os: [macos-13, macos-latest]
+        cibw_build: ["cp311-*", "cp312-*", "cp313-*"]
+        cibw_archs: ["x86_64", "arm64"]
+        exclude:
+          - os: macos-13
+            cibw_archs: arm64
+          - os: macos-latest
+            cibw_archs: x86_64
 
     steps:
       - name: Check out repository
@@ -273,7 +279,7 @@ jobs:
         env:
           CIBW_BUILD: ${{ matrix.cibw_build }}
           CIBW_ARCHS: ${{ matrix.cibw_archs }}
-          CIBW_TEST_SKIP: "*-macosx_arm64"
+          CIBW_TEST_SKIP: ${{ matrix.cibw_archs == 'arm64' && '*-macosx_arm64' || '' }}
           CIBW_BUILD_FRONTEND: "pip; args: --no-build-isolation"
           CIBW_BEFORE_BUILD: "python -m pip install -U pip setuptools wheel poetry==1.8.4 poetry-core cython numpy"
       - name: List dist contents (Unix)
