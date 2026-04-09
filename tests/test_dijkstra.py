@@ -104,3 +104,17 @@ class TestDijkstra:
         pathing = cy_dijkstra(cost, targets)
 
         assert pathing.get_path((0, 0)) == [(0, 0), (1, 0), (1, 1)]
+
+    def test_priorities_can_pick_detour(self):
+        cost = np.ones((3, 3))
+        targets = np.array([[0, 1], [2, 2]])
+
+        default_pathing = cy_dijkstra(cost, targets)
+        prioritized_pathing = cy_dijkstra(
+            cost,
+            targets,
+            priorities=np.array([0.0, 3.0]),
+        )
+
+        assert default_pathing.get_path((0, 0)) == [(0, 0), (0, 1)]
+        assert prioritized_pathing.get_path((0, 0)) == [(0, 0), (1, 1), (2, 2)]
