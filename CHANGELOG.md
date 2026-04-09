@@ -1,6 +1,9 @@
 # CHANGELOG
 
 
+## v0.14.0 (2026-04-09)
+
+
 ## v0.13.5 (2026-04-09)
 
 ### Bug Fixes
@@ -8,10 +11,24 @@
 - Accept readonly buffers in cy_dijkstra
   ([`469a41d`](https://github.com/AresSC2/cython-extensions-sc2/commit/469a41db7ca8f294d8af991b43265a45e1122c8a))
 
+- Generalize get_distance to float coordinates
+  ([`a9b63fd`](https://github.com/AresSC2/cython-extensions-sc2/commit/a9b63fd61a0f437f2076932f1b38ee4c33dccc20))
+
+- Repair dijkstra notebook
+  ([`dbec266`](https://github.com/AresSC2/cython-extensions-sc2/commit/dbec2665afd2ecf1dad2edee8ebedf796b194510))
+
+### Features
+
+- Add get_distance lookup
+  ([`aae39f5`](https://github.com/AresSC2/cython-extensions-sc2/commit/aae39f5df74632a3a1da3cc08a79523a16b79de8))
+
 ### Testing
 
 - Add regression test for readonly buffers
   ([`b0638a5`](https://github.com/AresSC2/cython-extensions-sc2/commit/b0638a5394c8d4d31a0efb13d4ef21d05616af38))
+
+- Add unit test for distance and upper bound
+  ([`184ceff`](https://github.com/AresSC2/cython-extensions-sc2/commit/184ceffa6eecf6f443c06418a35112b227ca4b78))
 
 
 ## v0.13.4 (2026-02-26)
