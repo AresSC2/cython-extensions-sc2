@@ -349,7 +349,6 @@ cpdef DijkstraPathing cy_dijkstra(
     """
     cdef const DTYPE_t[:, ::1] cost_array = np.ascontiguousarray(cost, dtype=np.float32)
     cdef const INDEX_t[:, ::1] target_array = np.ascontiguousarray(targets, dtype=np.int32)
-    cdef object priority_values
     cdef const DTYPE_t[::1] priority_array
     if priorities is None:
         priorities = np.zeros(target_array.shape[0], dtype=np.float32)
