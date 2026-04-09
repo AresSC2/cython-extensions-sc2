@@ -65,6 +65,16 @@ class TestDijkstraGeneric:
         cy_dijkstra(cost.astype(np.float64), targets.astype(np.int64))
         cy_dijkstra(cost.astype(np.int32), targets.astype(int))
 
+    def test_accepts_readonly_inputs(self):
+        cost = np.ones((8, 8), dtype=np.float32)
+        cost.flags.writeable = False
+        targets = np.array([(3, 3)], dtype=np.int32)
+        targets.flags.writeable = False
+
+        pathing = cy_dijkstra(cost, targets)
+
+        assert pathing.get_path((0, 0))
+
 
 class TestDijkstra:
 
@@ -118,3 +128,19 @@ class TestDijkstra:
 
         assert default_pathing.get_path((0, 0)) == [(0, 0), (0, 1)]
         assert prioritized_pathing.get_path((0, 0)) == [(0, 0), (1, 1), (2, 2)]
+
+    def test_distance(self):
+        cost = np.ones((3, 3))
+        targets = np.array([[2, 2]])
+        pathing = cy_dijkstra(cost, targets)
+
+        # estimate should be at maximum
+        for source in ((0, 0), (0, 1), (1, 0), (1, 1)):
+            assert np.isinf(pathing.get_distance(source, upper_bound=True))
+
+        actual = pathing.get_distance((0, 0))
+        estimate = pathing.get_distance((0, 0), upper_bound=True)
+
+        # after heap advance, upper bound should match settled distance
+        assert np.isfinite(actual)
+        assert_equal(estimate, actual)

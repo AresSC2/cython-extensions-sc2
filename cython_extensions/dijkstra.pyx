@@ -178,9 +178,9 @@ cdef class DijkstraPathing:
     cdef INDEX_t stride
 
     def __cinit__(self,
-                  DTYPE_t[:, ::1] cost,
-                  INDEX_t[:, ::1] targets,
-                  DTYPE_t[::1] priorities):
+                  const DTYPE_t[:, ::1] cost,
+                  const INDEX_t[:, ::1] targets,
+                  const DTYPE_t[::1] priorities):
         cdef INDEX_t num_targets = targets.shape[0]
         self.cost = np.pad(cost, 1, "constant", constant_values=INFINITY)
         self.stride = self.cost.shape[1]
@@ -213,6 +213,20 @@ cdef class DijkstraPathing:
         PyMem_Free(self.index)
         PyMem_Free(self.priority)
 
+    cdef void _advance_heap(self, INDEX_t start):
+        dijkstra_core(
+            &self.index,
+            &self.priority,
+            &self.capacity,
+            &self.indirection[0, 0],
+            &self.size,
+            start,
+            &self.distance[0, 0],
+            &self.cost[0, 0],
+            &self.direction[0, 0],
+            self.stride
+        )
+
     cpdef get_path(self, object source, int limit=0, int max_distance=1):
         """
 
@@ -237,19 +251,35 @@ cdef class DijkstraPathing:
         x0, y0 = self._find_starting_point(np.asarray(source, dtype=np.float32), max_distance=max_distance)
         if x0 < 0 or y0 < 0 or x0 >= self.cost.shape[0] or y0 >= self.cost.shape[1] or self.cost[x0, y0] == INFINITY:
             return [(x0 - 1, y0 - 1)]
-        dijkstra_core(
-            &self.index,
-            &self.priority,
-            &self.capacity,
-            &self.indirection[0, 0],
-            &self.size,
-            x0 * self.stride + y0,
-            &self.distance[0, 0],
-            &self.cost[0, 0],
-            &self.direction[0, 0],
-            self.stride
-        )
+        self._advance_heap(x0 * self.stride + y0)
         return self._follow_directions(x0, y0, limit)
+
+    cpdef DTYPE_t get_distance(self, object source, bint upper_bound=False):
+        """
+
+        Get the pathing distance from a given source to the nearest target.
+
+        Parameters
+        ----------
+        source :
+            Start point.
+        upper_bound :
+            If False (default), compute exact distance by advancing the heap.
+            If True, return current distance estimate without advancing.
+
+        Returns
+        -------
+        float :
+            The lowest cost from source to any of the targets.
+
+        """
+        cdef INDEX_t x0, y0
+        x0, y0 = self._find_starting_point(np.asarray(source, dtype=np.float32), max_distance=1)
+        if x0 < 0 or y0 < 0 or x0 >= self.cost.shape[0] or y0 >= self.cost.shape[1] or self.cost[x0, y0] == INFINITY:
+            return INFINITY
+        if not upper_bound:
+            self._advance_heap(x0 * self.stride + y0)
+        return self.distance[x0, y0]
 
     cdef _follow_directions(self, INDEX_t x, INDEX_t y, INDEX_t limit):
         if limit == 0:
@@ -317,10 +347,10 @@ cpdef DijkstraPathing cy_dijkstra(
         Pathfinding object containing containing distance and forward pointer grids.
 
     """
-    cdef DTYPE_t[:, ::1] cost_array = np.ascontiguousarray(cost, dtype=np.float32)
-    cdef INDEX_t[:, ::1] target_array = np.ascontiguousarray(targets, dtype=np.int32)
+    cdef const DTYPE_t[:, ::1] cost_array = np.ascontiguousarray(cost, dtype=np.float32)
+    cdef const INDEX_t[:, ::1] target_array = np.ascontiguousarray(targets, dtype=np.int32)
     cdef object priority_values
-    cdef DTYPE_t[::1] priority_array
+    cdef const DTYPE_t[::1] priority_array
     if priorities is None:
         priorities = np.zeros(target_array.shape[0], dtype=np.float32)
     priority_array = np.ascontiguousarray(priorities, dtype=np.float32)

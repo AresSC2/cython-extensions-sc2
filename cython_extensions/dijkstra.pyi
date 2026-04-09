@@ -3,6 +3,22 @@ import numpy as np
 class DijkstraPathing:
     """Result of Dijkstras algorithm containing distance and forward pointer grids."""
 
+    def get_distance(
+        self, source: tuple[float, float], upper_bound: bool = False
+    ) -> float:
+        """Get the pathing distance from a given source to the nearest target.
+
+        Args:
+            source: Start point.
+            upper_bound: If `True`, return the current distance estimate without
+                advancing the heap. Defaults to `False`.
+
+        Returns:
+            The lowest cost from source to any of the targets.
+
+        """
+        ...
+
     def get_path(
         self, source: tuple[float, float], limit: int = 0, max_distance: int = 1
     ) -> list[tuple[int, int]]:
