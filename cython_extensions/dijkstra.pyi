@@ -38,8 +38,8 @@ class DijkstraPathing:
 def cy_dijkstra(
     cost_grid: np.ndarray,
     targets: np.ndarray,
-    checks_enabled: bool = True,
     priorities: np.ndarray | None = None,
+    checks_enabled: bool = True,
 ) -> DijkstraPathing:
     """Run Dijkstras algorithm on a grid, yielding many-target-shortest paths for each position.
 
@@ -60,9 +60,9 @@ def cy_dijkstra(
     Args:
         cost_grid: Cost grid. Entries must be positive. Set unpathable cells to infinity.
         targets: Target array of shape (*, 2) containing x and y coordinates of the target points.
-        checks_enabled: Pass False to deactivate grid value and target coordinates checks. Defaults to True.
         priorities: Optional vector with one priority value per target. Higher values make
             targets more attractive.
+        checks_enabled: Pass False to deactivate grid value and target coordinates checks. Defaults to True.
 
     Returns:
         Pathfinding object containing distances and pointer grids.

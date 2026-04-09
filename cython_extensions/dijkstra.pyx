@@ -322,8 +322,8 @@ cdef class DijkstraPathing:
 cpdef DijkstraPathing cy_dijkstra(
     object cost,
     object targets,
-    bint checks_enabled = True,
     object priorities = None,
+    bint checks_enabled = True,
 ):
     """
 
@@ -335,11 +335,11 @@ cpdef DijkstraPathing cy_dijkstra(
         Cost grid. Entries must be positive. Set unpathable cells to infinity.
     targets :
         Target array of shape (*, 2) containing x and y coordinates of the target points.
-    checks_enabled :
-        Pass False to deactivate grid value and target coordinates checks. Defaults to True.
     priorities :
         Optional vector of target priorities. Higher priority values make a target more
         attractive by lowering its initial heap seed.
+    checks_enabled :
+        Pass False to deactivate grid value and target coordinates checks. Defaults to True.
 
     Returns
     -------

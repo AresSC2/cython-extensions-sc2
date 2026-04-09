@@ -128,4 +128,9 @@ def test_all_wrapper_functions_callable():
     )
 
     # Dijkstra
-    ce.cy_dijkstra(f32_grid, np.array([(0, 0)], dtype=np.int32), True, np.array([0.0], dtype=np.float32))
+    ce.cy_dijkstra(
+        f32_grid,
+        np.array([(0, 0)], dtype=np.int32),
+        np.array([0.0], dtype=np.float32),
+        True,
+    )
