@@ -253,7 +253,7 @@ cdef class DijkstraPathing:
         self._advance_heap(x0 * self.stride + y0)
         return self._follow_directions(x0, y0, limit)
 
-    cpdef DTYPE_t get_distance(self, tuple source, bint upper_bound=False):
+    cpdef DTYPE_t get_distance(self, object source, bint upper_bound=False):
         """
 
         Get the pathing distance from a given source to the nearest target.
@@ -261,7 +261,7 @@ cdef class DijkstraPathing:
         Parameters
         ----------
         source :
-            Start point as integer grid coordinates.
+            Start point.
         upper_bound :
             If False (default), compute exact distance by advancing the heap.
             If True, return current distance estimate without advancing.
@@ -271,18 +271,11 @@ cdef class DijkstraPathing:
         float :
             The lowest cost from source to any of the targets.
 
-        Raises
-        ------
-        IndexError :
-            If source is outside the cost grid bounds.
-
         """
-        cdef INDEX_t x0 = source[0]
-        cdef INDEX_t y0 = source[1]
-        if x0 < 0 or y0 < 0 or x0 >= self.cost.shape[0] - 2 or y0 >= self.cost.shape[1] - 2:
-            raise IndexError("source coordinates out of bounds")
-        x0 += 1
-        y0 += 1
+        cdef INDEX_t x0, y0
+        x0, y0 = self._find_starting_point(np.asarray(source, dtype=np.float32), max_distance=1)
+        if x0 < 0 or y0 < 0 or x0 >= self.cost.shape[0] or y0 >= self.cost.shape[1] or self.cost[x0, y0] == INFINITY:
+            return INFINITY
         if not upper_bound:
             self._advance_heap(x0 * self.stride + y0)
         return self.distance[x0, y0]
