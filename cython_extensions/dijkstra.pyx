@@ -113,7 +113,7 @@ cdef void dijkstra_core(
 
     cdef:
         INDEX_t i, neighbour, k
-        DTYPE_t d, alternative
+        DTYPE_t d, alternative, cost_i
         INDEX_t* index = index_ptr[0]
         DTYPE_t* priority = priority_ptr[0]
         INDEX_t size = size_ptr[0]
@@ -124,6 +124,7 @@ cdef void dijkstra_core(
         # pop minimum
         i = index[0]
         d = priority[0]
+        cost_i = cost[i]
         indirection[i] = NO_INDEX
         size -= 1
         if size > 0:
@@ -135,7 +136,7 @@ cdef void dijkstra_core(
         # iterate neighbours
         for k in range(8):
             neighbour = i + offsets[k]
-            alternative = d + COST_DIRECTION[k] * cost[neighbour]
+            alternative = d + 0.5 * COST_DIRECTION[k] * (cost_i + cost[neighbour])
             if alternative < distance[neighbour]:
                 distance[neighbour] = alternative
                 direction[neighbour] = <DIR_t>k
@@ -198,13 +199,11 @@ cdef class DijkstraPathing:
         cdef INDEX_t* indirection = &self.indirection[0,0]
         cdef DTYPE_t* distance = &self.distance[0,0]
         cdef DTYPE_t* cost = &self.cost[0,0]
-        c = cost[i]
-        if c == INFINITY:
-            return
+        cdef DTYPE_t seed = 0.0
         self.index[self.size] = i
-        self.priority[self.size] = c
+        self.priority[self.size] = seed
         indirection[i] = self.size
-        distance[i] = c
+        distance[i] = seed
         bubble_up(self.index, self.priority, indirection, self.size)
         self.size += 1
 
