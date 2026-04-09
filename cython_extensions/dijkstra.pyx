@@ -177,8 +177,8 @@ cdef class DijkstraPathing:
     cdef INDEX_t stride
 
     def __cinit__(self,
-                  DTYPE_t[:, ::1] cost,
-                  INDEX_t[:, ::1] targets):
+                  const DTYPE_t[:, ::1] cost,
+                  const INDEX_t[:, ::1] targets):
         cdef INDEX_t num_targets = targets.shape[0]
         self.cost = np.pad(cost, 1, "constant", constant_values=INFINITY)
         self.stride = self.cost.shape[1]
@@ -312,8 +312,8 @@ cpdef DijkstraPathing cy_dijkstra(
         Pathfinding object containing containing distance and forward pointer grids.
 
     """
-    cdef DTYPE_t[:, ::1] cost_array = np.ascontiguousarray(cost, dtype=np.float32)
-    cdef INDEX_t[:, ::1] target_array = np.ascontiguousarray(targets, dtype=np.int32)
+    cdef const DTYPE_t[:, ::1] cost_array = np.ascontiguousarray(cost, dtype=np.float32)
+    cdef const INDEX_t[:, ::1] target_array = np.ascontiguousarray(targets, dtype=np.int32)
     if checks_enabled:
         if not np.greater(cost_array, 0.0).all():
             raise Exception("invalid cost: values must be positive")
