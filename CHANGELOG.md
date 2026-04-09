@@ -1,6 +1,19 @@
 # CHANGELOG
 
 
+## v0.13.5 (2026-04-09)
+
+### Bug Fixes
+
+- Accept readonly buffers in cy_dijkstra
+  ([`469a41d`](https://github.com/AresSC2/cython-extensions-sc2/commit/469a41db7ca8f294d8af991b43265a45e1122c8a))
+
+### Testing
+
+- Add regression test for readonly buffers
+  ([`b0638a5`](https://github.com/AresSC2/cython-extensions-sc2/commit/b0638a5394c8d4d31a0efb13d4ef21d05616af38))
+
+
 ## v0.13.4 (2026-02-26)
 
 ### Bug Fixes

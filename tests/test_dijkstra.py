@@ -65,6 +65,16 @@ class TestDijkstraGeneric:
         cy_dijkstra(cost.astype(np.float64), targets.astype(np.int64))
         cy_dijkstra(cost.astype(np.int32), targets.astype(int))
 
+    def test_accepts_readonly_inputs(self):
+        cost = np.ones((8, 8), dtype=np.float32)
+        cost.flags.writeable = False
+        targets = np.array([(3, 3)], dtype=np.int32)
+        targets.flags.writeable = False
+
+        pathing = cy_dijkstra(cost, targets)
+
+        assert pathing.get_path((0, 0))
+
 
 class TestDijkstra:
 
