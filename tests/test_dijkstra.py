@@ -93,3 +93,20 @@ class TestDijkstra:
         pathing = cy_dijkstra(cost, targets)
         assert_equal(pathing.get_path((0, 0)), [(0, 0), (1, 0), (2, 0), (3, 0), (4, 1), (4, 2), (4, 3), (4, 4)])
         assert_equal(pathing.get_path((0, 2)), [(0, 2), (0, 3), (1, 4), (2, 4), (3, 4), (4, 4)])
+
+
+    def test_distance(self):
+        cost = np.ones((3, 3))
+        targets = np.array([[2, 2]])
+        pathing = cy_dijkstra(cost, targets)
+
+        # estimate should be at maximum
+        for source in ((0, 0), (0, 1), (1, 0), (1, 1)):
+            assert np.isinf(pathing.get_distance(source, upper_bound=True))
+
+        actual = pathing.get_distance((0, 0))
+        estimate = pathing.get_distance((0, 0), upper_bound=True)
+
+        # after heap advance, upper bound should match settled distance
+        assert np.isfinite(actual)
+        assert_equal(estimate, actual)
