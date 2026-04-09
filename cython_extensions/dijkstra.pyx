@@ -179,7 +179,8 @@ cdef class DijkstraPathing:
 
     def __cinit__(self,
                   DTYPE_t[:, ::1] cost,
-                  INDEX_t[:, ::1] targets):
+                  INDEX_t[:, ::1] targets,
+                  DTYPE_t[::1] priorities):
         cdef INDEX_t num_targets = targets.shape[0]
         self.cost = np.pad(cost, 1, "constant", constant_values=INFINITY)
         self.stride = self.cost.shape[1]
@@ -193,13 +194,14 @@ cdef class DijkstraPathing:
         if not self.index or not self.priority:
             raise MemoryError("Could not allocate heap memory")
         for k in range(num_targets):
-            self._add_target(self.stride * (targets[k, 0] + 1) + (targets[k, 1] + 1))
+            self._add_target(
+                self.stride * (targets[k, 0] + 1) + (targets[k, 1] + 1),
+                -priorities[k],
+            )
 
-    cdef void _add_target(self, INDEX_t i):
+    cdef void _add_target(self, INDEX_t i, DTYPE_t seed):
         cdef INDEX_t* indirection = &self.indirection[0,0]
         cdef DTYPE_t* distance = &self.distance[0,0]
-        cdef DTYPE_t* cost = &self.cost[0,0]
-        cdef DTYPE_t seed = 0.0
         self.index[self.size] = i
         self.priority[self.size] = seed
         indirection[i] = self.size
@@ -291,6 +293,7 @@ cpdef DijkstraPathing cy_dijkstra(
     object cost,
     object targets,
     bint checks_enabled = True,
+    object priorities = None,
 ):
     """
 
@@ -304,6 +307,9 @@ cpdef DijkstraPathing cy_dijkstra(
         Target array of shape (*, 2) containing x and y coordinates of the target points.
     checks_enabled :
         Pass False to deactivate grid value and target coordinates checks. Defaults to True.
+    priorities :
+        Optional vector of target priorities. Higher priority values make a target more
+        attractive by lowering its initial heap seed.
 
     Returns
     -------
@@ -313,6 +319,11 @@ cpdef DijkstraPathing cy_dijkstra(
     """
     cdef DTYPE_t[:, ::1] cost_array = np.ascontiguousarray(cost, dtype=np.float32)
     cdef INDEX_t[:, ::1] target_array = np.ascontiguousarray(targets, dtype=np.int32)
+    cdef object priority_values
+    cdef DTYPE_t[::1] priority_array
+    if priorities is None:
+        priorities = np.zeros(target_array.shape[0], dtype=np.float32)
+    priority_array = np.ascontiguousarray(priorities, dtype=np.float32)
     if checks_enabled:
         if not np.greater(cost_array, 0.0).all():
             raise Exception("invalid cost: values must be positive")
@@ -322,4 +333,4 @@ cpdef DijkstraPathing cy_dijkstra(
             or not np.less(targets[:, 1], cost.shape[1]).all()
         ):
             raise Exception(f"invalid target: coordinates out of bounds")
-    return DijkstraPathing(cost_array, target_array)
+    return DijkstraPathing(cost_array, target_array, priority_array)
