@@ -34,7 +34,6 @@ def test_all_wrapper_functions_callable():
     bool_grid = np.array([[True, False], [False, True]], dtype=bool)
     u8_grid = np.array([[0, 1], [1, 0]], dtype=np.uint8)
     f32_grid = np.array([[1.0, 2.0], [3.0, 4.0]], dtype=np.float32)
-    f64_grid = np.array([[1.0, 2.0], [3.0, 4.0]], dtype=np.float64)
     pos = (1.0, 2.0)
 
     # Simple mock objects with minimal required attributes
@@ -129,4 +128,9 @@ def test_all_wrapper_functions_callable():
     )
 
     # Dijkstra
-    ce.cy_dijkstra(f64_grid, np.array([[0, 0]], dtype=np.intp), True)
+    ce.cy_dijkstra(
+        f32_grid,
+        np.array([(0, 0)], dtype=np.int32),
+        np.array([0.0], dtype=np.float32),
+        True,
+    )

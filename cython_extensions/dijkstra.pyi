@@ -36,7 +36,10 @@ class DijkstraPathing:
         ...
 
 def cy_dijkstra(
-    cost_grid: np.ndarray, targets: np.ndarray, checks_enabled: bool = True
+    cost_grid: np.ndarray,
+    targets: np.ndarray,
+    priorities: np.ndarray | None = None,
+    checks_enabled: bool = True,
 ) -> DijkstraPathing:
     """Run Dijkstras algorithm on a grid, yielding many-target-shortest paths for each position.
 
@@ -44,9 +47,10 @@ def cy_dijkstra(
     ```py
     from cython_extensions import cy_dijkstra
 
-    targets = np.array([u.position.rounded for u in bot.enemy_units])
     cost = np.where(bot.game_info.pathing_grid.data_numpy.T == 1, 1.0, np.inf)
-    pathing = cy_dijkstra(cost, targets)
+    targets = np.array([u.position.rounded for u in bot.enemy_units])
+    priorities = np.array([-u.distance_to(bot.start_location) for u in bot.enemy_units])     # optional
+    pathing = cy_dijkstra(cost, targets, priorities=priorities)
 
     for unit in bot.units:
         path = pathing.get_path(unit.position.rounded, limit=7)  # path limit is optional
@@ -56,6 +60,8 @@ def cy_dijkstra(
     Args:
         cost_grid: Cost grid. Entries must be positive. Set unpathable cells to infinity.
         targets: Target array of shape (*, 2) containing x and y coordinates of the target points.
+        priorities: Optional vector with one priority value per target. Higher values make
+            targets more attractive.
         checks_enabled: Pass False to deactivate grid value and target coordinates checks. Defaults to True.
 
     Returns:

@@ -494,9 +494,9 @@ def cy_find_building_locations(
 
 
 @safe_wrapper(_validate_cy_dijkstra)
-def cy_dijkstra(cost, targets, checks_enabled=True):
+def cy_dijkstra(cost, targets, priorities=None, checks_enabled=True):
     """Type-safe wrapper for cy_dijkstra."""
-    return _cy_dijkstra(cost, targets, checks_enabled)
+    return _cy_dijkstra(cost, targets, priorities, checks_enabled)
 
 
 # ============================================================================

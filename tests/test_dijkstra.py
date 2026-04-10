@@ -104,6 +104,30 @@ class TestDijkstra:
         assert_equal(pathing.get_path((0, 0)), [(0, 0), (1, 0), (2, 0), (3, 0), (4, 1), (4, 2), (4, 3), (4, 4)])
         assert_equal(pathing.get_path((0, 2)), [(0, 2), (0, 3), (1, 4), (2, 4), (3, 4), (4, 4)])
 
+    def test_orthogonal_approach(self):
+        """test that approach direction is handled correctly by the path integration."""
+        cost = np.array([
+            [1, 2],
+            [1, 9],
+        ])
+        targets = np.array([[1, 1]])
+        pathing = cy_dijkstra(cost, targets)
+
+        assert pathing.get_path((0, 0)) == [(0, 0), (1, 0), (1, 1)]
+
+    def test_priorities_can_pick_detour(self):
+        cost = np.ones((3, 3))
+        targets = np.array([[0, 1], [2, 2]])
+
+        default_pathing = cy_dijkstra(cost, targets)
+        prioritized_pathing = cy_dijkstra(
+            cost,
+            targets,
+            priorities=np.array([0.0, 3.0]),
+        )
+
+        assert default_pathing.get_path((0, 0)) == [(0, 0), (0, 1)]
+        assert prioritized_pathing.get_path((0, 0)) == [(0, 0), (1, 1), (2, 2)]
 
     def test_distance(self):
         cost = np.ones((3, 3))

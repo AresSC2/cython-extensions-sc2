@@ -442,7 +442,10 @@ def _validate_cy_find_building_locations(args):
 def _validate_cy_dijkstra(args):
     cost = args["cost"]
     targets = args["targets"]
+    priorities = args.get("priorities")
 
     _validate_grid(cost, "cost")
     _validate_grid(targets, "targets")
+    if priorities is not None:
+        _validate_numpy_array(priorities, "priorities", cost.dtype, targets.shape[:1])
     # Optional: checks_enabled flag present in signature; validation not required for name alignment.
