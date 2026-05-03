@@ -27,10 +27,19 @@ class DijkstraPathing:
         Args:
             source: Start point.
             limit: Maximum length of the returned path. Defaults to 0 indicating no limit.
-                    max_distance: Size of the search region for a valid starting point. Defaults to 1.
+            max_distance: Size of the search region for a valid starting point. Defaults to 1.
 
         Returns:
             The lowest cost path from source to any of the targets.
+
+        """
+        ...
+
+    def get_distance_grid(self) -> np.ndarray:
+        """Evaluate the full pathing distance grid.
+
+        Returns:
+            Readonly pathing distance grid with the same shape as the cost grid.
 
         """
         ...

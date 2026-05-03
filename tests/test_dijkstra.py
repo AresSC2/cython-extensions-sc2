@@ -2,7 +2,7 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-from numpy.testing import assert_equal
+from numpy.testing import assert_allclose, assert_equal
 from sc2.bot_ai import BotAI
 
 from cython_extensions import cy_dijkstra
@@ -144,3 +144,20 @@ class TestDijkstra:
         # after heap advance, upper bound should match settled distance
         assert np.isfinite(actual)
         assert_equal(estimate, actual)
+
+    def test_distance_grid(self):
+        cost = np.ones((5, 5))
+        targets = np.array([[2, 2]])
+        pathing = cy_dijkstra(cost, targets)
+
+        distance_grid = pathing.get_distance_grid()
+        x, y = np.indices(cost.shape)
+        dx = np.abs(x - targets[0, 0])
+        dy = np.abs(y - targets[0, 1])
+        expected = np.sqrt(2) * np.minimum(dx, dy) + np.abs(dx - dy)
+
+        assert isinstance(distance_grid, np.ndarray)
+        assert not distance_grid.flags.writeable
+        with pytest.raises(ValueError):
+            distance_grid[2, 2] = 1.0
+        assert_allclose(distance_grid, expected, rtol=1e-6)
