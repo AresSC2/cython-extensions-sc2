@@ -150,6 +150,11 @@ class TestDijkstra:
         targets = np.array([[2, 2]])
         pathing = cy_dijkstra(cost, targets)
 
+        current_distance_grid = pathing.get_distance_grid(upper_bound=True)
+        assert np.isinf(current_distance_grid).sum() == cost.size - 1
+        assert current_distance_grid[2, 2] == 0.0
+        assert not current_distance_grid.flags.writeable
+
         distance_grid = pathing.get_distance_grid()
         x, y = np.indices(cost.shape)
         dx = np.abs(x - targets[0, 0])

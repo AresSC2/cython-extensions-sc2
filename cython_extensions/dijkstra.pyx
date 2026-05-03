@@ -283,10 +283,16 @@ cdef class DijkstraPathing:
             self._advance_heap(x0 * self.stride + y0)
         return self.distance[x0, y0]
 
-    cpdef object get_distance_grid(self):
+    cpdef object get_distance_grid(self, bint upper_bound=False):
         """
 
-        Get the fully evaluated distance grid.
+        Get the full pathing distance grid.
+
+        Parameters
+        ----------
+        upper_bound :
+            If False (default), fully evaluate the distance grid by advancing the heap.
+            If True, return the current distance estimates without advancing.
 
         Returns
         -------
@@ -295,7 +301,8 @@ cdef class DijkstraPathing:
 
         """
         cdef object distance_grid
-        self._advance_heap(NO_INDEX)
+        if not upper_bound:
+            self._advance_heap(NO_INDEX)
         distance_grid = np.asarray(self.distance)[
             1:self.distance.shape[0] - 1,
             1:self.distance.shape[1] - 1,

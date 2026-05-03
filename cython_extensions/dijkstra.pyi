@@ -35,8 +35,12 @@ class DijkstraPathing:
         """
         ...
 
-    def get_distance_grid(self) -> np.ndarray:
-        """Evaluate the full pathing distance grid.
+    def get_distance_grid(self, upper_bound: bool = False) -> np.ndarray:
+        """Get the full pathing distance grid.
+
+        Args:
+            upper_bound: If `True`, return the current distance estimates without
+                advancing the heap. Defaults to `False`.
 
         Returns:
             Readonly pathing distance grid with the same shape as the cost grid.
