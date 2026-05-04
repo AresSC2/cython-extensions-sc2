@@ -1,6 +1,22 @@
 # CHANGELOG
 
 
+## v0.16.0 (2026-05-04)
+
+### Bug Fixes
+
+- Use grid lookup in notebook
+  ([`ef43300`](https://github.com/AresSC2/cython-extensions-sc2/commit/ef43300e66c14c8bcfb56ecf5f58b9182b711918))
+
+### Features
+
+- Add get_distance_grid
+  ([`01f0ed0`](https://github.com/AresSC2/cython-extensions-sc2/commit/01f0ed0e98177b9a22d8da39fcd841498d05fc2d))
+
+- Add optional upper_bound flag
+  ([`c6d4429`](https://github.com/AresSC2/cython-extensions-sc2/commit/c6d4429159a5f48a0e430e76e6e0943074a9ec6a))
+
+
 ## v0.15.0 (2026-04-15)
 
 ### Bug Fixes
