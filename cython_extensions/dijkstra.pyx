@@ -119,7 +119,9 @@ cdef void dijkstra_core(
         INDEX_t size = size_ptr[0]
         INDEX_t[8] offsets = [-stride, stride, -1, 1, -stride - 1, -stride + 1, stride - 1, stride + 1]
 
-    while size > 0 and priority[0] < distance[start]:
+    while size > 0:
+        if start != NO_INDEX and priority[0] >= distance[start]:
+            break
 
         # pop minimum
         i = index[0]
@@ -280,6 +282,33 @@ cdef class DijkstraPathing:
         if not upper_bound:
             self._advance_heap(x0 * self.stride + y0)
         return self.distance[x0, y0]
+
+    cpdef object get_distance_grid(self, bint upper_bound=False):
+        """
+
+        Get the full pathing distance grid.
+
+        Parameters
+        ----------
+        upper_bound :
+            If False (default), fully evaluate the distance grid by advancing the heap.
+            If True, return the current distance estimates without advancing.
+
+        Returns
+        -------
+        np.ndarray :
+            Readonly distance grid with the same shape as the input cost grid.
+
+        """
+        cdef object distance_grid
+        if not upper_bound:
+            self._advance_heap(NO_INDEX)
+        distance_grid = np.asarray(self.distance)[
+            1:self.distance.shape[0] - 1,
+            1:self.distance.shape[1] - 1,
+        ]
+        distance_grid.setflags(write=False)
+        return distance_grid
 
     cdef _follow_directions(self, INDEX_t x, INDEX_t y, INDEX_t limit):
         if limit == 0:
