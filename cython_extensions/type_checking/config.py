@@ -3,6 +3,11 @@
 import os
 import threading
 
+try:
+    from propcache.api import cached_property
+except ImportError:
+    from functools import cached_property
+
 
 class SafeModeConfig:
     """Thread-safe configuration for safe mode."""
@@ -16,7 +21,7 @@ class SafeModeConfig:
         env_value = os.environ.get("CYTHON_EXTENSIONS_SAFE_MODE", "false")
         return env_value.lower() in ("true", "1", "yes", "on")
 
-    @property
+    @cached_property
     def enabled(self) -> bool:
         """Check if safe mode is enabled."""
         with self._lock:
@@ -50,7 +55,6 @@ def enable_safe_mode(enabled: bool = True):
 def disable_safe_mode():
     """Disable safe mode for type checking globally."""
     _config.disable()
-
 
 def is_safe_mode_enabled() -> bool:
     """Check if safe mode is currently enabled."""
