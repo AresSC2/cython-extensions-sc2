@@ -104,7 +104,7 @@ cpdef bint cy_pylon_matrix_covers(
 cpdef unsigned int cy_unit_pending(object bot, object unit_type):
     cdef:
         unsigned int num_pending = 0
-        Py_ssize_t len_units, x
+        Py_ssize_t len_units, len_orders, x, y
         object units_collection, unit
 
     if unit_type == UnitTypeId.ARCHON:
@@ -131,11 +131,13 @@ cpdef unsigned int cy_unit_pending(object bot, object unit_type):
             return num_pending
         # unit will be pending in eggs
         else:
-            units_collection = bot.eggs
+            units_collection = bot.units
             len_units = len(units_collection)
             for x in range(len_units):
-                egg = units_collection[x]
-                if egg.orders and egg.orders[0].ability.button_name.upper() == unit_type.name:
+                unit = units_collection[x]
+                if unit.type_id != UnitTypeId.EGG:
+                    continue
+                if unit.orders and unit.orders[0].ability.button_name.upper() == unit_type.name:
                     num_pending += 1
             return num_pending
 
@@ -145,15 +147,11 @@ cpdef unsigned int cy_unit_pending(object bot, object unit_type):
         len_units = len(units_collection)
         for x in range(len_units):
             structure = units_collection[x]
-            if structure.orders and structure.orders[0].ability.button_name.upper() == unit_type.name:
-                num_pending += 1
-            if (
-                structure.has_reactor
-                and structure.orders
-                and len(structure.orders) > 1
-                and structure.orders[1].ability.button_name.upper() == unit_type.name
-            ):
-                num_pending += 1
+            len_orders = len(structure.orders)
+            for y in range(len_orders):
+                if structure.orders[y].ability.button_name.upper() == unit_type.name:
+                    num_pending += 1
+
         return num_pending
 
 
