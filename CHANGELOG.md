@@ -1,6 +1,19 @@
 # CHANGELOG
 
 
+## v0.16.1 (2026-08-10)
+
+### Bug Fixes
+
+- Improve `cy_unit_pending` logic and add `cached_property`
+  ([`c45c214`](https://github.com/AresSC2/cython-extensions-sc2/commit/c45c214f0b566a0103455f971c546e1187e9a3cc))
+
+### Testing
+
+- Lower coverage threshold
+  ([`6328bd9`](https://github.com/AresSC2/cython-extensions-sc2/commit/6328bd9a61434e9fefed4b2668fad9bcafa64dc2))
+
+
 ## v0.16.0 (2026-05-04)
 
 ### Bug Fixes
