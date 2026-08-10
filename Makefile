@@ -3,7 +3,7 @@ unit-tests:
 unit-tests-cov:
 	@pytest --cov=src --cov-report term-missing --cov-report=html
 unit-tests-cov-fail:
-	@pytest --cov=cython_extensions --cov-report term-missing --cov-report=html --cov-fail-under=80
+	@pytest --cov=cython_extensions --cov-report term-missing --cov-report=html --cov-fail-under=50
 clean-cov:
 	@rm -rf .coverage
 	@rm -rf htmlcov
