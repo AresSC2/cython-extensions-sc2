@@ -37,6 +37,7 @@ pytest-asyncio = "^0.21.1"
 mkdocs = "^1.4.2"
 mkdocs-material = "^9.0.6"
 mkdocstrings-python = "^1.13.0"
+griffe = ">=1.5,<2"
 
 [tool.poetry.group.semver.dependencies]
 python-semantic-release = "9.21.0"

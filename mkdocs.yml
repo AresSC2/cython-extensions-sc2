@@ -38,7 +38,6 @@ use_directory_urls: false
 plugins:
   - search
   - mkdocstrings:
-      watch: [cython_extensions]
       handlers:
         python:
           paths: [cython_extensions]
