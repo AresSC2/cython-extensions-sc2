@@ -6,6 +6,10 @@
     options:
         show_root_heading: false
 
+::: cython_extensions.features
+    options:
+        show_root_heading: false
+
 ::: cython_extensions.general_utils
     options:
         show_root_heading: false
@@ -19,6 +23,10 @@
         show_root_heading: false
 
 ::: cython_extensions.numpy_helper
+    options:
+        show_root_heading: false
+
+::: cython_extensions.plots
     options:
         show_root_heading: false
 
