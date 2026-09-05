@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.17.0 (2026-09-05)
+
+### Features
+
+- Ml features inspired by alphastar/distar
+  ([`597d205`](https://github.com/AresSC2/cython-extensions-sc2/commit/597d205c18aba0ca411544e3d5c427ccce41a064))
+
+
 ## v0.16.1 (2026-08-10)
 
 ### Bug Fixes
