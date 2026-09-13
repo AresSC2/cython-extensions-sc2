@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.18.0 (2026-09-13)
+
+### Features
+
+- Expand entity feature dimensions and scalar stats, refine resource logic
+  ([`e7184c6`](https://github.com/AresSC2/cython-extensions-sc2/commit/e7184c661c7ad15648647e45e911286dfc4f34de))
+
+
 ## v0.17.0 (2026-09-05)
 
 ### Features
