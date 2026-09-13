@@ -137,7 +137,7 @@ class TestFeatures:
         # townhall at full hp -> hp ratio 1.0, harvester slots present
         townhall = bot.townhalls[0]
         row = by_tag[int(townhall.tag)]
-        assert ent[row, 3] == pytest.approx(1.0)  # EN_HP
+        assert ent[row, 4] == pytest.approx(1.0)  # EN_HP
         assert cats[row, 1] == 0  # own alliance
         assert cats[row, 0] > 0  # known unit type
         # collecting worker exposes its gather order ability
@@ -150,7 +150,7 @@ class TestFeatures:
         )
         mrow = by_tag[int(mineral.tag)]
         assert cats[mrow, 1] == 2
-        assert ent[mrow, 12] > 0.0  # EN_MINERALS
+        assert ent[mrow, 13] > 0.0  # EN_MINERALS
 
     def test_scalar_spot_check(self, bot: BotAI, event_loop):
         feats = Features(bot)
@@ -267,8 +267,8 @@ class TestFeatures:
         assert mask[row] == 1.0
         assert cats[row, 6] == BUFF_DICT[BuffId.STIMPACK.value]  # EC_BUFF0
         assert cats[row, 7] == 0  # EC_BUFF1 empty
-        assert ent[row, 15] == pytest.approx(30 / 60.0)  # EN_BUFF_DUR0
-        assert ent[row, 16] == 0.0  # EN_BUFF_DUR1 has no duration source
+        assert ent[row, 16] == pytest.approx(30 / 60.0)  # EN_BUFF_DUR0
+        assert ent[row, 17] == 0.0  # EN_BUFF_DUR1 has no duration source
 
     # -- synthetic branch coverage: start-state pickles never contain these --
     # Each test mutates live protos / state and restores them afterwards.
@@ -334,11 +334,11 @@ class TestFeatures:
         assert cats[row, 12] == 1  # powered
         assert cats[row, 13] == 1  # selected
         assert cats[row, 3] == 2  # cloak
-        assert ent[row, 10] == pytest.approx(0.5)  # weapon cd 25/50
-        assert ent[row, 7] == pytest.approx(0.25)  # cargo taken 2/8
-        assert ent[row, 8] == pytest.approx(1.0)  # cargo max 8/8
+        assert ent[row, 11] == pytest.approx(0.5)  # weapon cd 25/50
+        assert ent[row, 8] == pytest.approx(0.25)  # cargo taken 2/8
+        assert ent[row, 9] == pytest.approx(1.0)  # cargo max 8/8
         assert (cats[row, 14], cats[row, 15], cats[row, 16]) == (2, 1, 3)
-        assert ent[row, 19] == 1.0  # engaged
+        assert ent[row, 20] == 1.0  # engaged
         sel = dict(zip(SPATIAL_CHANNEL_NAMES, spatial))["selected"]
         w, h = float(feats.map_width), float(feats.map_height)
         gx = min(max(int(u.position.x / (w - 1) * 128), 0), 127)
@@ -384,13 +384,14 @@ class TestFeatures:
         pm = bot.state.psionic_matrix
         old = pm.sources
         hall = bot.townhalls[0]
-        pm.sources = [int(hall.tag)]
+        from sc2.power_source import PowerSource
+
+        pm.sources = [PowerSource(hall.position, 7.0, hall.tag)]
         try:
             obs = feats.build_observation()
         finally:
             pm.sources = old
         plane = dict(zip(SPATIAL_CHANNEL_NAMES, np.asarray(obs.spatial[0])))["power"]
-        # Power discs are stamped at target-res map coords (x * 128 / W).
         w, h = float(feats.map_width), float(feats.map_height)
         gx = min(max(int(hall.position.x * 128 / w), 0), 127)
         gy = min(max(int(hall.position.y * 128 / h), 0), 127)
@@ -430,12 +431,14 @@ class TestFeatures:
         )
         row = tags.index(int(geyser.tag))
         assert mask[row] == 1.0
-        assert ent[row, 13] > 0.0  # EN_VESPENE
+        assert ent[row, 14] > 0.0  # EN_VESPENE
 
     def test_full_entity_recompute(self, bot: BotAI, event_loop):
-        """Recompute all 20 + 17 entity columns from raw protos (no encoder
+        """Recompute all entity columns from raw protos (no encoder
         helpers) and diff against the encoder output, for every unit."""
         import math
+
+        from cython_extensions.features import ENTITY_CAT_DIM, ENTITY_NUM_DIM
 
         feats = Features(bot)
         w = float(feats.map_width)
@@ -452,33 +455,76 @@ class TestFeatures:
         def lognorm(v, s):
             return clip01(math.log1p(max(v, 0.0)) / math.log1p(s))
 
+        def initial_resource(raw_type, mineral_c, vespene_c):
+            if mineral_c > 0.0:
+                if raw_type in (147, 483, 666, 797, 885, 887):
+                    return 750.0
+                if raw_type == 1996:
+                    return 450.0
+                if raw_type == 1998:
+                    return 900.0
+                return 1800.0
+            if vespene_c > 0.0:
+                return 2250.0
+            return 0.0
+
         ent, cats, _pos, mask, tags, _aux = feats._encode_entities(
             bot.all_units, MAX_ENTITIES, True
         )
+        assert ent.shape[1] == ENTITY_NUM_DIM
+        assert cats.shape[1] == ENTITY_CAT_DIM
         n = int(mask.sum())
         assert n == len(bot.all_units)
         tag_to_type = {int(u.tag): int(u._proto.unit_type) for u in bot.all_units}
+        passenger_tags: set[int] = set()
+        for u in bot.all_units:
+            try:
+                for passenger in u._proto.passengers:
+                    passenger_tags.add(int(passenger.tag))
+            except Exception:
+                continue
         for u in bot.all_units:
             row = tags.index(int(u.tag))
             p = u._proto
-            exp_num = [0.0] * 20
+            raw_type = int(p.unit_type)
+            facing = float(p.facing) % (2 * math.pi)
+            exp_num = [0.0] * ENTITY_NUM_DIM
             exp_num[0] = clip01(p.pos.x / dx)
             exp_num[1] = clip01(p.pos.y / dy)
-            exp_num[2] = (float(p.facing) % (2 * math.pi)) / (2 * math.pi)
-            exp_num[3] = ratio(p.health, p.health_max)
-            exp_num[4] = ratio(p.shield, p.shield_max)
-            exp_num[5] = ratio(p.energy, p.energy_max)
-            exp_num[6] = lognorm(p.radius, 4.0)
-            exp_num[7] = clip01(p.cargo_space_taken / 8.0)
-            exp_num[8] = clip01(p.cargo_space_max / 8.0)
-            exp_num[9] = clip01(p.build_progress)
-            exp_num[10] = clip01(p.weapon_cooldown / 50.0)
-            exp_num[11] = lognorm(float(u.movement_speed), 8.0)
-            exp_num[12] = lognorm(p.mineral_contents, 2500.0)
-            exp_num[13] = lognorm(p.vespene_contents, 2500.0)
-            exp_num[14] = ratio(p.assigned_harvesters, p.ideal_harvesters)
-            exp_num[19] = 1.0 if int(p.engaged_target_tag) != 0 else 0.0
-            exp_cat = [0] * 17
+            exp_num[2] = clip01(math.sin(facing) * 0.5 + 0.5)
+            exp_num[3] = clip01(math.cos(facing) * 0.5 + 0.5)
+            exp_num[4] = ratio(p.health, p.health_max)
+            exp_num[5] = ratio(p.shield, p.shield_max)
+            exp_num[6] = ratio(p.energy, p.energy_max)
+            exp_num[7] = lognorm(p.radius, 4.0)
+            exp_num[8] = clip01(p.cargo_space_taken / 8.0)
+            exp_num[9] = clip01(p.cargo_space_max / 8.0)
+            exp_num[10] = clip01(p.build_progress)
+            exp_num[11] = clip01(p.weapon_cooldown / 50.0)
+            exp_num[12] = lognorm(float(u.movement_speed), 8.0)
+            exp_num[13] = lognorm(p.mineral_contents, 2500.0)
+            exp_num[14] = lognorm(p.vespene_contents, 2500.0)
+            exp_num[15] = ratio(p.assigned_harvesters, p.ideal_harvesters)
+            exp_num[20] = 1.0 if int(p.engaged_target_tag) != 0 else 0.0
+            exp_num[21] = clip01(
+                float(u.orders[0].progress) if u.orders else 0.0
+            )
+            init = initial_resource(
+                raw_type, float(p.mineral_contents), float(p.vespene_contents)
+            )
+            mined = (
+                max(
+                    0.0,
+                    init
+                    - (float(p.mineral_contents) + float(p.vespene_contents)),
+                )
+                if init > 0.0
+                else 0.0
+            )
+            exp_num[22] = lognorm(mined, 2500.0)
+            exp_num[23] = lognorm(float(p.detect_range), 16.0)
+            exp_num[24] = clip01(float(p.pos.z) / 16.0)
+            exp_cat = [0] * ENTITY_CAT_DIM
             exp_cat[0] = UNIT_TYPE_DICT.get(int(p.unit_type), 0)
             exp_cat[1] = int(u.alliance) - 1
             exp_cat[2] = int(p.display_type)
@@ -492,10 +538,27 @@ class TestFeatures:
             exp_cat[14] = int(p.attack_upgrade_level)
             exp_cat[15] = int(p.armor_upgrade_level)
             exp_cat[16] = int(p.shield_upgrade_level)
+            exp_cat[17] = min(len(u.orders), 8)
+            exp_cat[18] = 1 if p.is_on_screen else 0
+            exp_cat[19] = 1 if p.is_blip else 0
+            exp_cat[20] = 1 if int(u.tag) in passenger_tags else 0
+            addon_tag = int(p.add_on_tag)
+            if addon_tag != 0:
+                if addon_tag in tag_to_type:
+                    exp_cat[21] = UNIT_TYPE_DICT.get(tag_to_type[addon_tag], 1)
+                else:
+                    exp_cat[21] = 1
+            engaged_tag = int(p.engaged_target_tag)
+            if engaged_tag != 0:
+                ttype = tag_to_type.get(engaged_tag)
+                exp_cat[22] = (
+                    UNIT_TYPE_DICT.get(ttype, 0) if ttype is not None else 0
+                )
+            exp_cat[23] = min(max(int(p.owner), 0), 15)
             live_buffs = [int(b) for b in p.buff_ids]
             if live_buffs:
                 exp_cat[6] = BUFF_DICT.get(live_buffs[0], 0)
-                exp_num[15] = clip01(float(p.buff_duration_remain) / 60.0)
+                exp_num[16] = clip01(float(p.buff_duration_remain) / 60.0)
                 if len(live_buffs) > 1:
                     exp_cat[7] = BUFF_DICT.get(live_buffs[1], 0)
             if u.orders:
@@ -515,8 +578,8 @@ class TestFeatures:
                     ttype = tag_to_type.get(int(tgt))
                     exp_cat[5] = UNIT_TYPE_DICT.get(ttype, 0) if ttype is not None else 0
                 elif tgt is not None and hasattr(tgt, "x"):
-                    exp_num[17] = clip01(float(tgt.x) / dx)
-                    exp_num[18] = clip01(float(tgt.y) / dy)
+                    exp_num[18] = clip01(float(tgt.x) / dx)
+                    exp_num[19] = clip01(float(tgt.y) / dy)
             np.testing.assert_allclose(
                 ent[row], exp_num, rtol=1e-5, atol=1e-6, err_msg=u.name
             )
@@ -636,4 +699,127 @@ class TestFeatures:
         playable = chans["playable"] > 0.5
         np.testing.assert_allclose(
             chans["density_self"][playable], expected[playable], rtol=1e-5, atol=1e-5
+        )
+
+    def test_layout_dimensions(self, bot: BotAI, event_loop):
+        """Entity/scalar widths match the layout constants; all real rows
+        are finite and padded rows are exact zeros."""
+        from cython_extensions.features import ENTITY_CAT_DIM, ENTITY_NUM_DIM
+
+        feats = Features(bot)
+        ent, cats, _pos, mask, _tags, _aux = feats._encode_entities(
+            bot.all_units, MAX_ENTITIES, True
+        )
+        n = int(mask.sum())
+        assert ent.shape == (MAX_ENTITIES, ENTITY_NUM_DIM)
+        assert cats.shape == (MAX_ENTITIES, ENTITY_CAT_DIM)
+        assert np.isfinite(ent[:n]).all()
+        assert (ent[n:] == 0.0).all()
+        assert (cats[n:] == 0).all()
+
+    def test_facing_sincos_consistent(self, bot: BotAI, event_loop):
+        """Sin/cos pair must sit on the unit circle and match raw facing."""
+        import math
+
+        feats = Features(bot)
+        ent, _cats, _pos, mask, tags, _aux = feats._encode_entities(
+            bot.all_units, MAX_ENTITIES, True
+        )
+        n = int(mask.sum())
+        s, c = ent[:n, 2], ent[:n, 3]
+        np.testing.assert_allclose(
+            (2 * s - 1) ** 2 + (2 * c - 1) ** 2,
+            np.ones(n, dtype=np.float32),
+            rtol=1e-5,
+            atol=1e-5,
+        )
+        for u in bot.all_units:
+            row = tags.index(int(u.tag))
+            facing = float(u._proto.facing) % (2 * math.pi)
+            assert s[row] == pytest.approx(math.sin(facing) * 0.5 + 0.5, abs=1e-6)
+            assert c[row] == pytest.approx(math.cos(facing) * 0.5 + 0.5, abs=1e-6)
+
+    def test_screen_blip_owner_ranges(self, bot: BotAI, event_loop):
+        """New mask/owner categoricals are bounded and match raw protos."""
+        feats = Features(bot)
+        _ent, cats, _pos, mask, tags, _aux = feats._encode_entities(
+            bot.all_units, MAX_ENTITIES, True
+        )
+        n = int(mask.sum())
+        on_screen, blip, in_cargo = cats[:n, 18], cats[:n, 19], cats[:n, 20]
+        assert set(np.unique(on_screen).tolist()) <= {0, 1}
+        assert set(np.unique(blip).tolist()) <= {0, 1}
+        assert set(np.unique(in_cargo).tolist()) <= {0, 1}
+        assert cats[:n, 23].min() >= 0 and cats[:n, 23].max() <= 15
+        # Start-state pickles: own visible units on screen, no blips/cargo.
+        assert on_screen.max() == 1
+        assert blip.max() == 0
+        assert in_cargo.max() == 0
+        for u in bot.all_units:
+            row = tags.index(int(u.tag))
+            assert cats[row, 18] == (1 if u._proto.is_on_screen else 0)
+            assert cats[row, 23] == min(max(int(u._proto.owner), 0), 15)
+
+    def test_order_length_and_progress(self, bot: BotAI, event_loop):
+        """Queue length matches len(orders); progress matches first order."""
+        feats = Features(bot)
+        ent, cats, _pos, mask, tags, _aux = feats._encode_entities(
+            bot.all_units, MAX_ENTITIES, True
+        )
+        n = int(mask.sum())
+        assert cats[:n, 17].min() >= 0 and cats[:n, 17].max() <= 8
+        assert ent[:n, 21].min() >= 0.0 and ent[:n, 21].max() <= 1.0
+        worker = bot.workers[0]
+        row = tags.index(int(worker.tag))
+        assert cats[row, 17] == min(len(worker.orders), 8)
+        if worker.orders:
+            assert ent[row, 21] == pytest.approx(
+                min(max(float(worker.orders[0].progress), 0.0), 1.0)
+            )
+
+    def test_mined_only_on_resources(self, bot: BotAI, event_loop):
+        """Mined column is zero for non-resources and bounded everywhere."""
+        feats = Features(bot)
+        ent, cats, _pos, mask, tags, _aux = feats._encode_entities(
+            bot.all_units, MAX_ENTITIES, True
+        )
+        n = int(mask.sum())
+        assert ent[:n, 22].min() >= 0.0 and ent[:n, 22].max() <= 1.0
+        # Fresh start-state fields are full -> nothing mined yet.
+        assert ent[:n, 22].max() == 0.0
+        for u in bot.all_units:
+            row = tags.index(int(u.tag))
+            if (
+                u._proto.mineral_contents == 0
+                and u._proto.vespene_contents == 0
+            ):
+                assert ent[row, 22] == 0.0
+
+    def test_scalar_killed_split_lost_spent(self, bot: BotAI, event_loop):
+        """Split killed units/structures + lost/spent match score details."""
+        import math
+
+        feats = Features(bot)
+        scalar = feats._encode_scalar()
+        by_name = dict(zip(SCALAR_FEATURE_NAMES, scalar.tolist()))
+        score = bot.state.score
+        assert by_name["killed_units"] == pytest.approx(
+            min(max(math.log1p(float(score.killed_value_units)) / math.log1p(10000.0), 0.0), 1.0)
+        )
+        assert by_name["killed_structures"] == pytest.approx(
+            min(max(math.log1p(float(score.killed_value_structures)) / math.log1p(10000.0), 0.0), 1.0)
+        )
+        lost = sum(
+            float(getattr(score, f"lost_minerals_{c}", 0.0))
+            + float(getattr(score, f"lost_vespene_{c}", 0.0))
+            for c in ("none", "army", "economy", "technology", "upgrade")
+        )
+        spent = float(getattr(score, "spent_minerals", 0.0)) + float(
+            getattr(score, "spent_vespene", 0.0)
+        )
+        assert by_name["lost_value"] == pytest.approx(
+            min(max(math.log1p(max(lost, 0.0)) / math.log1p(50000.0), 0.0), 1.0)
+        )
+        assert by_name["spent_value"] == pytest.approx(
+            min(max(math.log1p(max(spent, 0.0)) / math.log1p(50000.0), 0.0), 1.0)
         )

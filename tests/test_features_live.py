@@ -10,6 +10,12 @@ expectation is recomputed from live state with plain ``math``.
 Requires a StarCraft II install plus the ``TorchesAIE`` map; skipped
 otherwise (the probe below only checks for the install, it never launches
 a game, so the default suite stays fast).
+
+Expected end-of-run noise: the bot forfeits via ``client.leave()`` once
+the audit is done, so the log always shows ``Result ... : Defeat`` and an
+``ERROR ... KILLED`` teardown line. Both are harmless. The audit prints a
+``[live-audit]`` summary (units checked, failure count); exit code 0 plus
+``failures=0`` means everything matched.
 """
 
 import math
@@ -80,6 +86,7 @@ class _AuditBot(BotAI):
         self._mover_tag: int | None = None
         self._move_target = None
         self._bile_at = None
+        self._audit_iteration: int | None = None
 
     def check(self, cond: bool, msg: str) -> None:
         if not cond:
@@ -162,6 +169,7 @@ class _AuditBot(BotAI):
         await self._upkeep()
         bile_seen = len(self.state.effects) > 0
         if (bile_seen and iteration > 15) or iteration >= _MAX_ITERS:
+            self._audit_iteration = iteration
             self._audit()
             self.audited = True
             await self.client.leave()
@@ -200,54 +208,59 @@ class _AuditBot(BotAI):
             c = cats[row]
             self.check(abs(f[0] - p.pos.x / dx) < 1e-4, f"{u.name} x")
             self.check(abs(f[1] - p.pos.y / dy) < 1e-4, f"{u.name} y")
+            facing = float(p.facing) % (2 * math.pi)
             self.check(
-                abs(f[2] - (float(p.facing) % (2 * math.pi)) / (2 * math.pi)) < 1e-4,
-                f"{u.name} facing",
+                abs(f[2] - _clip01(math.sin(facing) * 0.5 + 0.5)) < 1e-4,
+                f"{u.name} facing sin",
             )
             self.check(
-                abs(f[3] - _ratio(p.health, p.health_max)) < 1e-4, f"{u.name} hp"
+                abs(f[3] - _clip01(math.cos(facing) * 0.5 + 0.5)) < 1e-4,
+                f"{u.name} facing cos",
             )
             self.check(
-                abs(f[4] - _ratio(p.shield, p.shield_max)) < 1e-4, f"{u.name} shield"
+                abs(f[4] - _ratio(p.health, p.health_max)) < 1e-4, f"{u.name} hp"
             )
             self.check(
-                abs(f[5] - _ratio(p.energy, p.energy_max)) < 1e-4, f"{u.name} energy"
+                abs(f[5] - _ratio(p.shield, p.shield_max)) < 1e-4, f"{u.name} shield"
             )
-            self.check(abs(f[6] - _log_norm(p.radius, 4.0)) < 1e-4, f"{u.name} radius")
             self.check(
-                abs(f[7] - _clip01(p.cargo_space_taken / 8.0)) < 1e-4,
+                abs(f[6] - _ratio(p.energy, p.energy_max)) < 1e-4, f"{u.name} energy"
+            )
+            self.check(abs(f[7] - _log_norm(p.radius, 4.0)) < 1e-4, f"{u.name} radius")
+            self.check(
+                abs(f[8] - _clip01(p.cargo_space_taken / 8.0)) < 1e-4,
                 f"{u.name} cargo taken",
             )
             self.check(
-                abs(f[8] - _clip01(p.cargo_space_max / 8.0)) < 1e-4,
+                abs(f[9] - _clip01(p.cargo_space_max / 8.0)) < 1e-4,
                 f"{u.name} cargo max",
             )
             self.check(
-                abs(f[9] - _clip01(p.build_progress)) < 1e-4, f"{u.name} build progress"
+                abs(f[10] - _clip01(p.build_progress)) < 1e-4, f"{u.name} build progress"
             )
             self.check(
-                abs(f[10] - _clip01(p.weapon_cooldown / 50.0)) < 1e-4,
+                abs(f[11] - _clip01(p.weapon_cooldown / 50.0)) < 1e-4,
                 f"{u.name} weapon cd",
             )
             try:
                 speed = float(u.movement_speed)
             except Exception:
                 speed = 0.0
-            self.check(abs(f[11] - _log_norm(speed, 8.0)) < 1e-4, f"{u.name} speed")
+            self.check(abs(f[12] - _log_norm(speed, 8.0)) < 1e-4, f"{u.name} speed")
             self.check(
-                abs(f[12] - _log_norm(p.mineral_contents, 2500.0)) < 1e-4,
+                abs(f[13] - _log_norm(p.mineral_contents, 2500.0)) < 1e-4,
                 f"{u.name} minerals",
             )
             self.check(
-                abs(f[13] - _log_norm(p.vespene_contents, 2500.0)) < 1e-4,
+                abs(f[14] - _log_norm(p.vespene_contents, 2500.0)) < 1e-4,
                 f"{u.name} vespene",
             )
             self.check(
-                abs(f[14] - _ratio(p.assigned_harvesters, p.ideal_harvesters)) < 1e-4,
+                abs(f[15] - _ratio(p.assigned_harvesters, p.ideal_harvesters)) < 1e-4,
                 f"{u.name} harvesters",
             )
             self.check(
-                abs(f[19] - (1.0 if int(p.engaged_target_tag) != 0 else 0.0)) < 1e-4,
+                abs(f[20] - (1.0 if int(p.engaged_target_tag) != 0 else 0.0)) < 1e-4,
                 f"{u.name} engaged",
             )
             self.check(
@@ -279,7 +292,7 @@ class _AuditBot(BotAI):
                 live_rem0 = float(p.buff_duration_remain)
             except Exception:
                 live_rem0 = 0.0
-            for slot, col, dcol in ((0, 6, 15), (1, 7, 16)):
+            for slot, col, dcol in ((0, 6, 16), (1, 7, 17)):
                 exp_id = (
                     BUFF_DICT.get(live_buffs[slot], 0) if slot < len(live_buffs) else 0
                 )
@@ -316,18 +329,18 @@ class _AuditBot(BotAI):
             # game actually provides a value.
             if live_rem > 0:
                 self.check(
-                    float(ent[srow, 15]) > 0.0,
+                    float(ent[srow, 16]) > 0.0,
                     f"stim duration recorded (remain={live_rem})",
                 )
         if self._mover_tag in by_tag:
             mrow = by_tag[self._mover_tag]
             self.check(int(cats[mrow, 4]) != 0, "move order ability recorded")
             self.check(
-                abs(float(ent[mrow, 17]) - self._move_target.x / dx) < 2e-2,
+                abs(float(ent[mrow, 18]) - self._move_target.x / dx) < 2e-2,
                 "move order target x",
             )
             self.check(
-                abs(float(ent[mrow, 18]) - self._move_target.y / dy) < 2e-2,
+                abs(float(ent[mrow, 19]) - self._move_target.y / dy) < 2e-2,
                 "move order target y",
             )
 
@@ -385,6 +398,15 @@ class _AuditBot(BotAI):
         self.check(ent.shape == (MAX_ENTITIES, ENTITY_NUM_DIM), "entity width")
         self.check(cats.shape == (MAX_ENTITIES, ENTITY_CAT_DIM), "categorical width")
         self.check(len(scalar) == SCALAR_DIM, "scalar width")
+        # Loud summary so a passing run is unmistakable in the log (the
+        # forfeit below always logs Defeat + KILLED teardown noise).
+        print(
+            f"[live-audit] iteration={self._audit_iteration} units={n} "
+            f"effects={len(self.state.effects)} failures={len(self.failures)}",
+            flush=True,
+        )
+        for failure in self.failures:
+            print(f"[live-audit] FAIL: {failure}", flush=True)
 
 
 def _run_audit_game() -> _AuditBot:
@@ -397,6 +419,12 @@ def _run_audit_game() -> _AuditBot:
         )
     except ProtocolError:
         pass  # raised by client.leave() after a successful audit
+    print(
+        f"[live-audit] done: audited={bot.audited} "
+        f"failures={len(bot.failures)} "
+        "(Defeat + KILLED above are expected: the bot forfeits after auditing.)",
+        flush=True,
+    )
     return bot
 
 

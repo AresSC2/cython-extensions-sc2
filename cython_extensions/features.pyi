@@ -80,9 +80,9 @@ class Observation:
 
     async def on_step(self, iteration: int):
         obs = Features(self).build_observation()
-        print(obs.entity_features.shape)  # (1, 512, 20)
-        print(obs.spatial.shape)  # (1, 18, 128, 128)
-        print(obs.scalar.shape)  # (1, 46)
+        print(obs.entity_features.shape)  # (1, 512, 25)
+        print(obs.spatial.shape)  # (1, 19, 128, 128)
+        print(obs.scalar.shape)  # (1, 50)
     ```
 
     Attributes:
@@ -171,7 +171,7 @@ class Features:
         entity_mask: np.ndarray,
         entity_aux: np.ndarray,
         target_spatial_size: tuple[int, int] = TARGET_SPATIAL_SIZE,
-    ) -> Tuple[np.ndarray, int, int]:
+    ) -> Tuple[np.ndarray, int]:
         """Build the ``(C, H, W)`` map stack; see ``SPATIAL_CHANNEL_NAMES``.
 
         Returns:

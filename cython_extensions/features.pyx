@@ -16,7 +16,13 @@ Three modalities, collected from a ``python-sc2`` ``BotAI`` instance:
   ``entity_positions`` + ``entity_mask`` are its inputs (see the private
   note ``notes/scatter_connection.md`` for the reference op).
 * **scalar** — ``(D,)`` global player vector: game time, log-scaled
-  economy, supply, races, hashed upgrades, alerts, spawn, score stats.
+  economy, supply, races, hashed upgrades, alerts, spawn, score stats
+  (split killed units/structures, lost, spent).
+
+Facing is encoded as a sin/cos pair (no 1.0 -> 0.0 wrap discontinuity).
+Mined resources use an initial-contents table (1800 minerals / 2250
+vespene, small-field variants excepted) mirroring AlphaStar's
+``INITIAL_RESOURCE_CONTENTS``.
 
 All spatial planes are ``float32`` in ``[0, 1]`` and already masked to the
 playable area. ``entity_mask`` marks real rows (``1.0``) vs padding.
@@ -29,7 +35,7 @@ import numpy as np
 
 cimport numpy as cnp
 
-from libc.math cimport log
+from libc.math cimport cos, log, sin
 from sc2.ids.ability_id import AbilityId
 from sc2.ids.buff_id import BuffId
 from sc2.ids.unit_typeid import UnitTypeId
@@ -65,25 +71,30 @@ TARGET_SPATIAL_SIZE = (128, 128)  # AlphaStar minimap resolution
 # Entity numeric columns (continuous, [0, 1]).
 cdef int EN_X = 0
 cdef int EN_Y = 1
-cdef int EN_FACING = 2
-cdef int EN_HP = 3
-cdef int EN_SHIELD = 4
-cdef int EN_ENERGY = 5
-cdef int EN_RADIUS = 6
-cdef int EN_CARGO_TAKEN = 7
-cdef int EN_CARGO_MAX = 8
-cdef int EN_BUILD_PROGRESS = 9
-cdef int EN_WEAPON_CD = 10
-cdef int EN_SPEED = 11
-cdef int EN_MINERALS = 12
-cdef int EN_VESPENE = 13
-cdef int EN_HARVESTERS = 14
-cdef int EN_BUFF_DUR0 = 15
-cdef int EN_BUFF_DUR1 = 16
-cdef int EN_ORDER_X = 17
-cdef int EN_ORDER_Y = 18
-cdef int EN_ENGAGED = 19
-ENTITY_NUM_DIM = 20
+cdef int EN_FACING_SIN = 2  # sin(facing) * 0.5 + 0.5
+cdef int EN_FACING_COS = 3  # cos(facing) * 0.5 + 0.5
+cdef int EN_HP = 4
+cdef int EN_SHIELD = 5
+cdef int EN_ENERGY = 6
+cdef int EN_RADIUS = 7
+cdef int EN_CARGO_TAKEN = 8
+cdef int EN_CARGO_MAX = 9
+cdef int EN_BUILD_PROGRESS = 10
+cdef int EN_WEAPON_CD = 11
+cdef int EN_SPEED = 12
+cdef int EN_MINERALS = 13
+cdef int EN_VESPENE = 14
+cdef int EN_HARVESTERS = 15
+cdef int EN_BUFF_DUR0 = 16
+cdef int EN_BUFF_DUR1 = 17
+cdef int EN_ORDER_X = 18
+cdef int EN_ORDER_Y = 19
+cdef int EN_ENGAGED = 20
+cdef int EN_ORDER_PROGRESS = 21  # first order progress in [0, 1]
+cdef int EN_MINED = 22  # log-norm mined resources (initial - current)
+cdef int EN_DETECT = 23  # log-norm detect_range / 16
+cdef int EN_POS_Z = 24  # clip(pos.z / 16)
+ENTITY_NUM_DIM = 25
 
 # Entity categorical columns (integer indices, 0 = none/unknown).
 cdef int EC_TYPE = 0
@@ -103,7 +114,14 @@ cdef int EC_SELECTED = 13
 cdef int EC_ATK_UP = 14
 cdef int EC_ARMOR_UP = 15
 cdef int EC_SHIELD_UP = 16
-ENTITY_CAT_DIM = 17
+cdef int EC_ORDER_LENGTH = 17  # capped queued order count, 0-8
+cdef int EC_ON_SCREEN = 18  # AlphaStar SELECTABLE mask input
+cdef int EC_BLIP = 19  # sensor-tower snapshot (fog blip)
+cdef int EC_IN_CARGO = 20  # transported (member of a passenger tag set)
+cdef int EC_ADDON = 21  # addon unit-type idx, 0 = none, 1 = present-unknown
+cdef int EC_ENGAGED_TYPE = 22  # engaged-target unit-type idx, 0 = none/unknown
+cdef int EC_OWNER = 23  # proto.owner capped to 0-15 (e.g. neutral ~= 15)
+ENTITY_CAT_DIM = 24
 
 SPATIAL_CHANNEL_NAMES = [
     "height",          # 0: min-max normalised terrain height
@@ -172,13 +190,16 @@ SCALAR_FEATURE_NAMES = [
     "spawn_x",              # 37: start-location x (camera proxy)
     "spawn_y",              # 38: start-location y (camera proxy)
     "score_total",          # 39: log total value / log1p(20000)
-    "score_killed",         # 40: log killed value / log1p(10000)
-    "collected_minerals",   # 41: log / log1p(50000)
-    "collected_vespene",    # 42: log / log1p(50000)
-    "collection_rate_min",  # 43: log / log1p(5000)
-    "collection_rate_ves",  # 44: log / log1p(5000)
-    "apm",                  # 45: log current apm / log1p(1000)
-    "effect_count",         # 46: log1p(n persistent effects) / log1p(8)
+    "killed_units",         # 40: log killed unit value / log1p(10000)
+    "killed_structures",    # 41: log killed structure value / log1p(10000)
+    "collected_minerals",   # 42: log / log1p(50000)
+    "collected_vespene",    # 43: log / log1p(50000)
+    "collection_rate_min",  # 44: log / log1p(5000)
+    "collection_rate_ves",  # 45: log / log1p(5000)
+    "apm",                  # 46: log current apm / log1p(1000)
+    "effect_count",         # 47: log1p(n persistent effects) / log1p(8)
+    "lost_value",           # 48: log lost minerals+vespene / log1p(50000)
+    "spent_value",          # 49: log spent minerals+vespene / log1p(50000)
 ]
 SCALAR_DIM = len(SCALAR_FEATURE_NAMES)
 
@@ -195,8 +216,12 @@ cdef double SCALE_SPEED = 8.0
 cdef double SCALE_RESOURCE_CONTENTS = 2500.0
 cdef double SCALE_BUFF_DURATION = 60.0
 cdef double SCALE_CARGO = 8.0
-cdef double SCALE_POWER_RADIUS = 7.0
 cdef double SCALE_SPAWN_RADIUS = 4.0
+cdef double SCALE_DETECT = 16.0
+cdef double SCALE_POS_Z = 16.0
+cdef double SCALE_ORDER_LENGTH = 8.0
+cdef double SCALE_KILLED = 10000.0
+cdef double SCALE_VALUE_WIDE = 50000.0
 cdef double TWO_PI = 6.283185307179586
 
 
@@ -406,7 +431,7 @@ cdef void _accumulate_unit_planes(
     int p_hp_self,
     int p_hp_enemy,
     int p_selected,
-    int p_effects,
+    int p_buffs,
 ) noexcept nogil:
     """Single summing pass of entity mass onto minimap feature planes.
 
@@ -454,7 +479,7 @@ cdef void _accumulate_unit_planes(
         if selected[i] > 0.5:
             planes[p_selected, gy, gx] += 1.0
         if has_buff[i] > 0.5:
-            planes[p_effects, gy, gx] += 1.0
+            planes[p_buffs, gy, gx] += 1.0
 
 
 cdef inline int _alliance_idx(int alliance) noexcept nogil:
@@ -481,6 +506,34 @@ cdef inline int _race_slot(object race):
     if v == 3:
         return 2
     return 3
+
+
+# Initial resource contents per unit type (raw SC2 ids). AlphaStar keeps an
+# equivalent INITIAL_RESOURCE_CONTENTS table to encode *mined* resources.
+# Defaults: 1800 minerals / 2250 vespene; only the small-field variants
+# below differ. Values from UnitTypeId: MINERALFIELD750 family = 750,
+# MINERALFIELD450 = 450, MINERALFIELDOPAQUE900 = 900.
+cdef set _MINERAL_750_TYPES = {147, 483, 666, 797, 885, 887}
+cdef set _MINERAL_450_TYPES = {1996}
+cdef set _MINERAL_900_TYPES = {1998}
+cdef double _SCALE_MINERAL_DEFAULT = 1800.0
+cdef double _SCALE_VESPENE_DEFAULT = 2250.0
+
+
+cdef inline double _initial_resource_c(int raw_type, double mineral_c,
+                                       double vespene_c):
+    # GIL-held on purpose (set membership); _encode_entities holds the GIL.
+    if mineral_c > 0.0:
+        if raw_type in _MINERAL_750_TYPES:
+            return 750.0
+        if raw_type in _MINERAL_450_TYPES:
+            return 450.0
+        if raw_type in _MINERAL_900_TYPES:
+            return 900.0
+        return _SCALE_MINERAL_DEFAULT
+    if vespene_c > 0.0:
+        return _SCALE_VESPENE_DEFAULT
+    return 0.0
 
 
 @dataclass(slots=True)
@@ -622,9 +675,11 @@ class Features:
         # statics. movement_speed chains two objects and is_structure scans
         # game data, so both are memoized per unit type across steps; the
         # sort key below then stays allocation-free of property work.
+        # NOTE: movement_speed is a type static (excludes buffs/slow fields).
         cdef dict tag_to_type = {}
         cdef dict type_cache = self._type_cache
         cdef object u
+        cdef set passenger_tags = set()
         for u in units:
             t = u._proto.unit_type
             tag_to_type[u.tag] = UNIT_TYPE_DICT.get(t, 0)
@@ -638,6 +693,22 @@ class Features:
                 except Exception:
                     type_struct = 0
                 type_cache[t] = (type_speed, type_struct)
+            # Collect transported-unit tags so EC_IN_CARGO can be marked.
+            # proto.passengers is empty for non-transports; guards keep
+            # synthetic / partial protos cheap.
+            try:
+                passengers = u._proto.passengers
+            except Exception:
+                passengers = None
+            if passengers:
+                try:
+                    for passenger in passengers:
+                        try:
+                            passenger_tags.add(passenger.tag)
+                        except Exception:
+                            continue
+                except Exception:
+                    pass
 
         # Deterministic priority order so truncation is stable: own units
         # first, then ally / neutral / enemy, buildings after armies.
@@ -674,6 +745,11 @@ class Features:
         cdef int n_buffs, order_ability, order_unit_type, raw_type
         cdef double order_x, order_y, hp_raw, buff_remain0, speed
         cdef int alliance
+        cdef int order_length, on_screen, is_blip, in_cargo
+        cdef int addon_tag, addon_type, engaged_tag, engaged_type, owner
+        cdef double order_progress, facing, facing_sin, facing_cos
+        cdef double pos_z, detect_range, mineral_c, vespene_c
+        cdef double initial_res, mined
 
         for i in range(n):
             u = ordered[i]
@@ -685,17 +761,34 @@ class Features:
 
             hp_raw = proto.health + proto.shield
 
-            # -- orders: first order only (ability + target) -----------------
+            # -- orders: queue length + first order (ability + target) --------
+            # AlphaStar keeps 4x order_id + progress; we keep the first
+            # ability/target plus queue length and first progress, which
+            # distinguishes idle (0) from queued (n) without a 4x blowup.
             order_ability = 0
             order_unit_type = 0
             order_x = 0.0
             order_y = 0.0
+            order_length = 0
+            order_progress = 0.0
             try:
                 orders = u.orders
             except Exception:
                 orders = None
             if orders:
+                try:
+                    order_length = len(orders)
+                except Exception:
+                    order_length = 1
+                if order_length > 8:
+                    order_length = 8
                 first = orders[0]
+                try:
+                    order_progress = float(getattr(first, "progress", 0.0))
+                except Exception:
+                    order_progress = 0.0
+                if order_progress != order_progress:  # NaN guard
+                    order_progress = 0.0
                 try:
                     ability = first.ability
                     ability = getattr(ability, "id", ability)
@@ -738,9 +831,77 @@ class Features:
             if n_buffs > 1:
                 buff1 = BUFF_DICT.get(buff_ids[1], 0)
 
+            # -- masks / attachments -----------------------------------------
+            # is_on_screen + is_blip feed AlphaStar's SELECTABLE /
+            # TARGETABLE_WITH_CAMERA masks; in_cargo marks transported units
+            # (no proto flag — resolved via the passenger tag set above).
+            try:
+                on_screen = 1 if proto.is_on_screen else 0
+            except Exception:
+                on_screen = 0
+            try:
+                is_blip = 1 if proto.is_blip else 0
+            except Exception:
+                is_blip = 0
+            try:
+                in_cargo = 1 if proto.tag in passenger_tags else 0
+            except Exception:
+                in_cargo = 0
+            try:
+                addon_tag = int(proto.add_on_tag)
+            except Exception:
+                addon_tag = 0
+            if addon_tag != 0:
+                addon_type = tag_to_type.get(addon_tag, 1)
+            else:
+                addon_type = 0
+            try:
+                engaged_tag = int(proto.engaged_target_tag)
+            except Exception:
+                engaged_tag = 0
+            if engaged_tag != 0:
+                engaged_type = tag_to_type.get(engaged_tag, 0)
+            else:
+                engaged_type = 0
+            try:
+                owner = int(proto.owner)
+            except Exception:
+                owner = 0
+            if owner < 0:
+                owner = 0
+            elif owner > 15:
+                owner = 15
+
+            # -- facing as a sin/cos pair (no wrap discontinuity) -------------
+            facing = proto.facing % TWO_PI
+            facing_sin = sin(facing) * 0.5 + 0.5
+            facing_cos = cos(facing) * 0.5 + 0.5
+            try:
+                pos_z = float(proto.pos.z)
+            except Exception:
+                pos_z = 0.0
+            try:
+                detect_range = float(proto.detect_range)
+            except Exception:
+                detect_range = 0.0
+            try:
+                mineral_c = float(proto.mineral_contents)
+            except Exception:
+                mineral_c = 0.0
+            try:
+                vespene_c = float(proto.vespene_contents)
+            except Exception:
+                vespene_c = 0.0
             # Type statics were primed above for every unit in this call.
             raw_type = proto.unit_type
             speed = type_cache[raw_type][0]
+            initial_res = _initial_resource_c(raw_type, mineral_c, vespene_c)
+            if initial_res > 0.0:
+                mined = initial_res - (mineral_c + vespene_c)
+                if mined < 0.0:
+                    mined = 0.0
+            else:
+                mined = 0.0
             ideal = proto.ideal_harvesters
             assigned = proto.assigned_harvesters
 
@@ -749,8 +910,8 @@ class Features:
             feats[i, EN_Y] = _clip01_c(y / denom_y)
             # Optimistic proto reads: every field below always exists on a
             # Unit proto (protobuf returns defaults); fail fast otherwise.
-            facing = proto.facing % TWO_PI
-            feats[i, EN_FACING] = facing / TWO_PI
+            feats[i, EN_FACING_SIN] = _clip01_c(facing_sin)
+            feats[i, EN_FACING_COS] = _clip01_c(facing_cos)
             feats[i, EN_HP] = _safe_ratio_c(proto.health, proto.health_max)
             feats[i, EN_SHIELD] = _safe_ratio_c(proto.shield, proto.shield_max)
             feats[i, EN_ENERGY] = _safe_ratio_c(proto.energy, proto.energy_max)
@@ -773,6 +934,10 @@ class Features:
             feats[i, EN_ORDER_X] = _clip01_c(order_x)
             feats[i, EN_ORDER_Y] = _clip01_c(order_y)
             feats[i, EN_ENGAGED] = 1.0 if proto.engaged_target_tag != 0 else 0.0
+            feats[i, EN_ORDER_PROGRESS] = _clip01_c(order_progress)
+            feats[i, EN_MINED] = _log_norm_c(mined, SCALE_RESOURCE_CONTENTS)
+            feats[i, EN_DETECT] = _log_norm_c(detect_range, SCALE_DETECT)
+            feats[i, EN_POS_Z] = _clip01_c(pos_z / SCALE_POS_Z)
 
             cats[i, EC_TYPE] = UNIT_TYPE_DICT.get(raw_type, 0)
             cats[i, EC_ALLIANCE] = alliance
@@ -791,6 +956,13 @@ class Features:
             cats[i, EC_ATK_UP] = proto.attack_upgrade_level
             cats[i, EC_ARMOR_UP] = proto.armor_upgrade_level
             cats[i, EC_SHIELD_UP] = proto.shield_upgrade_level
+            cats[i, EC_ORDER_LENGTH] = order_length
+            cats[i, EC_ON_SCREEN] = on_screen
+            cats[i, EC_BLIP] = is_blip
+            cats[i, EC_IN_CARGO] = in_cargo
+            cats[i, EC_ADDON] = addon_type
+            cats[i, EC_ENGAGED_TYPE] = engaged_type
+            cats[i, EC_OWNER] = owner
 
             pos[i, 0] = feats[i, EN_X]
             pos[i, 1] = feats[i, EN_Y]
@@ -911,6 +1083,9 @@ class Features:
                 dtype=np.float32,
             )
             vis = np.nan_to_num(vis, nan=0.0, posinf=0.0, neginf=0.0) / 2.0
+            # Visibility is a 0/1/2 enum in python-sc2; clip so a future
+            # 0-255 change degrades to saturated instead of >1.0 planes.
+            vis = np.clip(vis, 0.0, 1.0)
         except Exception:
             vis = np.zeros((h, w), dtype=np.float32)
         try:
@@ -935,8 +1110,6 @@ class Features:
             dyn = np.stack([vis, creep]).astype(np.float32)
 
         # -- power: stamp discs at psionic-matrix sources (target res) ----------
-        # Sources fetched first: the tag scan below is skipped entirely when
-        # there is nothing to draw (the common non-Protoss case).
         cdef cnp.ndarray[cnp.float32_t, ndim=2] power = np.zeros(
             (th, tw), dtype=np.float32
         )
@@ -947,15 +1120,11 @@ class Features:
             )
         except Exception:
             sources = []
-        if sources:
-            tag_to_xy = {}
-            for u in self.ai.all_units:
-                tag_to_xy[u.tag] = (u._proto.pos.x, u._proto.pos.y)
-            for tag in sources:
-                xy = tag_to_xy.get(tag)
-                if xy is not None:
-                    _splat_disc(power, xy[0] * sx, xy[1] * sy,
-                                SCALE_POWER_RADIUS * (sx + sy) * 0.5)
+        for source in sources:
+            pos = source.position
+            pos_x, pos_y = float(pos.x), float(pos.y)
+            _splat_disc(power, pos_x * sx, pos_y * sy,
+                        float(source.radius) * (sx + sy) * 0.5)
 
         # -- summing scatter of entity mass, straight at target res -------------
         cdef cnp.ndarray[cnp.float32_t, ndim=3] scatter = np.zeros(
@@ -1161,18 +1330,27 @@ class Features:
 
         score = ai.state.score if getattr(ai, "state", None) is not None else None
         if score is None:
-            total_value = killed_value = collected_min = collected_ves = 0.0
+            total_value = collected_min = collected_ves = 0.0
             rate_min = rate_ves = apm = 0.0
+            killed_units = killed_structures = lost_value = spent_value = 0.0
         else:
             total_value = _score("total_value_units") + _score(
                 "total_value_structures")
-            killed_value = _score("killed_value_units") + _score(
-                "killed_value_structures")
+            killed_units = _score("killed_value_units")
+            killed_structures = _score("killed_value_structures")
             collected_min = _score("collected_minerals")
             collected_ves = _score("collected_vespene")
             rate_min = _score("collection_rate_minerals")
             rate_ves = _score("collection_rate_vespene")
             apm = _score("current_apm")
+            # Lost / spent have no single total field: sum the per-category
+            # minerals + vespene buckets (none/army/economy/technology/
+            # upgrade). Missing buckets fall back to 0.0 via _score.
+            lost_value = 0.0
+            for _cat in ("none", "army", "economy", "technology", "upgrade"):
+                lost_value += _score(f"lost_minerals_{_cat}")
+                lost_value += _score(f"lost_vespene_{_cat}")
+            spent_value = _score("spent_minerals") + _score("spent_vespene")
 
         arr = np.empty((SCALAR_DIM,), dtype=np.float32)
         arr[0] = min(loop / SCALE_GAME_LOOP, 1.0)
@@ -1209,11 +1387,14 @@ class Features:
         arr[37] = min(max(spawn_x / denom_x, 0.0), 1.0)
         arr[38] = min(max(spawn_y / denom_y, 0.0), 1.0)
         arr[39] = _log_norm_c(total_value, SCALE_MINERALS)
-        arr[40] = _log_norm_c(killed_value, 10000.0)
-        arr[41] = _log_norm_c(collected_min, 50000.0)
-        arr[42] = _log_norm_c(collected_ves, 50000.0)
-        arr[43] = _log_norm_c(rate_min, 5000.0)
-        arr[44] = _log_norm_c(rate_ves, 5000.0)
-        arr[45] = _log_norm_c(apm, 1000.0)
-        arr[46] = float(np.log1p(max(n_effects, 0.0)) / np.log1p(8.0))
+        arr[40] = _log_norm_c(killed_units, SCALE_KILLED)
+        arr[41] = _log_norm_c(killed_structures, SCALE_KILLED)
+        arr[42] = _log_norm_c(collected_min, SCALE_VALUE_WIDE)
+        arr[43] = _log_norm_c(collected_ves, SCALE_VALUE_WIDE)
+        arr[44] = _log_norm_c(rate_min, 5000.0)
+        arr[45] = _log_norm_c(rate_ves, 5000.0)
+        arr[46] = _log_norm_c(apm, 1000.0)
+        arr[47] = float(np.log1p(max(n_effects, 0.0)) / np.log1p(8.0))
+        arr[48] = _log_norm_c(lost_value, SCALE_VALUE_WIDE)
+        arr[49] = _log_norm_c(spent_value, SCALE_VALUE_WIDE)
         return arr
